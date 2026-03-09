@@ -1,32 +1,10 @@
 import { NextResponse } from "next/server";
-import { exec } from "child_process";
-import { promisify } from "util";
-
-const execAsync = promisify(exec);
+import { spawn } from "child_process";
 
 export async function POST() {
-  try {
-    const { stdout, stderr } = await execAsync(
-      `cd ~/Projects/flywheel-bot && timeout 120 node -e "const r = require('./modules/radar'); r.manualPull().then(() => process.exit(0))"`,
-      { timeout: 130_000 }
-    );
-
-    return NextResponse.json({
-      status: "success",
-      output: stdout,
-      errors: stderr || undefined,
-    });
-  } catch (err) {
-    const error = err as { stdout?: string; stderr?: string; message?: string };
-    console.error("Scan failed:", err);
-    return NextResponse.json(
-      {
-        status: "error",
-        error: error.message || "Scan failed",
-        output: error.stdout || undefined,
-        errors: error.stderr || undefined,
-      },
-      { status: 500 }
-    );
-  }
+  const script = process.env["FLYWHEEL_SCAN_SCRIPT"];
+  if (!script) return NextResponse.json({ status: "error", message: "FLYWHEEL_SCAN_SCRIPT not configured" }, { status: 500 });
+  const child = spawn("node", [script], { detached: true, stdio: "ignore" });
+  child.unref();
+  return NextResponse.json({ status: "started", message: "扫描已启动，新信号将通过雷达频道实时显示" });
 }
