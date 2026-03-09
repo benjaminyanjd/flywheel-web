@@ -143,13 +143,13 @@ export default function OpportunitiesPage() {
       <h1 className="text-xl font-bold text-slate-100 mb-4">机会捕捉</h1>
 
       <ScrollArea className="flex-1">
-        <div className="space-y-4 pr-4">
+        <div className="space-y-5 pr-4">
           {opportunities.map((opp) => {
             const embed = parseEmbed(opp.opp_embed);
             return (
               <Card
                 key={opp.id}
-                className="bg-slate-800 border-slate-700 p-5"
+                className="bg-slate-800 border-slate-700 p-6"
               >
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-slate-100 font-semibold text-lg">
@@ -225,7 +225,7 @@ export default function OpportunitiesPage() {
                 )}
 
                 {opp.action === "missed" && (
-                  <div className="flex items-center gap-2 mt-4 pt-3 border-t border-slate-700">
+                  <div className="flex items-center gap-3 mt-4 pt-4 border-t border-slate-700">
                     <Button
                       variant="outline"
                       size="sm"

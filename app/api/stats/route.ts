@@ -1,5 +1,20 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { execSync } from "child_process";
+
+function checkBotStatus(): "online" | "offline" {
+  try {
+    const output = execSync("pm2 jlist", { timeout: 5000 }).toString();
+    const list = JSON.parse(output);
+    const bot = list.find(
+      (p: { name: string; pm2_env?: { status?: string } }) =>
+        p.name === "flywheel-bot"
+    );
+    return bot?.pm2_env?.status === "online" ? "online" : "offline";
+  } catch {
+    return "offline";
+  }
+}
 
 export async function GET() {
   try {
@@ -12,13 +27,18 @@ export async function GET() {
       )
       .get() as { count: number };
 
-    const sourceCounts = db
+    const sourceRows = db
       .prepare(
         `SELECT source, COUNT(*) as count FROM signals
          GROUP BY source
          ORDER BY count DESC`
       )
       .all() as { source: string; count: number }[];
+
+    const signalsBySource: Record<string, number> = {};
+    for (const row of sourceRows) {
+      signalsBySource[row.source] = row.count;
+    }
 
     const totalSignals = db
       .prepare("SELECT COUNT(*) as count FROM signals")
@@ -28,12 +48,17 @@ export async function GET() {
       .prepare("SELECT COUNT(*) as count FROM opportunity_actions")
       .get() as { count: number };
 
-    const statusCounts = db
+    const statusRows = db
       .prepare(
         `SELECT action, COUNT(*) as count FROM opportunity_actions
          GROUP BY action`
       )
       .all() as { action: string; count: number }[];
+
+    const opportunityStatusCounts: Record<string, number> = {};
+    for (const row of statusRows) {
+      opportunityStatusCounts[row.action] = row.count;
+    }
 
     const conversationCount = db
       .prepare("SELECT COUNT(*) as count FROM conversations")
@@ -41,13 +66,16 @@ export async function GET() {
 
     const cost = parseFloat((conversationCount.count * 0.05).toFixed(2));
 
+    const botStatus = checkBotStatus();
+
     return NextResponse.json({
-      todayCount: todayCount.count,
-      sourceCounts,
+      todaySignals: todayCount.count,
       totalSignals: totalSignals.count,
       totalOpportunities: totalOpportunities.count,
-      statusCounts,
       cost,
+      signalsBySource,
+      opportunityStatusCounts,
+      botStatus,
     });
   } catch (err) {
     console.error("Failed to fetch stats:", err);

@@ -138,11 +138,11 @@ export default function RadarPage() {
       </Tabs>
 
       <ScrollArea className="flex-1">
-        <div className="space-y-3 pr-4">
+        <div className="space-y-4 pr-4">
           {filtered.map((signal) => (
             <Card
               key={signal.id}
-              className={`bg-slate-800 border-slate-700 p-4 transition-all duration-500 ${
+              className={`bg-slate-800 border-slate-700 p-5 transition-all duration-500 ${
                 newIds.has(signal.id)
                   ? "ring-2 ring-blue-500/50 animate-in fade-in slide-in-from-top-2"
                   : ""
@@ -164,7 +164,7 @@ export default function RadarPage() {
                       {signal.title}
                     </a>
                   </div>
-                  <p className="text-slate-400 text-sm line-clamp-2">
+                  <p className="text-slate-400 text-sm line-clamp-2 mt-1.5">
                     {signal.description}
                   </p>
                 </div>

@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
       stats[row.action] = row.count;
     }
 
-    return NextResponse.json({ opportunities, stats });
+    return NextResponse.json({ items: opportunities, stats });
   } catch (err) {
     console.error("Failed to fetch archive:", err);
     return NextResponse.json({ error: "Failed to fetch archive" }, { status: 500 });
