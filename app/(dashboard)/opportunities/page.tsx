@@ -115,13 +115,24 @@ export default function OpportunitiesPage() {
       if (!res.body) return;
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
-      let buffer = "";
+      let rawBuffer = "";
+      let textAccum = "";
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        setAdvisorResponse(buffer);
+        rawBuffer += decoder.decode(value, { stream: true });
+        // Parse SSE: each line looks like "data: {"text":"..."}"
+        const lines = rawBuffer.split("\n");
+        rawBuffer = lines.pop() || ""; // keep incomplete last line
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          try {
+            const json = JSON.parse(line.slice(6));
+            if (json.text) textAccum += json.text;
+          } catch {}
+        }
+        setAdvisorResponse(textAccum);
       }
     } catch (err) {
       if ((err as Error).name !== "AbortError") console.error(err);

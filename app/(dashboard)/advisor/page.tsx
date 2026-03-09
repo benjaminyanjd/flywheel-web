@@ -50,16 +50,25 @@ export default function AdvisorPage() {
       if (!res.body) return;
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
-      let accumulated = "";
+      let rawBuffer = "";
+      let textAccum = "";
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        accumulated += decoder.decode(value, { stream: true });
-        const current = accumulated;
+        rawBuffer += decoder.decode(value, { stream: true });
+        const lines = rawBuffer.split("\n");
+        rawBuffer = lines.pop() || "";
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          try {
+            const json = JSON.parse(line.slice(6));
+            if (json.text) textAccum += json.text;
+          } catch {}
+        }
         setMessages((prev) => {
           const updated = [...prev];
-          updated[updated.length - 1] = { role: "assistant", content: current };
+          updated[updated.length - 1] = { role: "assistant", content: textAccum };
           return updated;
         });
       }
