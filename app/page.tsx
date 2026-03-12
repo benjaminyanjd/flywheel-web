@@ -158,18 +158,18 @@ export default function LandingPage() {
           <div className="space-y-3">
             {[
               {
-                badge: "🔥 高置信",
+                badge: "🔴 高置信",
                 badgeCls: "bg-rose-500/20 text-rose-400 border border-rose-500/30",
-                title: "Layer 2 Native Rollups 技術解讀 + 潛在項目埋伏",
-                why: "以太坊研究人員剛演示了原型，處於早期驗證階段，引發新一輪 L2 敘事",
-                action: "深入研究技術細節，篩選 3–5 個可能採用的早期項目"
+                title: "Perplexity AI 新一輪融資前夕 · AI 搜索賽道佈局窗口",
+                why: "Perplexity 估值談判中洩露的文件顯示 3 倍增長，窗口期約 2 週",
+                action: "研究競品 You.com / Kagi 的 B 端 API 商業模式，搶先佈局"
               },
               {
-                badge: "⚡ 中置信",
+                badge: "🟡 中置信",
                 badgeCls: "bg-amber-500/20 text-amber-400 border border-amber-500/30",
-                title: "AI Agent 支付軌道：Stripe 新 API 的商業機會",
-                why: "Stripe 剛開放 AI Agent 支付接口，開發者社區熱度激增",
-                action: "評估是否搭建 Agent 支付中間層工具"
+                title: "Cloudflare Workers AI 免費額度限制即將調整",
+                why: "官方論壇帖子確認下月調整，現有免費項目需遷移",
+                action: "評估是否提前鎖定現有免費資源，或切換至替代方案"
               },
             ].map((item, i) => (
               <div key={i} className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50">
@@ -226,6 +226,43 @@ export default function LandingPage() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section className="max-w-2xl mx-auto px-6 py-16">
+        <h2 className="text-2xl font-bold text-center text-slate-100 mb-10">常見問題</h2>
+        <div className="space-y-4">
+          {[
+            {
+              q: "邀請碼從哪裡獲取？",
+              a: "填寫上方申請表單，我們會在 24 小時內通過 Telegram 聯繫你並發送邀請碼。"
+            },
+            {
+              q: "必須有 Telegram 才能用嗎？",
+              a: "是的，每天早 8 點的行動清單通過 Telegram 推送。如果還沒有帳號，註冊只需 1 分鐘。"
+            },
+            {
+              q: "7 天試用結束後會自動扣費嗎？",
+              a: "不會。試用期結束後系統暫停，不會自動續費。你可以隨時選擇訂閱繼續使用。"
+            },
+            {
+              q: "掃描哪些資訊源？",
+              a: "Reddit、Hacker News、KOL 推文、GitHub Trending、全球 RSS 訂閱，每 30 分鐘掃描一次，每天超過 350 條信號。"
+            },
+            {
+              q: "我的資料安全嗎？",
+              a: "我們只存儲你的 Telegram Chat ID 和偏好設置，不收集個人身份信息，不出售數據。"
+            },
+          ].map((item, i) => (
+            <details key={i} className="border border-slate-700/60 rounded-lg group">
+              <summary className="flex justify-between items-center p-4 cursor-pointer text-slate-200 font-medium hover:text-white select-none list-none">
+                {item.q}
+                <span className="text-slate-500 group-open:rotate-180 transition-transform">▾</span>
+              </summary>
+              <p className="px-4 pb-4 text-slate-400 text-sm leading-relaxed">{item.a}</p>
+            </details>
+          ))}
         </div>
       </section>
 
