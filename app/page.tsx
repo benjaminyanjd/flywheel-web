@@ -1,8 +1,23 @@
 import Link from "next/link"
 import WaitlistForm from "@/components/waitlist-form"
 import { FlywheelLogo } from "@/components/flywheel-logo"
+import { getDb } from "@/lib/db"
+
+const USER_COUNT_BASE = 45  // base offset for social proof
+
+function getUserCount(): number {
+  try {
+    const db = getDb()
+    const subs = (db.prepare("SELECT COUNT(*) as cnt FROM user_subscriptions").get() as { cnt: number }).cnt
+    const wl = (db.prepare("SELECT COUNT(*) as cnt FROM waitlist").get() as { cnt: number }).cnt
+    return USER_COUNT_BASE + subs + wl
+  } catch {
+    return USER_COUNT_BASE
+  }
+}
 
 export default function LandingPage() {
+  const userCount = getUserCount()
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
 
@@ -60,7 +75,7 @@ export default function LandingPage() {
 
       {/* 社会证明 */}
       <p className="text-center text-sm text-slate-500 pb-6">
-        已有 47 位研究者和創業者在用 · 平均每天節省 2 小時信息篩選
+        已有 {userCount} 位研究者和創業者在用 · 平均每天節省 2 小時信息篩選
       </p>
 
       {/* 三步流程 */}
