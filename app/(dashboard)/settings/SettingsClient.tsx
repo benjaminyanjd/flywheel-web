@@ -159,15 +159,23 @@ export default function SettingsClient({ initialSettings }: Props) {
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="bg-slate-700/50 rounded-lg p-3 text-sm text-slate-300">
-              <p className="font-medium mb-1">
-                {t ? "如何獲取 Chat ID？" : "How to get your Chat ID?"}
+            <div className="bg-slate-700/30 rounded-lg p-3 text-sm text-slate-400 space-y-1 mb-2">
+              <p className="text-slate-300 font-medium">
+                {t ? "如何獲取 Chat ID：" : "How to get your Chat ID:"}
               </p>
-              <p className="text-slate-400">
-                {t
-                  ? "在 Telegram 搜索 @userinfobot，發送任意消息，獲取 Your ID 數字"
-                  : "Search @userinfobot on Telegram, send any message, and get your ID number"}
-              </p>
+              {t ? (
+                <>
+                  <p>1. Telegram 搜索 <span className="font-mono text-amber-400">@userinfobot</span></p>
+                  <p>2. 發送任意消息</p>
+                  <p>3. 複製回覆裡的 <span className="font-mono text-amber-400">Id:</span> 數字貼到下方</p>
+                </>
+              ) : (
+                <>
+                  <p>1. Search <span className="font-mono text-amber-400">@userinfobot</span> on Telegram</p>
+                  <p>2. Send any message</p>
+                  <p>3. Copy the <span className="font-mono text-amber-400">Id:</span> number below</p>
+                </>
+              )}
             </div>
 
             <Input
@@ -181,7 +189,7 @@ export default function SettingsClient({ initialSettings }: Props) {
               <Button
                 onClick={saveTelegram}
                 disabled={tgStatus === "saving" || !chatId}
-                className="bg-indigo-600 hover:bg-indigo-500"
+                className="bg-amber-500 hover:bg-amber-400 text-slate-950"
               >
                 {tgStatus === "saving"
                   ? t ? "保存中..." : "Saving..."
@@ -230,7 +238,7 @@ export default function SettingsClient({ initialSettings }: Props) {
                 onClick={() => toggleCategory(cat.value)}
                 className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
                   categories.includes(cat.value)
-                    ? "border-indigo-500 bg-indigo-500/20 text-indigo-300"
+                    ? "border-amber-500 bg-amber-500/20 text-amber-300"
                     : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
                 }`}
               >
@@ -240,7 +248,7 @@ export default function SettingsClient({ initialSettings }: Props) {
             <Button
               onClick={saveCategories}
               disabled={catStatus === "saving" || categories.length === 0}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 mt-2"
+              className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 mt-2"
             >
               {catStatus === "saving"
                 ? t ? "保存中..." : "Saving..."
@@ -263,7 +271,7 @@ export default function SettingsClient({ initialSettings }: Props) {
               onClick={() => switchLang("zh")}
               className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
                 currentLang === "zh"
-                  ? "border-indigo-500 bg-indigo-500/20 text-indigo-300"
+                  ? "border-amber-500 bg-amber-500/20 text-amber-300"
                   : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
               }`}
             >
@@ -273,7 +281,7 @@ export default function SettingsClient({ initialSettings }: Props) {
               onClick={() => switchLang("en")}
               className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
                 currentLang === "en"
-                  ? "border-indigo-500 bg-indigo-500/20 text-indigo-300"
+                  ? "border-amber-500 bg-amber-500/20 text-amber-300"
                   : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
               }`}
             >

@@ -370,12 +370,15 @@ function OpportunitiesContent() {
   return (
     <div className="flex flex-col h-full bg-slate-900 p-6">
       {showWelcome && (
-        <div className="mb-4 p-4 bg-indigo-900/40 border border-indigo-700/60 rounded-xl flex items-start justify-between">
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 mb-4 flex items-start justify-between">
           <div>
-            <p className="text-indigo-200 font-semibold">🎉 歡迎加入 Flywheel！</p>
-            <p className="text-indigo-400 text-sm mt-1">掃描已觸發，你的第一批機會正在生成中。每天早上 8 點你會收到 Telegram 推送。</p>
+            <p className="text-amber-400 font-medium">🎉 歡迎使用 Flywheel！</p>
+            <p className="text-slate-400 text-sm mt-1">
+              系統正在為你掃描第一批信號，約需 5–10 分鐘。<br />
+              記得去 <a href="/settings" className="text-amber-400 underline">設置頁面</a> 綁定 Telegram，才能收到每日推送。
+            </p>
           </div>
-          <button onClick={() => setShowWelcome(false)} className="text-indigo-600 hover:text-indigo-400 ml-4 text-lg leading-none">✕</button>
+          <button onClick={() => setShowWelcome(false)} className="text-slate-500 hover:text-slate-300 ml-4">✕</button>
         </div>
       )}
       <div className="flex items-center gap-3 mb-4 flex-wrap">
