@@ -7,6 +7,7 @@ import { useEffect, useState, Suspense } from "react";
 import { getLangStored, useLang, type Lang } from "@/lib/lang";
 import { useT } from "@/lib/i18n";
 import { UserButton, useUser } from "@clerk/nextjs";
+import { FlywheelLogo } from "@/components/flywheel-logo";
 
 const RADAR_CATEGORIES = [
   { value: "ai_tech",         zh: "AI 科技",  en: "AI Tech",  icon: "🤖" },
@@ -116,28 +117,7 @@ function SidebarInner() {
     <aside className="hidden md:flex w-56 bg-slate-800 border-r border-slate-700 flex-col h-screen sticky top-0">
       <div className="p-4 border-b border-slate-700">
         <div className="flex items-center gap-2.5">
-          {/* Flywheel Logo Mark: rotating arc + momentum arrow + amber hub */}
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-            {/* Outer arc - 3/4 circle suggesting rotation */}
-            <path
-              d="M11 2.5 A8.5 8.5 0 1 1 4.52 17.73"
-              stroke="#3B82F6"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-            />
-            {/* Arrow head showing acceleration/momentum direction */}
-            <path
-              d="M4.52 17.73 L2 19.8 M4.52 17.73 L6.8 15.6"
-              stroke="#3B82F6"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            {/* Center hub - the opportunity core, amber */}
-            <circle cx="11" cy="11" r="2.8" fill="#F59E0B" />
-            {/* Inner dot - signal node */}
-            <circle cx="11" cy="11" r="1.1" fill="#1E293B" />
-          </svg>
+          <FlywheelLogo size={22} className="text-amber-400 animate-[spin_8s_linear_infinite] shrink-0" />
           <div>
             <h1 className="text-base font-bold text-slate-100 leading-tight">Flywheel</h1>
             <p className="text-[10px] text-slate-500 leading-tight">{t("sidebar_subtitle")}</p>

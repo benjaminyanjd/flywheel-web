@@ -15,6 +15,12 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
+  --color-brand: #F59E0B;
+  --color-brand-dim: #92400E;
+  --color-signal-high: #F43F5E;
+  --color-signal-mid: #F59E0B;
+  --color-signal-low: #64748B;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -95,8 +101,8 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.87 0.00 0);
-  --primary-foreground: oklch(0.205 0 0);
+  --primary: oklch(0.75 0.15 60);  /* amber-500 equivalent */
+  --primary-foreground: oklch(0.1 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);

@@ -545,7 +545,7 @@ function OpportunitiesContent() {
                         </div>
 
                         <div className="w-full md:w-96 md:shrink-0 bg-slate-900/60 rounded-lg border border-slate-600/50 p-5 md:ml-2 mt-4 md:mt-0">
-                          <p className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-3">{t("opp_actions")}</p>
+                          <p className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-3">{t("opp_actions")}</p>
                           <ol className="space-y-3.5">
                             {embed.actions.map((a, i) => (
                               <li key={i} className="flex gap-3 text-slate-300">
