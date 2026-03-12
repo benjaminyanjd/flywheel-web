@@ -6,6 +6,7 @@ import { useT } from "@/lib/i18n";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { FlywheelLogo } from "@/components/flywheel-logo";
 
 interface Signal {
   id: number;
@@ -259,7 +260,7 @@ function RadarContent() {
         </div>
         {translating && (
           <span className="text-xs text-slate-500 ml-auto flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />{t("radar_translating")}
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />{t("radar_translating")}
           </span>
         )}
       </div>
@@ -374,13 +375,13 @@ function RadarContent() {
             </Card>
           ))}
           {filtered.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-64 text-center p-8">
-              <div className="text-4xl mb-4">📡</div>
-              <p className="text-slate-300 font-medium mb-2">正在掃描全球信息源...</p>
-              <p className="text-slate-500 text-sm mb-4">通常 30 分鐘內出現第一批信號</p>
+            <div className="flex flex-col items-center justify-center py-20 text-slate-500">
+              <FlywheelLogo size={48} className="text-amber-400/40 animate-[spin_8s_linear_infinite] mb-4" />
+              <p className="text-lg font-medium text-slate-400">信號採集中</p>
+              <p className="text-sm mt-1">每 30 分鐘掃描一次，早 8 點見</p>
               <button
                 onClick={() => { fetch("/api/scan", { method: "POST" }); }}
-                className="text-xs text-indigo-400 hover:text-indigo-300 underline"
+                className="text-xs text-amber-400/60 hover:text-amber-400 underline mt-4"
               >
                 手動觸發掃描
               </button>

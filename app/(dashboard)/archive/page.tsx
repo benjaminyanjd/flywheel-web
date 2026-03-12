@@ -252,7 +252,7 @@ export default function ArchivePage() {
                       {/* Right: actions */}
                       {(embed.actions?.length ?? 0) > 0 && (
                         <div className="w-96 shrink-0 bg-slate-900/60 rounded-lg border border-slate-600/50 p-5 ml-2">
-                          <p className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-3">{t("opp_section_actions")}</p>
+                          <p className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-3">{t("opp_section_actions")}</p>
                           <ol className="space-y-3">
                             {embed.actions!.map((a, i) => (
                               <li key={i} className="flex gap-3 text-slate-300">

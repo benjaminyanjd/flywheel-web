@@ -17,6 +17,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import ReactMarkdown from "react-markdown";
 import { useT } from "@/lib/i18n";
+import { FlywheelLogo } from "@/components/flywheel-logo";
 import remarkGfm from "remark-gfm";
 
 interface TodoItem {
@@ -180,9 +181,10 @@ export default function TodolistPage() {
       <h1 className="text-xl font-bold text-slate-100 mb-4">{t("todo_title")}</h1>
 
       {todos.length === 0 ? (
-        <div className="flex flex-col items-center justify-center flex-1 text-slate-500">
-          <span className="text-4xl mb-3">✅</span>
-          <p>{t("todo_empty")}</p>
+        <div className="flex flex-col items-center justify-center py-20 text-slate-500">
+          <FlywheelLogo size={48} className="text-amber-400/40 animate-[spin_8s_linear_infinite] mb-4" />
+          <p className="text-lg font-medium text-slate-400">信號採集中</p>
+          <p className="text-sm mt-1">每 30 分鐘掃描一次，早 8 點見</p>
         </div>
       ) : (
         <ScrollArea className="flex-1">
@@ -258,7 +260,7 @@ export default function TodolistPage() {
 
                           {/* Right: action list */}
                           <div className="w-full md:w-96 md:shrink-0 bg-slate-900/60 rounded-lg border border-slate-600/50 p-5 md:ml-2 mt-4 md:mt-0">
-                            <p className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-3">{t("opp_section_actions")}</p>
+                            <p className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-3">{t("opp_section_actions")}</p>
                             <ol className="space-y-3.5">
                               {embed.actions?.map((a, i) => (
                                 <li key={i} className="flex gap-3 text-slate-300">

@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { FlywheelLogo } from "@/components/flywheel-logo";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -412,7 +413,7 @@ function OpportunitiesContent() {
         </div>
         {oppTranslating && (
           <span className="text-xs text-slate-500 flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />{t("radar_translating")}
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />{t("radar_translating")}
           </span>
         )}
       </div>
@@ -719,18 +720,10 @@ function OpportunitiesContent() {
             );
           })}
           {opportunities.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-24 text-center">
-              <div className="relative mb-6">
-                <div className="w-16 h-16 rounded-full border-2 border-blue-500/30 border-t-blue-500 animate-spin"/>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-4 h-4 rounded-full bg-amber-500 animate-pulse"/>
-                </div>
-              </div>
-              <p className="text-slate-200 font-semibold text-lg mb-2">正在掃描市場信號...</p>
-              <p className="text-slate-500 text-sm max-w-xs">
-                首次掃描通常需要 2–3 分鐘。掃描完成後機會會自動出現，無需刷新頁面。
-              </p>
-              <p className="text-slate-600 text-xs mt-4">掃描完成後你也會收到 Telegram 推送通知</p>
+            <div className="flex flex-col items-center justify-center py-20 text-slate-500">
+              <FlywheelLogo size={48} className="text-amber-400/40 animate-[spin_8s_linear_infinite] mb-4" />
+              <p className="text-lg font-medium text-slate-400">信號採集中</p>
+              <p className="text-sm mt-1">每 30 分鐘掃描一次，早 8 點見</p>
             </div>
           )}
         </div>
