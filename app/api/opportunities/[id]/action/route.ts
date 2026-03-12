@@ -1,13 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { userId } = await auth();
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { id } = await params;
+    const db = getDb();
+    db.prepare(
+      "UPDATE opportunity_actions SET action = NULL, acted_at = NULL WHERE id = ? AND user_id = ?"
+    ).run(Number(id), userId);
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("Failed to undo opportunity action:", err);
+    return NextResponse.json({ error: "Failed to undo" }, { status: 500 });
+  }
+}
 
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = await params;
-    const { action, cancel_reason } = await req.json();
+    const { action, cancel_reason, advisor_notes } = await req.json();
 
     const validActions = ["todo", "bias", "action", "done", "cancel"];
     if (!action || !validActions.includes(action)) {
@@ -28,15 +53,21 @@ export async function POST(
     if (action === "cancel") {
       db.prepare(
         `UPDATE opportunity_actions
-         SET action = ?, cancel_reason = ?, acted_at = datetime('now')
+         SET action = ?, cancel_reason = ?, user_id = ?, acted_at = datetime('now')
          WHERE id = ?`
-      ).run(action, cancel_reason || null, id);
+      ).run(action, cancel_reason || null, userId, id);
+    } else if (advisor_notes) {
+      db.prepare(
+        `UPDATE opportunity_actions
+         SET action = ?, advisor_notes = ?, user_id = ?, acted_at = datetime('now')
+         WHERE id = ?`
+      ).run(action, advisor_notes, userId, id);
     } else {
       db.prepare(
         `UPDATE opportunity_actions
-         SET action = ?, acted_at = datetime('now')
+         SET action = ?, user_id = ?, acted_at = datetime('now')
          WHERE id = ?`
-      ).run(action, id);
+      ).run(action, userId, id);
     }
 
     const updated = db.prepare("SELECT * FROM opportunity_actions WHERE id = ?").get(id);

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { getDb } from "@/lib/db";
 
@@ -12,6 +13,11 @@ Be concise, direct, and action-oriented. Focus on practical next steps the user 
 
 export async function POST(req: NextRequest) {
   try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { message } = await req.json();
 
     if (!message || typeof message !== "string") {
@@ -19,6 +25,14 @@ export async function POST(req: NextRequest) {
     }
 
     const db = getDb();
+
+    // Get user's recent opportunity actions for context
+    const recentOpps = db.prepare(
+      "SELECT opp_title, action, created_at FROM opportunity_actions WHERE user_id = ? OR user_id = 'system' ORDER BY created_at DESC LIMIT 5"
+    ).all(userId) as { opp_title: string; action: string; created_at: string }[];
+    const contextStr = recentOpps.length > 0
+      ? `\n\n用戶最近的機會記錄：\n${recentOpps.map(o => `- ${o.opp_title} (${o.action})`).join('\n')}`
+      : '';
 
     // Get recent hot signals for context
     const hotSignals = db
@@ -63,7 +77,7 @@ export async function POST(req: NextRequest) {
     const stream = await client.messages.stream({
       model: "claude-opus-4-6",
       max_tokens: 4096,
-      system: SYSTEM_PROMPT,
+      system: SYSTEM_PROMPT + contextStr,
       messages,
     });
 

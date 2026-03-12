@@ -2,9 +2,15 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --animate-fade-in: fadeIn 0.2s ease-out;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);

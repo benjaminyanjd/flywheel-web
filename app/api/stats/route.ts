@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
 import { execSync } from "child_process";
 
@@ -18,6 +19,11 @@ function checkBotStatus(): "online" | "offline" {
 
 export async function GET() {
   try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const db = getDb();
 
     const todayCount = db
@@ -45,15 +51,16 @@ export async function GET() {
       .get() as { count: number };
 
     const totalOpportunities = db
-      .prepare("SELECT COUNT(*) as count FROM opportunity_actions")
-      .get() as { count: number };
+      .prepare("SELECT COUNT(*) as count FROM opportunity_actions WHERE (user_id = 'system' OR user_id = ?)")
+      .get(userId) as { count: number };
 
     const statusRows = db
       .prepare(
         `SELECT action, COUNT(*) as count FROM opportunity_actions
+         WHERE (user_id = 'system' OR user_id = ?)
          GROUP BY action`
       )
-      .all() as { action: string; count: number }[];
+      .all(userId) as { action: string; count: number }[];
 
     const opportunityStatusCounts: Record<string, number> = {};
     for (const row of statusRows) {

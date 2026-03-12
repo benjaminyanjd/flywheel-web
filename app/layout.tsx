@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
+import { runMigrations } from "@/lib/db";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,18 +19,25 @@ export const metadata: Metadata = {
   description: "Personal intelligence dashboard",
 };
 
+// Run migrations once on server startup
+if (typeof window === "undefined") {
+  try { runMigrations(); } catch(e) { console.error("Migration error:", e); }
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className="dark">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-900 text-slate-100 min-h-screen`}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="zh-CN" className="dark">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-900 text-slate-100 min-h-screen`}
+        >
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
