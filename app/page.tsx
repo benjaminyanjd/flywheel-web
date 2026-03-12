@@ -32,9 +32,9 @@ export default function LandingPage() {
             <Link href="/sign-in" className="text-sm text-slate-400 hover:text-slate-200 transition-colors">
               登入
             </Link>
-            <a href="https://t.me/BJMYan" target="_blank" rel="noopener noreferrer"
+            <a href="#waitlist-form"
               className="text-sm bg-amber-500 hover:bg-amber-400 text-black px-4 py-1.5 rounded-lg transition-colors font-medium">
-              申請邀請碼
+              申請免費試用
             </a>
           </div>
         </div>
@@ -70,7 +70,9 @@ export default function LandingPage() {
           不是新聞摘要。是附帶「為什麼是現在」和「第一步怎麼做」的行動清單。
         </p>
 
-        <WaitlistForm />
+        <div id="waitlist-form">
+          <WaitlistForm />
+        </div>
       </section>
 
       {/* 社会证明 */}
@@ -235,8 +237,10 @@ export default function LandingPage() {
           加入第一批用戶，每天早上 8 點<br/>
           收到你的私人市場情報簡報。
         </p>
-        <WaitlistForm />
-        <p className="text-xs text-slate-600 mt-4">試用結束後 $19/月，隨時取消</p>
+        <div id="waitlist-form-bottom">
+          <WaitlistForm />
+        </div>
+        <p className="text-xs text-slate-600 mt-4">試用結束後 $19.9/月，隨時取消</p>
       </section>
 
       {/* ── Footer ── */}

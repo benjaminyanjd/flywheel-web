@@ -28,6 +28,7 @@ export default function OnboardingPage() {
   const [categories, setCategories] = useState(["ai_tech", "crypto_policy", "new_tools"]);
   const [scanInterval, setScanInterval] = useState(60);
   const [saving, setSaving] = useState(false);
+  const [telegramId, setTelegramId] = useState("");
 
   async function validateInvite() {
     setInviteError("");
@@ -62,9 +63,23 @@ export default function OnboardingPage() {
     await fetch("/api/user/settings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ categories, scan_interval: scanInterval }),
+    });
+    // Trigger initial scan (fire-and-forget, don't await)
+    fetch("/api/scan", { method: "POST" }).catch(() => {});
+    router.push("/opportunities?welcome=1");
+  }
+
+  async function finishWithTelegram() {
+    setSaving(true);
+    await fetch("/api/user/settings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         categories,
         scan_interval: scanInterval,
+        telegram_chat_id: telegramId || null,
+        notify_channel: telegramId ? "telegram" : "none",
       }),
     });
     // Trigger initial scan (fire-and-forget, don't await)
@@ -75,13 +90,13 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Progress bar */}
+        {/* Progress bar - 4 steps */}
         <div className="flex gap-2 mb-6">
-          {[0, 1, 2].map(i => (
+          {[0, 1, 2, 3].map(i => (
             <div
               key={i}
               className={`h-1 flex-1 rounded-full transition-colors ${
-                i <= step ? "bg-indigo-500" : "bg-slate-700"
+                i <= step ? "bg-amber-500" : "bg-slate-700"
               }`}
             />
           ))}
@@ -107,10 +122,16 @@ export default function OnboardingPage() {
               <Button
                 onClick={validateInvite}
                 disabled={!inviteCode || inviteLoading}
-                className="w-full bg-indigo-600 hover:bg-indigo-500"
+                className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950"
               >
                 {inviteLoading ? "驗證中..." : "驗證邀請碼 →"}
               </Button>
+              <p className="text-center text-xs text-slate-500">
+                沒有邀請碼？
+                <a href="https://flywheelsea.club/#waitlist-form" className="text-amber-400 hover:underline ml-1">
+                  申請免費試用
+                </a>
+              </p>
             </CardContent>
           </Card>
         )}
@@ -128,7 +149,7 @@ export default function OnboardingPage() {
                   onClick={() => toggleCategory(cat.value)}
                   className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
                     categories.includes(cat.value)
-                      ? "border-indigo-500 bg-indigo-500/20 text-indigo-300"
+                      ? "border-amber-500 bg-amber-500/20 text-amber-300"
                       : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
                   }`}
                 >
@@ -138,7 +159,7 @@ export default function OnboardingPage() {
               <Button
                 onClick={() => setStep(2)}
                 disabled={categories.length === 0}
-                className="w-full bg-indigo-600 hover:bg-indigo-500 mt-2"
+                className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 mt-2"
               >
                 下一步 →
               </Button>
@@ -159,7 +180,7 @@ export default function OnboardingPage() {
                   onClick={() => setScanInterval(opt.value)}
                   className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
                     scanInterval === opt.value
-                      ? "border-indigo-500 bg-indigo-500/20 text-indigo-300"
+                      ? "border-amber-500 bg-amber-500/20 text-amber-300"
                       : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
                   }`}
                 >
@@ -167,17 +188,56 @@ export default function OnboardingPage() {
                 </button>
               ))}
               <Button
-                onClick={finish}
-                disabled={saving}
-                className="w-full bg-indigo-600 hover:bg-indigo-500 mt-2"
+                onClick={() => setStep(3)}
+                className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 mt-2"
               >
-                {saving ? "保存中..." : "開始使用 →"}
+                下一步 →
               </Button>
             </CardContent>
           </Card>
         )}
 
-
+        {step === 3 && (
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-slate-100 text-xl">📱 綁定 Telegram</CardTitle>
+              <p className="text-slate-400 text-sm">每天早 8 點，Flywheel 把行動清單推送到你的 Telegram</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-slate-700/50 rounded-lg p-4 text-sm text-slate-300 space-y-2">
+                <p className="font-medium text-slate-200">如何獲取 Chat ID：</p>
+                <ol className="space-y-1 list-decimal list-inside text-slate-400">
+                  <li>打開 Telegram，搜索 <span className="font-mono text-amber-400">@userinfobot</span></li>
+                  <li>發送任意消息給它</li>
+                  <li>複製回覆裡的 <span className="font-mono text-amber-400">Id:</span> 數字</li>
+                </ol>
+              </div>
+              <Input
+                value={telegramId}
+                onChange={e => setTelegramId(e.target.value)}
+                placeholder="例如：5825881638"
+                className="bg-slate-700 border-slate-600 text-slate-100 font-mono"
+              />
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  onClick={finish}
+                  disabled={saving}
+                  className="flex-1 text-slate-400 hover:text-slate-200"
+                >
+                  稍後設置
+                </Button>
+                <Button
+                  onClick={finishWithTelegram}
+                  disabled={saving}
+                  className="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950"
+                >
+                  {saving ? "保存中..." : "完成設置 →"}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
