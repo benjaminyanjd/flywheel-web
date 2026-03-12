@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
+import { FlywheelLogo } from "@/components/flywheel-logo";
 
 export default async function ExpiredPage() {
   const { userId } = await auth();
@@ -17,7 +18,9 @@ export default async function ExpiredPage() {
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
       <div className="text-center max-w-lg">
-        <div className="text-5xl mb-4">⏰</div>
+        <div className="flex justify-center mb-4">
+          <FlywheelLogo size={52} className="text-amber-400/60 animate-[spin_8s_linear_infinite]" />
+        </div>
         <h1 className="text-2xl font-bold text-slate-100 mb-2">試用期已結束</h1>
         <p className="text-slate-400 mb-6">你的 7 天免費試用已到期。</p>
 
@@ -58,11 +61,19 @@ export default async function ExpiredPage() {
           </div>
         </div>
 
+        {/* 主要付款 CTA */}
+        <a
+          href="https://buy.stripe.com/placeholder"
+          className="inline-block w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-6 py-3 rounded-lg transition-colors mb-3 text-center"
+        >
+          立即訂閱 $19.9/月 →
+        </a>
+        {/* 次要 CTA - 聯繫 */}
         <a
           href="https://t.me/BJMYan"
-          className="inline-block w-full bg-amber-500 hover:bg-amber-400 text-slate-950 px-6 py-3 rounded-lg font-medium transition-colors mb-3"
+          className="inline-block w-full border border-slate-600 hover:border-slate-400 text-slate-400 hover:text-slate-200 px-6 py-3 rounded-lg transition-colors mb-3 text-center text-sm"
         >
-          聯繫獲取正式授權 →
+          聯繫獲取授權
         </a>
         <p className="text-xs text-slate-600">發送邀請碼給好友，雙方各得 1 個月</p>
       </div>
