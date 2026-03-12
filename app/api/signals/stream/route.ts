@@ -6,13 +6,30 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const encoder = new TextEncoder();
 
+  // Shared state accessible by both start() and cancel()
+  let closed = false;
+  let intervalId: ReturnType<typeof setInterval> | null = null;
+
   const stream = new ReadableStream({
     start(controller) {
       let lastSeen = new Date().toISOString();
-      let closed = false;
 
-      const interval = setInterval(() => {
+      // Safe enqueue: silently ignore if controller is already closed
+      const safeEnqueue = (data: Uint8Array) => {
         if (closed) return;
+        try {
+          controller.enqueue(data);
+        } catch {
+          closed = true;
+          if (intervalId) clearInterval(intervalId);
+        }
+      };
+
+      intervalId = setInterval(() => {
+        if (closed) {
+          if (intervalId) clearInterval(intervalId);
+          return;
+        }
 
         try {
           const db = getDb();
@@ -23,38 +40,26 @@ export async function GET() {
           if (newSignals.length > 0) {
             const latest = newSignals[newSignals.length - 1] as { created_at: string };
             lastSeen = latest.created_at;
-
-            const data = `data: ${JSON.stringify(newSignals)}\n\n`;
-            controller.enqueue(encoder.encode(data));
+            safeEnqueue(encoder.encode(`data: ${JSON.stringify(newSignals)}\n\n`));
           } else {
-            // Send heartbeat to keep connection alive
-            controller.enqueue(encoder.encode(": heartbeat\n\n"));
+            // Heartbeat to keep connection alive
+            safeEnqueue(encoder.encode(": heartbeat\n\n"));
           }
         } catch (err) {
           console.error("SSE poll error:", err);
-          clearInterval(interval);
-          if (!closed) {
-            closed = true;
-            controller.close();
-          }
+          closed = true;
+          if (intervalId) clearInterval(intervalId);
+          try { controller.close(); } catch { /* already closed */ }
         }
       }, 5000);
 
       // Send initial connection event
-      controller.enqueue(encoder.encode("data: {\"connected\":true}\n\n"));
-
-      // Cleanup when the stream is cancelled
-      const cleanup = () => {
-        closed = true;
-        clearInterval(interval);
-      };
-
-      // Handle abort
-      controller.enqueue(encoder.encode(""));
-      (controller as unknown as { signal?: AbortSignal }).signal?.addEventListener("abort", cleanup);
+      safeEnqueue(encoder.encode("data: {\"connected\":true}\n\n"));
     },
     cancel() {
-      // Stream cancelled by client
+      // Client disconnected — stop polling
+      closed = true;
+      if (intervalId) clearInterval(intervalId);
     },
   });
 

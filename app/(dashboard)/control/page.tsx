@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { useLang, type Lang } from "@/lib/lang";
+import { useT } from "@/lib/i18n";
+import { useToast } from "@/components/toast";
 
 interface Stats {
   todaySignals: number;
@@ -14,12 +17,19 @@ interface Stats {
 }
 
 export default function ControlPage() {
+  const [, setLang] = useLang();
+  const { t, lang } = useT();
+  const toast = useToast();
   const [stats, setStats] = useState<Stats | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
   const [scanLoading, setScanLoading] = useState(false);
   const [scanResult, setScanResult] = useState<string | null>(null);
+  const [scanCooldown, setScanCooldown] = useState(0);
+  const scanTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [oppLoading, setOppLoading] = useState(false);
   const [oppResult, setOppResult] = useState<string | null>(null);
+  const [oppCooldown, setOppCooldown] = useState(0);
+  const oppTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     loadStats();
@@ -34,16 +44,51 @@ export default function ControlPage() {
       .finally(() => setStatsLoading(false));
   }
 
+  const startCooldown = useCallback((seconds: number, setter: React.Dispatch<React.SetStateAction<number>>, timerRef: React.MutableRefObject<ReturnType<typeof setInterval> | null>) => {
+    setter(seconds);
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setter((prev) => {
+        if (prev <= 1) {
+          if (timerRef.current) clearInterval(timerRef.current);
+          timerRef.current = null;
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, []);
+
+  function formatCooldown(seconds: number): string {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m} 分 ${s.toString().padStart(2, "0")} 秒`;
+  }
+
   async function handleScan() {
     setScanLoading(true);
     setScanResult(null);
     try {
       const res = await fetch("/api/scan", { method: "POST" });
       const data = await res.json();
-      setScanResult(JSON.stringify(data, null, 2));
-      loadStats();
+      if (res.status === 429) {
+        startCooldown(data.cooldown, setScanCooldown, scanTimerRef);
+        setScanResult(null);
+      } else {
+        const newSignals = data.newSignals ?? 0;
+        toast(`✅ 掃描完成，新增 ${newSignals} 條信號`);
+        setScanResult(lang === "zh" ? "扫描已启动，约30秒后自动刷新统计..." : "Scan started, stats will refresh in ~30s...");
+        let elapsed = 0;
+        const poll = setInterval(() => {
+          elapsed += 10;
+          loadStats();
+          if (elapsed >= 60) clearInterval(poll);
+        }, 10000);
+        void poll;
+      }
     } catch (err) {
-      setScanResult(`错误: ${(err as Error).message}`);
+      toast("❌ 掃描失敗", "error");
+      setScanResult(`${t("common_error_prefix")}${(err as Error).message}`);
     } finally {
       setScanLoading(false);
     }
@@ -55,22 +100,37 @@ export default function ControlPage() {
     try {
       const res = await fetch("/api/opportunity", { method: "POST" });
       const data = await res.json();
-      setOppResult(JSON.stringify(data, null, 2));
-      loadStats();
+      if (res.status === 429) {
+        startCooldown(data.cooldown, setOppCooldown, oppTimerRef);
+        setOppResult(null);
+      } else {
+        toast("✅ 機會已生成");
+        setOppResult(lang === "zh" ? "机会分析已启动，约30秒后自动刷新统计..." : "Analysis started, stats will refresh in ~30s...");
+        let elapsed = 0;
+        const poll = setInterval(() => {
+          elapsed += 10;
+          loadStats();
+          if (elapsed >= 60) clearInterval(poll);
+        }, 10000);
+        void data;
+        void poll;
+      }
     } catch (err) {
-      setOppResult(`错误: ${(err as Error).message}`);
+      toast("❌ 生成失敗", "error");
+      setOppResult(`${t("common_error_prefix")}${(err as Error).message}`);
     } finally {
       setOppLoading(false);
     }
   }
 
   const STATUS_LABELS: Record<string, string> = {
-    todo: "待办",
-    bias: "偏见",
-    action: "行动",
-    missed: "遗漏",
-    done: "完成",
-    cancel: "取消",
+    todo:   t("archive_status_todo"),
+    bias:   t("archive_status_bias"),
+    action: t("archive_status_action"),
+    missed: t("archive_status_missed"),
+    done:   t("archive_status_done"),
+    cancel: t("archive_status_cancel"),
+    cancelled: t("archive_status_cancel"),
   };
 
   const STATUS_COLORS: Record<string, string> = {
@@ -80,25 +140,26 @@ export default function ControlPage() {
     missed: "bg-gray-600 text-gray-100",
     done: "bg-emerald-600 text-emerald-100",
     cancel: "bg-red-600 text-red-100",
+    cancelled: "bg-red-600 text-red-100",
   };
 
   return (
     <div className="flex flex-col h-full bg-slate-900 p-6">
-      <h1 className="text-xl font-bold text-slate-100 mb-4">控制台</h1>
+      <h1 className="text-xl font-bold text-slate-100 mb-4">{t("ctrl_title")}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Manual Scan */}
         <Card className="bg-slate-800 border-slate-700 p-5">
-          <h3 className="text-slate-100 font-semibold mb-3">手动扫描</h3>
+          <h3 className="text-slate-100 font-semibold mb-3">{t("ctrl_scan_title")}</h3>
           <p className="text-sm text-slate-400 mb-4">
-            手动触发信号源扫描，获取最新信号。
+            {t("ctrl_scan_desc")}
           </p>
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white w-full"
             onClick={handleScan}
-            disabled={scanLoading}
+            disabled={scanLoading || scanCooldown > 0}
           >
-            {scanLoading ? "扫描中..." : "开始扫描"}
+            {scanLoading ? t("ctrl_scan_running") : scanCooldown > 0 ? `掃描冷卻中，剩餘 ${formatCooldown(scanCooldown)}` : t("ctrl_scan_btn")}
           </Button>
           {scanResult && (
             <pre className="mt-3 text-xs text-slate-400 bg-slate-900 rounded p-3 overflow-auto max-h-40">
@@ -109,16 +170,16 @@ export default function ControlPage() {
 
         {/* Manual Opportunity */}
         <Card className="bg-slate-800 border-slate-700 p-5">
-          <h3 className="text-slate-100 font-semibold mb-3">生成机会</h3>
+          <h3 className="text-slate-100 font-semibold mb-3">{t("ctrl_opp_title")}</h3>
           <p className="text-sm text-slate-400 mb-4">
-            手动触发机会分析，从最新信号中提取机会。
+            {t("ctrl_opp_desc")}
           </p>
           <Button
             className="bg-purple-600 hover:bg-purple-700 text-white w-full"
             onClick={handleOpportunity}
-            disabled={oppLoading}
+            disabled={oppLoading || oppCooldown > 0}
           >
-            {oppLoading ? "分析中..." : "生成机会"}
+            {oppLoading ? t("ctrl_opp_running") : oppCooldown > 0 ? `冷卻中，剩餘 ${formatCooldown(oppCooldown)}` : t("ctrl_opp_btn")}
           </Button>
           {oppResult && (
             <pre className="mt-3 text-xs text-slate-400 bg-slate-900 rounded p-3 overflow-auto max-h-40">
@@ -129,25 +190,25 @@ export default function ControlPage() {
 
         {/* Signal Stats */}
         <Card className="bg-slate-800 border-slate-700 p-5">
-          <h3 className="text-slate-100 font-semibold mb-3">信号统计</h3>
+          <h3 className="text-slate-100 font-semibold mb-3">{t("ctrl_stats_title")}</h3>
           {statsLoading ? (
-            <p className="text-sm text-slate-400">加载中...</p>
+            <p className="text-sm text-slate-400">{t("ctrl_loading")}</p>
           ) : stats ? (
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">今日信号</span>
+                <span className="text-sm text-slate-400">{t("ctrl_today")}</span>
                 <span className="text-2xl font-bold text-slate-100">
                   {stats.todaySignals}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">总信号数</span>
+                <span className="text-sm text-slate-400">{t("ctrl_total")}</span>
                 <span className="text-2xl font-bold text-slate-100">
                   {stats.totalSignals}
                 </span>
               </div>
               <Separator className="bg-slate-700" />
-              <h4 className="text-sm font-medium text-slate-300">按来源</h4>
+              <h4 className="text-sm font-medium text-slate-300">{t("ctrl_by_source")}</h4>
               <div className="grid grid-cols-2 gap-2">
                 {stats.signalsBySource &&
                   Object.entries(stats.signalsBySource).map(([source, count]) => (
@@ -164,15 +225,15 @@ export default function ControlPage() {
               </div>
             </div>
           ) : (
-            <p className="text-sm text-slate-500">无法加载统计数据</p>
+            <p className="text-sm text-slate-500">{t("ctrl_stats_error")}</p>
           )}
         </Card>
 
         {/* Opportunity Status */}
         <Card className="bg-slate-800 border-slate-700 p-5">
-          <h3 className="text-slate-100 font-semibold mb-3">机会状态</h3>
+          <h3 className="text-slate-100 font-semibold mb-3">{t("ctrl_opp_status")}</h3>
           {statsLoading ? (
-            <p className="text-sm text-slate-400">加载中...</p>
+            <p className="text-sm text-slate-400">{t("ctrl_loading")}</p>
           ) : stats?.opportunityStatusCounts ? (
             <div className="space-y-2">
               {Object.entries(stats.opportunityStatusCounts).map(
@@ -194,7 +255,7 @@ export default function ControlPage() {
               )}
               <Separator className="bg-slate-700" />
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">总计</span>
+                <span className="text-sm text-slate-400">{t("ctrl_subtotal")}</span>
                 <span className="text-lg font-bold text-slate-100">
                   {Object.values(stats.opportunityStatusCounts).reduce(
                     (a, b) => a + b,
@@ -204,10 +265,37 @@ export default function ControlPage() {
               </div>
             </div>
           ) : (
-            <p className="text-sm text-slate-500">无法加载状态数据</p>
+            <p className="text-sm text-slate-500">{t("ctrl_status_error")}</p>
           )}
         </Card>
       </div>
+
+      {/* Language Setting — bottom */}
+      <Card className="bg-slate-800 border-slate-700 p-5 mt-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-slate-100 font-semibold">{t("ctrl_lang_title")}</h3>
+            <p className="text-xs text-slate-400 mt-0.5">
+              {t("ctrl_lang_current")}<span className="text-slate-300 font-medium">{lang === "zh" ? t("ctrl_lang_desc_zh") : t("ctrl_lang_desc_en")}</span>
+            </p>
+          </div>
+          <div className="flex gap-2">
+            {(["zh", "en"] as Lang[]).map((l) => (
+              <button
+                key={l}
+                onClick={() => setLang(l)}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-all ${
+                  lang === l
+                    ? "bg-blue-600 border-blue-500 text-white"
+                    : "bg-slate-700 border-slate-600 text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                {l === "zh" ? "🇨🇳 中文" : "🇺🇸 English"}
+              </button>
+            ))}
+          </div>
+        </div>
+      </Card>
     </div>
   );
 }

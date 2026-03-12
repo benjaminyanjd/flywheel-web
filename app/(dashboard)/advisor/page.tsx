@@ -1,16 +1,18 @@
 "use client";
 
-import { useRef, useState, useEffect, KeyboardEvent } from "react";
+import { useRef, useState, useEffect, KeyboardEvent, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useT } from "@/lib/i18n";
 
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
 }
 
-export default function AdvisorPage() {
+function AdvisorInner() {
+  const { t } = useT();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -79,7 +81,7 @@ export default function AdvisorPage() {
           const updated = [...prev];
           updated[updated.length - 1] = {
             role: "assistant",
-            content: "请求失败，请重试。",
+            content: t("advisor_error"),
           };
           return updated;
         });
@@ -98,14 +100,39 @@ export default function AdvisorPage() {
 
   return (
     <div className="flex flex-col h-full bg-slate-900 p-6">
-      <h1 className="text-xl font-bold text-slate-100 mb-4">AI 顾问</h1>
+      <h1 className="text-xl font-bold text-slate-100 mb-4">{t("advisor_title")}</h1>
 
       <ScrollArea className="flex-1 mb-4" ref={scrollRef}>
         <div className="space-y-4 pr-4">
           {messages.length === 0 && (
-            <div className="text-center text-slate-500 py-20">
-              <p className="text-lg mb-2">有什么可以帮你的?</p>
-              <p className="text-sm">输入问题开始对话</p>
+            <div className="flex flex-col items-center gap-6 py-12">
+              <div className="text-center">
+                <p className="text-slate-300 text-lg font-medium mb-1">{t("advisor_welcome")}</p>
+                <p className="text-slate-500 text-sm">{t("advisor_welcome_sub")}</p>
+              </div>
+              {/* 快捷問題 */}
+              <div className="flex flex-col gap-2 w-full max-w-md">
+                {[
+                  "今天的信號裡哪些值得重點關注？",
+                  "幫我分析待辦清單裡的機會，下一步應該優先做什麼？",
+                  "AI Agent 賽道最近有什麼新進展和投資機會？",
+                ].map((q) => (
+                  <button
+                    key={q}
+                    className="text-left text-sm text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-500 rounded-lg px-4 py-3 transition-colors"
+                    onClick={() => {
+                      setInput(q);
+                      // auto-send
+                      setTimeout(() => {
+                        const btn = document.querySelector('[data-send-btn]') as HTMLButtonElement;
+                        btn?.click();
+                      }, 50);
+                    }}
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
           {messages.map((msg, i) => (
@@ -132,7 +159,7 @@ export default function AdvisorPage() {
           {streaming && messages[messages.length - 1]?.content === "" && (
             <div className="flex justify-start">
               <div className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-sm text-slate-400">
-                思考中...
+                <span className="animate-pulse">...</span>
               </div>
             </div>
           )}
@@ -142,7 +169,7 @@ export default function AdvisorPage() {
       <div className="flex gap-2 items-end">
         <Textarea
           className="bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500 resize-none flex-1 min-h-[44px] max-h-[120px]"
-          placeholder="输入你的问题..."
+          placeholder={t("advisor_placeholder")}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -150,13 +177,22 @@ export default function AdvisorPage() {
           disabled={streaming}
         />
         <Button
+          data-send-btn
           className="bg-blue-600 hover:bg-blue-700 text-white shrink-0 h-[44px]"
           onClick={handleSend}
           disabled={streaming || !input.trim()}
         >
-          发送
+          {t("advisor_send")}
         </Button>
       </div>
     </div>
+  );
+}
+
+export default function AdvisorPage() {
+  return (
+    <Suspense>
+      <AdvisorInner />
+    </Suspense>
   );
 }
