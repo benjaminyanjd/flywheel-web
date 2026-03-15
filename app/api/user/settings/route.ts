@@ -122,10 +122,18 @@ export async function PATCH(req: NextRequest) {
         ? body.opp_type.split(",").filter((t: string) => VALID_OPP_TYPES.includes(t.trim())).join(",") || null
         : null;
 
+    const profitSource = typeof body.profit_source === "string" ? body.profit_source || null : null;
+    const coreSkills = typeof body.core_skills === "string" ? body.core_skills || null : null;
+    const oppHorizon = typeof body.opp_horizon === "string" ? body.opp_horizon || null : null;
+    const riskLevel = typeof body.risk_level === "string" ? body.risk_level || null : null;
+    const timeBudget = typeof body.time_budget === "string" ? body.time_budget || null : null;
+
     const db = getDb();
     db.prepare(`INSERT OR IGNORE INTO user_settings (user_id) VALUES (?)`).run(userId);
-    db.prepare(`UPDATE user_settings SET user_role = ?, user_focus = ?, opp_type = ? WHERE user_id = ?`)
-      .run(userRole, userFocus, oppType, userId);
+    db.prepare(`UPDATE user_settings SET user_role = ?, user_focus = ?, opp_type = ?,
+      profit_source = ?, core_skills = ?, opp_horizon = ?, risk_level = ?, time_budget = ?
+      WHERE user_id = ?`)
+      .run(userRole, userFocus, oppType, profitSource, coreSkills, oppHorizon, riskLevel, timeBudget, userId);
 
     logger.info("user/settings/PATCH", "Preferences saved", { userId });
     return NextResponse.json({ success: true });
