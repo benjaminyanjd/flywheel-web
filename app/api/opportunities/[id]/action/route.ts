@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 export async function DELETE(
   req: NextRequest,
@@ -16,7 +17,7 @@ export async function DELETE(
     ).run(Number(id), userId);
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error("Failed to undo opportunity action:", err);
+    logger.error("opportunities/action/DELETE", "Failed to undo opportunity action", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json({ error: "Failed to undo" }, { status: 500 });
   }
 }
@@ -44,8 +45,10 @@ export async function POST(
 
     const db = getDb();
 
-    // Verify opportunity exists
-    const existing = db.prepare("SELECT id FROM opportunity_actions WHERE id = ?").get(id);
+    // Verify opportunity exists and belongs to this user (or is system-created)
+    const existing = db.prepare(
+      "SELECT id FROM opportunity_actions WHERE id = ? AND (user_id = ? OR user_id = 'system')"
+    ).get(Number(id), userId);
     if (!existing) {
       return NextResponse.json({ error: "Opportunity not found" }, { status: 404 });
     }
@@ -74,7 +77,7 @@ export async function POST(
 
     return NextResponse.json({ opportunity: updated });
   } catch (err) {
-    console.error("Failed to update opportunity action:", err);
+    logger.error("opportunities/action/POST", "Failed to update opportunity action", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json({ error: "Failed to update opportunity" }, { status: 500 });
   }
 }

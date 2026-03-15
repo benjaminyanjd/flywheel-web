@@ -1,9 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { getDb } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
+
+export async function GET() {
+  try {
+    const { userId } = await auth();
+    if (!userId) return NextResponse.json({ history: [] });
+    const db = getDb();
+    const rows = db.prepare(
+      `SELECT input_summary, output, created_at FROM conversations
+       WHERE type = 'advisor' AND user_id = ?
+       ORDER BY created_at DESC LIMIT 20`
+    ).all(userId) as { input_summary: string; output: string; created_at: string }[];
+    // Return in chronological order as message pairs
+    const history = rows.reverse().flatMap(r => [
+      { role: "user" as const, content: r.input_summary },
+      { role: "assistant" as const, content: r.output },
+    ]);
+    return NextResponse.json({ history });
+  } catch {
+    return NextResponse.json({ history: [] });
+  }
+}
 
 const SYSTEM_PROMPT = `You are the Flywheel Advisor — a strategic AI assistant for a solo entrepreneur running an automated signal-to-opportunity pipeline. Your role is to help analyze trends, prioritize opportunities, suggest monetization strategies, and provide actionable business advice.
 
@@ -23,8 +45,30 @@ export async function POST(req: NextRequest) {
     if (!message || typeof message !== "string") {
       return NextResponse.json({ error: "Message is required" }, { status: 400 });
     }
+    if (message.length > 2000) {
+      return NextResponse.json({ error: "Message too long (max 2000 characters)" }, { status: 400 });
+    }
 
     const db = getDb();
+
+    // Trial rate limit: max 3 advisor queries per day for trial users
+    const sub = db.prepare(
+      "SELECT trial_end, plan FROM user_subscriptions WHERE user_id = ?"
+    ).get(userId) as { trial_end: string | null; plan: string } | undefined;
+    const isTrial = sub?.trial_end && new Date(sub.trial_end) > new Date() && (!sub.plan || sub.plan === "trial");
+    if (isTrial) {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const usageToday = (db.prepare(
+        "SELECT COUNT(*) as cnt FROM conversations WHERE type = 'advisor' AND user_id = ? AND created_at >= ?"
+      ).get(userId, todayStart.toISOString()) as { cnt: number } | undefined)?.cnt ?? 0;
+      if (usageToday >= 3) {
+        return NextResponse.json(
+          { error: "trial_limit", message: "試用期每天最多 3 次顧問諮詢，明天再來！升級訂閱可享無限次使用。" },
+          { status: 429 }
+        );
+      }
+    }
 
     // Get user's recent opportunity actions for context
     const recentOpps = db.prepare(
@@ -45,19 +89,37 @@ export async function POST(req: NextRequest) {
       )
       .all();
 
-    // Get recent advisor conversations for history
+    // Get recent advisor conversations for history (filtered by user)
     const recentConversations = db
       .prepare(
         `SELECT input_summary, output
          FROM conversations
-         WHERE type = 'advisor'
+         WHERE type = 'advisor' AND user_id = ?
          ORDER BY created_at DESC
          LIMIT 5`
       )
-      .all() as { input_summary: string; output: string }[];
+      .all(userId) as { input_summary: string; output: string }[];
+
+    // Get user profile for personalized system prompt
+    const userSettings = db.prepare("SELECT user_role, user_focus, opp_type FROM user_settings WHERE user_id = ?").get(userId) as { user_role?: string; user_focus?: string; opp_type?: string } | undefined;
+
+    const roleMap: Record<string, string> = { indie_dev: "獨立開發者", investor: "投資者", founder: "創業者", researcher: "研究者" };
+    const focusMap: Record<string, string> = { ai: "AI", crypto: "加密貨幣", saas: "SaaS", overseas: "出海" };
+    const oppMap: Record<string, string> = { tools: "技術工具", arbitrage: "套利機會", content: "內容創作", growth: "增長策略" };
+
+    let systemPrompt = SYSTEM_PROMPT;
+    if (userSettings && (userSettings.user_role || userSettings.user_focus)) {
+      const profileParts: string[] = [];
+      if (userSettings.user_role && roleMap[userSettings.user_role]) profileParts.push(`身份：${roleMap[userSettings.user_role]}`);
+      if (userSettings.user_focus && focusMap[userSettings.user_focus]) profileParts.push(`關注領域：${focusMap[userSettings.user_focus]}`);
+      if (userSettings.opp_type && oppMap[userSettings.opp_type]) profileParts.push(`偏好機會類型：${oppMap[userSettings.opp_type]}`);
+      if (profileParts.length > 0) {
+        systemPrompt += `\n\n用戶資料：${profileParts.join("，")}。請根據此資料調整建議的角度和重點。`;
+      }
+    }
 
     // Build messages array with history
-    const messages: Anthropic.MessageParam[] = [];
+    const messages: { role: "user" | "assistant"; content: string }[] = [];
 
     // Add conversation history (in chronological order)
     for (const conv of recentConversations.reverse()) {
@@ -73,45 +135,66 @@ export async function POST(req: NextRequest) {
 
     messages.push({ role: "user", content: message + signalContext });
 
-    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-    const stream = await client.messages.stream({
-      model: "claude-opus-4-6",
-      max_tokens: 4096,
-      system: SYSTEM_PROMPT + contextStr,
-      messages,
-    });
+    // Use local claude-proxy (OpenAI-compatible) to avoid direct API key dependency
+    const client = new OpenAI({ apiKey: "not-needed", baseURL: "http://localhost:3456/v1" });
 
     const encoder = new TextEncoder();
     let fullResponse = "";
 
+    // Prepend system prompt as a system message
+    const allMessages: OpenAI.ChatCompletionMessageParam[] = [
+      { role: "system", content: systemPrompt + contextStr },
+      ...messages.map(m => ({ role: m.role as "user" | "assistant", content: m.content as string })),
+    ];
+
     const readableStream = new ReadableStream({
       async start(controller) {
         try {
-          for await (const event of stream) {
-            if (
-              event.type === "content_block_delta" &&
-              event.delta.type === "text_delta"
-            ) {
-              const chunk = event.delta.text;
-              fullResponse += chunk;
+          const stream = await client.chat.completions.create({
+            model: "claude-sonnet-4",
+            max_tokens: 4096,
+            messages: allMessages,
+            stream: true,
+          });
+
+          for await (const chunk of stream) {
+            const text = chunk.choices[0]?.delta?.content ?? "";
+            if (text) {
+              fullResponse += text;
               controller.enqueue(
-                encoder.encode(`data: ${JSON.stringify({ text: chunk })}\n\n`)
+                encoder.encode(`data: ${JSON.stringify({ text })}\n\n`)
               );
             }
           }
 
           // Save conversation to DB after streaming completes
-          db.prepare(
-            `INSERT INTO conversations (type, input_summary, output)
-             VALUES ('advisor', ?, ?)`
-          ).run(message, fullResponse);
+          // Trial users: use transaction to atomically check limit and insert
+          if (isTrial) {
+            const saveIfUnderLimit = db.transaction(() => {
+              const todayStart = new Date();
+              todayStart.setHours(0, 0, 0, 0);
+              const countNow = (db.prepare(
+                "SELECT COUNT(*) as cnt FROM conversations WHERE type = 'advisor' AND user_id = ? AND created_at >= ?"
+              ).get(userId, todayStart.toISOString()) as { cnt: number } | undefined)?.cnt ?? 0;
+              if (countNow >= 3) return false;
+              db.prepare(
+                `INSERT INTO conversations (type, input_summary, output, user_id) VALUES ('advisor', ?, ?, ?)`
+              ).run(message, fullResponse, userId);
+              return true;
+            });
+            saveIfUnderLimit();
+          } else {
+            db.prepare(
+              `INSERT INTO conversations (type, input_summary, output, user_id) VALUES ('advisor', ?, ?, ?)`
+            ).run(message, fullResponse, userId);
+          }
 
           controller.enqueue(
             encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`)
           );
           controller.close();
         } catch (err) {
-          console.error("Advisor stream error:", err);
+          logger.error("advisor/POST", "Advisor stream error", { error: err instanceof Error ? err.message : String(err) });
           controller.enqueue(
             encoder.encode(
               `data: ${JSON.stringify({ error: "Stream failed" })}\n\n`
@@ -130,7 +213,7 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (err) {
-    console.error("Advisor error:", err);
+    logger.error("advisor/POST", "Advisor request failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json({ error: "Advisor request failed" }, { status: 500 });
   }
 }

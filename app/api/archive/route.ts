@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 export async function GET(req: NextRequest) {
   try {
@@ -49,7 +50,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ items: opportunities, stats });
   } catch (err) {
-    console.error("Failed to fetch archive:", err);
+    logger.error("archive/GET", "Failed to fetch archive", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json({ error: "Failed to fetch archive" }, { status: 500 });
   }
 }

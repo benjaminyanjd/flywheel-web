@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  const { userId } = await auth();
+  if (!userId) {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
+
   const encoder = new TextEncoder();
 
   // Shared state accessible by both start() and cancel()
@@ -46,7 +53,7 @@ export async function GET() {
             safeEnqueue(encoder.encode(": heartbeat\n\n"));
           }
         } catch (err) {
-          console.error("SSE poll error:", err);
+          logger.error("signals/stream", "SSE poll error", { error: err instanceof Error ? err.message : String(err) });
           closed = true;
           if (intervalId) clearInterval(intervalId);
           try { controller.close(); } catch { /* already closed */ }

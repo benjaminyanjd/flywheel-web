@@ -1,0 +1,755 @@
+{
+  "version": 1,
+  "runs": [
+    {
+      "run_id": "run-1",
+      "timestamp": "2026-03-12T10:00:00.000Z",
+      "completed_count": 5,
+      "summary": "SEO metadata+OG tags + lang=zh-TW修正、robots.txt、sitemap.ts、i18n全面繁體化、waitlist API IP速率限制"
+    },
+    {
+      "run_id": "run-2",
+      "timestamp": "2026-03-12T11:00:00.000Z",
+      "completed_count": 8,
+      "summary": "合併landing頁DB查詢、翻譯API per-user每日限速、Dashboard loading skeleton、React ErrorBoundary、動態OG image路由、/api/health健康檢查、settings API輸入驗證、隱私政策頁面+footer連結"
+    },
+    {
+      "run_id": "run-3",
+      "timestamp": "2026-03-12T12:00:00.000Z",
+      "completed_count": 7,
+      "summary": "翻譯API伺服器端MD5快取(24h TTL 2000條)、結構化JSON日誌lib+4條路由改造、安全HTTP headers(X-Frame/CSP/XSS等)、OG image Cache-Control、PROSE CSS class提取為共用常量、advisor消息長度限制2000char、ux-empty-states確認已完整覆蓋"
+    },
+    {
+      "run_id": "run-4",
+      "timestamp": "2026-03-12T13:00:00.000Z",
+      "completed_count": 10,
+      "summary": "移除hardcoded Telegram token明文fallback、7條API路由補結構化logger(scan/todolist/stats/opportunity/signals-stream/opp-action/waitlist)、API response簡體→繁體(scan/opportunity)、前端簡體→繁體(control頁面/todolist/opportunities顧問消息)、清理void code smells"
+    },
+    {
+      "run_id": "run-5",
+      "timestamp": "2026-03-12T14:00:00.000Z",
+      "completed_count": 7,
+      "summary": "zh-CN→zh-TW locale修正(4文件)、海外趋势→海外趨勢簡體殘留、invite/validate IP速率限制、4條路由補結構化logger(notify/telegram/signals/bookmark/outcome)、advisor頁面消除fragile DOM querySelector"
+    },
+    {
+      "run_id": "run-6",
+      "timestamp": "2026-03-13T10:00:00.000Z",
+      "completed_count": 6,
+      "summary": "合規修正/privacy加入公開路由、sitemap新增privacy頁、刪除legacy密碼登錄死代碼(lib/auth.ts+api/auth+login/page)、trial route補logger+類型安全、6個前端頁面console.error全部清除、API routes as any替換為精確類型"
+    },
+    {
+      "run_id": "run-7",
+      "timestamp": "2026-03-13T11:00:00.000Z",
+      "completed_count": 6,
+      "summary": "opportunities頁3處簡體殘留(条信号/无信号数据/加载中→繁體)、語言切換🇨🇳→🇹🇼(settings+control兩頁)、notify/telegram as any→精確類型、opportunities/signals路由加try/catch+logger+修as any、landing頁新增JSON-LD結構化資料(SoftwareApplication)、opportunity推送setTimeout補logger+推送結果追蹤"
+    },
+    {
+      "run_id": "run-8",
+      "timestamp": "2026-03-13T12:00:00.000Z",
+      "completed_count": 8,
+      "summary": "as any類型安全改進(layout/expired/settings/invite 7處)、user/settings路由補try-catch+logger、layout.tsx遷移console.error→logger、radar搜尋改useDeferredValue優化渲染、/api/stats+/api/signals加Cache-Control降低伺服器負載"
+    },
+    {
+      "run_id": "run-9",
+      "timestamp": "2026-03-13T13:00:00.000Z",
+      "completed_count": 8,
+      "summary": "sidebar.tsx 10處簡體→繁體(機會捕捉/待辦清單/歸檔記錄/顧問/設置/雷達/海外趨勢/機會/待辦/歸檔)、share-card-modal console.error靜默、waitlist表單aria-label無障礙、radar搜尋input+按鈕aria-label+aria-pressed、bookmark樂觀更新+錯誤回滾、next.config compress:true啟用gzip、filtered陣列useMemo優化、手動掃描按鈕錯誤處理"
+    },
+    {
+      "run_id": "run-10",
+      "timestamp": "2026-03-13T14:00:00.000Z",
+      "completed_count": 8,
+      "summary": "todolist/opportunities骨架屏loading、onboarding錯誤處理(finish/finishWithTelegram加try-catch)、welcome-digest每日速率限制(per-user 24h)、next.config.ts新增CSP安全頭、control頁面void pollId代碼異味消除、SettingsClient冗余currentLang狀態移除、onboarding按鈕aria-label+aria-pressed無障礙屬性"
+    }
+  ],
+  "completed_items": [
+    {
+      "id": "seo-metadata-og",
+      "category": "SEO",
+      "description": "升級 app/layout.tsx metadata：加 OG tags（og:title/description/image/url/locale）、Twitter card、robots 指令、關鍵字；description 從 'Personal intelligence dashboard' 改為繁中說明文案；lang 從 zh-CN 修正為 zh-TW",
+      "file": "app/layout.tsx",
+      "completed_at": "2026-03-12T10:00:00.000Z"
+    },
+    {
+      "id": "seo-robots-txt",
+      "category": "SEO",
+      "description": "新增 public/robots.txt：允許爬取 /，禁止 /api/ 和認證相關頁面，加入 Sitemap 指向",
+      "file": "public/robots.txt",
+      "completed_at": "2026-03-12T10:00:00.000Z"
+    },
+    {
+      "id": "seo-sitemap",
+      "category": "SEO",
+      "description": "新增 app/sitemap.ts：Next.js 原生 sitemap 生成，包含首頁（priority 1.0）和 sign-in 頁",
+      "file": "app/sitemap.ts",
+      "completed_at": "2026-03-12T10:00:00.000Z"
+    },
+    {
+      "id": "ux-i18n-traditional-chinese",
+      "category": "UX",
+      "description": "修正 lib/i18n.ts zh 區塊全部簡體→繁體（雷達、機會捕捉、待辦清單、歸檔記錄、顧問等 60+ 字串）；修正 app/(dashboard)/radar/page.tsx relativeTime 函式（刚刚→剛剛、分钟前→分鐘前、小时前→小時前）",
+      "file": "lib/i18n.ts, app/(dashboard)/radar/page.tsx",
+      "completed_at": "2026-03-12T10:00:00.000Z"
+    },
+    {
+      "id": "security-waitlist-rate-limit",
+      "category": "安全",
+      "description": "waitlist API 新增 IP 速率限制（每 IP 每小時最多 3 次）+ 輸入長度驗證（telegram ≤64、email ≤256）",
+      "file": "app/api/waitlist/route.ts",
+      "completed_at": "2026-03-12T10:00:00.000Z"
+    },
+    {
+      "id": "perf-landing-db-queries",
+      "category": "性能",
+      "description": "合併 getUserCount 和 getWaitlistCount 為單一 getCounts() 函式，一次查詢同時取得兩個 COUNT，減少 DB round-trip",
+      "file": "app/page.tsx",
+      "completed_at": "2026-03-12T11:00:00.000Z"
+    },
+    {
+      "id": "seo-og-image",
+      "category": "SEO",
+      "description": "新增 app/og-image/route.tsx：使用 Next.js ImageResponse（Edge runtime）動態生成 1200×630 OG 圖片，含品牌 logo、headline、tag pills；更新 layout.tsx OG image URL 指向 /og-image",
+      "file": "app/og-image/route.tsx, app/layout.tsx",
+      "completed_at": "2026-03-12T11:00:00.000Z"
+    },
+    {
+      "id": "security-translate-rate-limit",
+      "category": "安全",
+      "description": "翻譯 API 新增 per-user 每日 30 次速率限制，in-memory Map 追蹤每 userId 每日使用量，超限返回 429",
+      "file": "app/api/translate/route.ts",
+      "completed_at": "2026-03-12T11:00:00.000Z"
+    },
+    {
+      "id": "ux-loading-skeleton",
+      "category": "UX",
+      "description": "新增 app/(dashboard)/loading.tsx：動態路由切換時顯示 skeleton loading，5 張卡片 animate-pulse 效果",
+      "file": "app/(dashboard)/loading.tsx",
+      "completed_at": "2026-03-12T11:00:00.000Z"
+    },
+    {
+      "id": "code-error-boundary",
+      "category": "代碼質量",
+      "description": "新增 components/error-boundary.tsx：React class ErrorBoundary，捕獲 client 端 JS 錯誤顯示友好訊息 + 重新整理按鈕；在 dashboard layout 包裹 children",
+      "file": "components/error-boundary.tsx, app/(dashboard)/layout.tsx",
+      "completed_at": "2026-03-12T11:00:00.000Z"
+    },
+    {
+      "id": "ops-health-check",
+      "category": "運維",
+      "description": "新增 app/api/health/route.ts：健康檢查端點，返回 DB 狀態、uptime、latencyMs；DB 異常時返回 503",
+      "file": "app/api/health/route.ts",
+      "completed_at": "2026-03-12T11:00:00.000Z"
+    },
+    {
+      "id": "security-settings-validation",
+      "category": "安全",
+      "description": "settings API 新增嚴格輸入驗證：categories 白名單過濾、scan_interval 枚舉驗證、notify_channel 白名單、email 格式+長度檢查、telegram_chat_id 正則驗證",
+      "file": "app/api/user/settings/route.ts",
+      "completed_at": "2026-03-12T11:00:00.000Z"
+    },
+    {
+      "id": "compliance-privacy-policy",
+      "category": "合規",
+      "description": "新增 app/privacy/page.tsx 隱私政策頁面（含資料收集說明、第三方服務、用戶刪除權利）；在 landing footer 加入隱私政策連結；robots.txt 加入 /og-image 禁止爬取",
+      "file": "app/privacy/page.tsx, app/page.tsx, public/robots.txt",
+      "completed_at": "2026-03-12T11:00:00.000Z"
+    },
+    {
+      "id": "perf-translate-no-cache",
+      "category": "性能",
+      "description": "翻譯 API 新增伺服器端 MD5 key in-memory 快取（TTL 24h，最多 2000 條自動淘汰），快取命中時跳過速率限制計數，大幅減少重複 Anthropic API 費用",
+      "file": "app/api/translate/route.ts",
+      "completed_at": "2026-03-12T12:00:00.000Z"
+    },
+    {
+      "id": "ux-empty-states",
+      "category": "UX",
+      "description": "審查確認所有頁面（radar/opportunities/todolist/archive）均已有完整 empty state UI，無需額外修改",
+      "file": "app/(dashboard)/radar/page.tsx, app/(dashboard)/opportunities/page.tsx, app/(dashboard)/todolist/page.tsx, app/(dashboard)/archive/page.tsx",
+      "completed_at": "2026-03-12T12:00:00.000Z"
+    },
+    {
+      "id": "ops-log-structured",
+      "category": "運維",
+      "description": "新增 lib/logger.ts：JSON 結構化日誌 helper（timestamp/level/route/message/userId/durationMs），帶 withTiming() 工具函式；改造 signals/opportunities/archive/translate/advisor 共 5 條路由使用結構化 logger",
+      "file": "lib/logger.ts, app/api/signals/route.ts, app/api/opportunities/route.ts, app/api/archive/route.ts, app/api/translate/route.ts, app/api/advisor/route.ts",
+      "completed_at": "2026-03-12T12:00:00.000Z"
+    },
+    {
+      "id": "security-http-headers",
+      "category": "安全",
+      "description": "next.config.ts 新增全域安全 headers：X-Frame-Options(SAMEORIGIN)、X-Content-Type-Options(nosniff)、X-XSS-Protection、Referrer-Policy(strict-origin-when-cross-origin)、Permissions-Policy(禁用camera/microphone/geolocation)；OG image 路由加 Cache-Control(public max-age=300 s-maxage=3600)",
+      "file": "next.config.ts",
+      "completed_at": "2026-03-12T12:00:00.000Z"
+    },
+    {
+      "id": "code-prose-dedup",
+      "category": "代碼質量",
+      "description": "提取重複的 PROSE Tailwind CSS class 字串為 lib/prose-class.ts 共用常量 PROSE_CLASS；opportunities/page.tsx 和 todolist/page.tsx 改為 import 使用，消除 3 處重複",
+      "file": "lib/prose-class.ts, app/(dashboard)/opportunities/page.tsx, app/(dashboard)/todolist/page.tsx",
+      "completed_at": "2026-03-12T12:00:00.000Z"
+    },
+    {
+      "id": "security-advisor-msg-limit",
+      "category": "安全",
+      "description": "advisor API 新增 message 長度上限 2000 字元驗證，防止超長輸入消耗 Anthropic API token；使用結構化 logger 替換 console.error",
+      "file": "app/api/advisor/route.ts",
+      "completed_at": "2026-03-12T12:00:00.000Z"
+    },
+    {
+      "id": "security-hardcoded-token",
+      "category": "安全",
+      "description": "移除 welcome-digest/route.ts 中 TELEGRAM_BOT_TOKEN 硬編碼明文 fallback，改為純 env var 讀取；token 未設置時返回錯誤並記錄結構化日誌",
+      "file": "app/api/user/welcome-digest/route.ts",
+      "completed_at": "2026-03-12T13:00:00.000Z"
+    },
+    {
+      "id": "ops-logger-remaining-routes",
+      "category": "運維",
+      "description": "補充 7 條路由的結構化 logger：scan/todolist/stats/opportunity/signals-stream/opportunities-action/waitlist 全部替換 console.error 為 logger.error",
+      "file": "app/api/scan/route.ts, app/api/todolist/route.ts, app/api/stats/route.ts, app/api/opportunity/route.ts, app/api/signals/stream/route.ts, app/api/opportunities/[id]/action/route.ts, app/api/waitlist/route.ts",
+      "completed_at": "2026-03-12T13:00:00.000Z"
+    },
+    {
+      "id": "ux-trad-chinese-api-responses",
+      "category": "UX",
+      "description": "修正 API 返回消息中的簡體字：scan/route.ts（扫描已启动→掃描已啟動）、opportunity/route.ts（机会识别已启动→機會識別已啟動）",
+      "file": "app/api/scan/route.ts, app/api/opportunity/route.ts",
+      "completed_at": "2026-03-12T13:00:00.000Z"
+    },
+    {
+      "id": "ux-trad-chinese-frontend",
+      "category": "UX",
+      "description": "修正前端殘留簡體字：control/page.tsx 掃描/機會結果提示文字、todolist/page.tsx 顧問請求文字、opportunities/page.tsx 顧問請求文字；同時清理 void poll/void data 代碼異味",
+      "file": "app/(dashboard)/control/page.tsx, app/(dashboard)/todolist/page.tsx, app/(dashboard)/opportunities/page.tsx",
+      "completed_at": "2026-03-12T13:00:00.000Z"
+    },
+    {
+      "id": "ux-zh-tw-locale",
+      "category": "UX",
+      "description": "修正 toLocaleDateString(\"zh-CN\") → \"zh-TW\"：todolist/page.tsx、opportunities/page.tsx（5處）、radar/page.tsx（2處）、archive/page.tsx，確保繁體中文介面日期格式正確",
+      "file": "app/(dashboard)/todolist/page.tsx, app/(dashboard)/opportunities/page.tsx, app/(dashboard)/radar/page.tsx, app/(dashboard)/archive/page.tsx",
+      "completed_at": "2026-03-12T14:00:00.000Z"
+    },
+    {
+      "id": "ux-overseas-trad-chinese",
+      "category": "UX",
+      "description": "修正 radar/page.tsx CATEGORY_LABELS 中 overseas_trends 分類標籤殘留簡體「海外趋势」→「海外趨勢」",
+      "file": "app/(dashboard)/radar/page.tsx",
+      "completed_at": "2026-03-12T14:00:00.000Z"
+    },
+    {
+      "id": "security-invite-rate-limit",
+      "category": "安全",
+      "description": "invite/validate API 新增 IP 速率限制（每 IP 每小時最多 10 次），防止暴力枚舉邀請碼；同時加入結構化 logger 記錄失敗嘗試",
+      "file": "app/api/invite/validate/route.ts",
+      "completed_at": "2026-03-12T14:00:00.000Z"
+    },
+    {
+      "id": "ops-logger-new-routes",
+      "category": "運維",
+      "description": "補充 4 條路由的結構化 logger：notify/telegram（通知成功/失敗日誌）、signals/bookmarks（錯誤捕獲）、signals/[id]/bookmark（POST/DELETE 錯誤處理）、opportunities/[id]/outcome（成功記錄+錯誤處理）",
+      "file": "app/api/notify/telegram/route.ts, app/api/signals/bookmarks/route.ts, app/api/signals/[id]/bookmark/route.ts, app/api/opportunities/[id]/outcome/route.ts",
+      "completed_at": "2026-03-12T14:00:00.000Z"
+    },
+    {
+      "id": "code-advisor-dom-query",
+      "category": "代碼質量",
+      "description": "修正 advisor/page.tsx 快捷問題按鈕使用 document.querySelector(\"[data-send-btn]\") 的脆弱 DOM 操作；改為 handleSend(textOverride?) 直接傳入文字，消除 setTimeout + DOM 查詢依賴",
+      "file": "app/(dashboard)/advisor/page.tsx",
+      "completed_at": "2026-03-12T14:00:00.000Z"
+    },
+    {
+      "id": "compliance-privacy-public-route",
+      "category": "合規",
+      "description": "middleware.ts isPublicRoute 新增 /privacy 和 /og-image，確保隱私政策頁面無需登錄即可訪問（合規強制要求）",
+      "file": "middleware.ts",
+      "completed_at": "2026-03-13T10:00:00.000Z"
+    },
+    {
+      "id": "seo-sitemap-privacy",
+      "category": "SEO",
+      "description": "sitemap.ts 新增 /privacy 頁面條目（priority 0.2, changeFrequency yearly），完善站點地圖覆蓋",
+      "file": "app/sitemap.ts",
+      "completed_at": "2026-03-13T10:00:00.000Z"
+    },
+    {
+      "id": "code-remove-legacy-auth",
+      "category": "代碼質量",
+      "description": "刪除已被 Clerk 替代的遺留密碼登錄死代碼：lib/auth.ts（jose JWT）、app/api/auth/login/route.ts、app/api/auth/logout/route.ts、app/login/page.tsx，消除安全隱患和混淆",
+      "file": "lib/auth.ts, app/api/auth/login/route.ts, app/api/auth/logout/route.ts, app/login/page.tsx",
+      "completed_at": "2026-03-13T10:00:00.000Z"
+    },
+    {
+      "id": "ops-trial-route-logger",
+      "category": "運維",
+      "description": "user/trial/route.ts 新增 logger 結構化錯誤記錄 + try/catch 錯誤邊界 + DB 結果類型安全（去掉 as any）",
+      "file": "app/api/user/trial/route.ts",
+      "completed_at": "2026-03-13T10:00:00.000Z"
+    },
+    {
+      "id": "code-frontend-console-errors",
+      "category": "代碼質量",
+      "description": "清除 6 個前端頁面所有 console.error 調用（todolist/opportunities/radar/archive/control/advisor），改為靜默錯誤處理，避免線上環境洩露敏感堆棧信息",
+      "file": "app/(dashboard)/todolist/page.tsx, app/(dashboard)/opportunities/page.tsx, app/(dashboard)/radar/page.tsx, app/(dashboard)/archive/page.tsx, app/(dashboard)/control/page.tsx, app/(dashboard)/advisor/page.tsx",
+      "completed_at": "2026-03-13T10:00:00.000Z"
+    },
+    {
+      "id": "code-api-any-types",
+      "category": "代碼質量",
+      "description": "替換 opportunity/route.ts 和 advisor/route.ts 中多處 as any 類型斷言為精確接口類型（opp_title/opp_embed/telegram_chat_id/trial_end/plan/cnt），提升類型安全",
+      "file": "app/api/opportunity/route.ts, app/api/advisor/route.ts",
+      "completed_at": "2026-03-13T10:00:00.000Z"
+    },
+    {
+      "id": "ux-opportunities-simplified-chinese",
+      "category": "UX",
+      "description": "修正 opportunities/page.tsx 中 3 處殘留簡體字：「条信号」→「條信號」、「无信号数据」→「無信號數據」、「加载中…」→「載入中…」",
+      "file": "app/(dashboard)/opportunities/page.tsx",
+      "completed_at": "2026-03-13T11:00:00.000Z"
+    },
+    {
+      "id": "ux-lang-flag-tw",
+      "category": "UX",
+      "description": "修正語言切換器 🇨🇳 旗幟 → 🇹🇼，並將標籤從「中文」改為「繁體中文」；涉及 settings/SettingsClient.tsx 和 control/page.tsx 兩處",
+      "file": "app/(dashboard)/settings/SettingsClient.tsx, app/(dashboard)/control/page.tsx",
+      "completed_at": "2026-03-13T11:00:00.000Z"
+    },
+    {
+      "id": "code-notify-telegram-any-type",
+      "category": "代碼質量",
+      "description": "修正 notify/telegram/route.ts 中 DB 查詢結果的 as any 類型斷言，改為精確接口類型 { telegram_chat_id: string | null } | undefined",
+      "file": "app/api/notify/telegram/route.ts",
+      "completed_at": "2026-03-13T11:00:00.000Z"
+    },
+    {
+      "id": "ops-opp-signals-route-safety",
+      "category": "運維",
+      "description": "opportunities/[id]/signals/route.ts 補充 try/catch 錯誤邊界 + 結構化 logger 記錄；修正 DB 查詢結果 as any → 精確接口類型 OppActionRow",
+      "file": "app/api/opportunities/[id]/signals/route.ts",
+      "completed_at": "2026-03-13T11:00:00.000Z"
+    },
+    {
+      "id": "seo-json-ld",
+      "category": "SEO",
+      "description": "landing page 新增 JSON-LD 結構化資料（schema.org SoftwareApplication）：name/url/description/applicationCategory/offers/inLanguage，提升 Google 富媒體搜尋結果呈現",
+      "file": "app/page.tsx",
+      "completed_at": "2026-03-13T11:00:00.000Z"
+    },
+    {
+      "id": "ops-opportunity-push-logger",
+      "category": "運維",
+      "description": "opportunity/route.ts setTimeout 推送通知補充完整 logger：無機會時 info log、無用戶時 info log、token 未設置時 warn log、推送循環改為 try/catch 記錄個別失敗、推送完成後記錄 total/succeeded 統計",
+      "file": "app/api/opportunity/route.ts",
+      "completed_at": "2026-03-13T11:00:00.000Z"
+    },
+    {
+      "id": "code-as-any-server-pages",
+      "category": "代碼質量",
+      "description": "替換 layout.tsx(2處)、expired/page.tsx(3處)、settings/page.tsx、SettingsClient.tsx 的 as any 為精確接口類型；同步修正 invite/validate/route.ts InviteCode as any → { code: string }",
+      "file": "app/(dashboard)/layout.tsx, app/expired/page.tsx, app/(dashboard)/settings/page.tsx, app/(dashboard)/settings/SettingsClient.tsx, app/api/invite/validate/route.ts",
+      "completed_at": "2026-03-13T12:00:00.000Z"
+    },
+    {
+      "id": "ops-settings-route-logger",
+      "category": "運維",
+      "description": "user/settings/route.ts 的 GET 和 POST 補充 try/catch + 結構化 logger；POST 成功時記錄 info log，錯誤時記錄 error log，返回 500",
+      "file": "app/api/user/settings/route.ts",
+      "completed_at": "2026-03-13T12:00:00.000Z"
+    },
+    {
+      "id": "ops-layout-migration-logger",
+      "category": "運維",
+      "description": "app/layout.tsx DB migration 錯誤從 console.error 改為結構化 logger.error，符合全局日誌規範",
+      "file": "app/layout.tsx",
+      "completed_at": "2026-03-13T12:00:00.000Z"
+    },
+    {
+      "id": "perf-radar-search-deferred",
+      "category": "性能",
+      "description": "radar/page.tsx 搜尋關鍵字過濾改用 useDeferredValue，讓 React 延遲低優先級的列表重渲染，輸入響應更流暢，避免大量信號時每次 keystroke 阻塞 UI",
+      "file": "app/(dashboard)/radar/page.tsx",
+      "completed_at": "2026-03-13T12:00:00.000Z"
+    },
+    {
+      "id": "perf-api-cache-control",
+      "category": "性能",
+      "description": "/api/stats 加 Cache-Control: private, max-age=30, stale-while-revalidate=120；/api/signals 加 private, max-age=15, stale-while-revalidate=60；允許瀏覽器短期快取降低重複請求",
+      "file": "app/api/stats/route.ts, app/api/signals/route.ts",
+      "completed_at": "2026-03-13T12:00:00.000Z"
+    },
+    {
+      "id": "ux-sidebar-simplified-chinese",
+      "category": "UX",
+      "description": "修正 sidebar.tsx 中 10 處簡體字殘留：机会捕捉→機會捕捉、待办清单→待辦清單、归档记录→歸檔記錄、顾问→顧問、设置→設置、雷达→雷達（RADAR_LABEL + 移動端）、海外趋势→海外趨勢、机会→機會、待办→待辦、归档→歸檔（移動端底部導航）",
+      "file": "components/sidebar.tsx",
+      "completed_at": "2026-03-13T13:00:00.000Z"
+    },
+    {
+      "id": "code-share-card-modal-console",
+      "category": "代碼質量",
+      "description": "share-card-modal.tsx 中圖片下載失敗的 console.error 改為靜默錯誤處理，避免線上環境洩露堆棧信息",
+      "file": "components/share-card-modal.tsx",
+      "completed_at": "2026-03-13T13:00:00.000Z"
+    },
+    {
+      "id": "a11y-waitlist-form-aria-labels",
+      "category": "無障礙",
+      "description": "waitlist-form.tsx 的兩個 input 元素新增 aria-label（Telegram 用戶名、電子郵件地址），改善螢幕閱讀器可用性",
+      "file": "components/waitlist-form.tsx",
+      "completed_at": "2026-03-13T13:00:00.000Z"
+    },
+    {
+      "id": "a11y-radar-interactive-elements",
+      "category": "無障礙",
+      "description": "radar/page.tsx 新增無障礙屬性：搜尋 input 加 aria-label、熱度過濾按鈕加 aria-label+aria-pressed、複製/收藏按鈕加 aria-label+aria-pressed、手動掃描按鈕加 aria-label、所有 button 加 type=button",
+      "file": "app/(dashboard)/radar/page.tsx",
+      "completed_at": "2026-03-13T13:00:00.000Z"
+    },
+    {
+      "id": "code-bookmark-optimistic-update",
+      "category": "代碼質量",
+      "description": "radar/page.tsx 書籤切換改為樂觀更新（先更新 UI 再發請求），並在 API 失敗時自動回滾狀態，提升操作響應速度和正確性",
+      "file": "app/(dashboard)/radar/page.tsx",
+      "completed_at": "2026-03-13T13:00:00.000Z"
+    },
+    {
+      "id": "perf-next-config-compress",
+      "category": "性能",
+      "description": "next.config.ts 顯式設置 compress: true，啟用 Next.js 內建 gzip/Brotli 壓縮，降低 API 回應和靜態資源傳輸體積",
+      "file": "next.config.ts",
+      "completed_at": "2026-03-13T13:00:00.000Z"
+    },
+    {
+      "id": "perf-radar-filtered-usememo",
+      "category": "性能",
+      "description": "radar/page.tsx 的 filtered 陣列計算改用 useMemo，避免在 copiedId/bookmarks 等無關狀態變化時重新過濾大型信號列表，減少不必要渲染",
+      "file": "app/(dashboard)/radar/page.tsx",
+      "completed_at": "2026-03-13T13:00:00.000Z"
+    },
+    {
+      "id": "code-manual-scan-error-handling",
+      "category": "代碼質量",
+      "description": "radar/page.tsx 手動觸發掃描按鈕加 .catch() 錯誤處理，防止未處理的 Promise rejection；同時加 aria-label 無障礙屬性",
+      "file": "app/(dashboard)/radar/page.tsx",
+      "completed_at": "2026-03-13T13:00:00.000Z"
+    },
+    {
+      "id": "ux-loading-skeleton-todolist",
+      "category": "UX",
+      "description": "todolist/page.tsx loading skeleton改為3張骨架屏卡片(animate-pulse)，與radar頁面風格一致，替換原純文字「載入中...」",
+      "file": "app/(dashboard)/todolist/page.tsx",
+      "completed_at": "2026-03-13T14:00:00.000Z"
+    },
+    {
+      "id": "ux-loading-skeleton-opportunities",
+      "category": "UX",
+      "description": "opportunities/page.tsx loading skeleton改為3張骨架屏卡片(animate-pulse)含標題/描述/按鈕佔位，替換原純文字「載入中...」",
+      "file": "app/(dashboard)/opportunities/page.tsx",
+      "completed_at": "2026-03-13T14:00:00.000Z"
+    },
+    {
+      "id": "code-onboarding-error-handling",
+      "category": "代碼質量",
+      "description": "onboarding/page.tsx finish()和finishWithTelegram()新增try/catch：API失敗時重置saving=false允許重試，防止按鈕永久禁用的UX死鎖",
+      "file": "app/onboarding/page.tsx",
+      "completed_at": "2026-03-13T14:00:00.000Z"
+    },
+    {
+      "id": "a11y-onboarding-aria-labels",
+      "category": "無障礙",
+      "description": "onboarding/page.tsx話題類別和掃描頻率選擇按鈕新增type=button、aria-pressed、aria-label屬性，提升螢幕閱讀器可用性",
+      "file": "app/onboarding/page.tsx",
+      "completed_at": "2026-03-13T14:00:00.000Z"
+    },
+    {
+      "id": "security-welcome-digest-rate-limit",
+      "category": "安全",
+      "description": "welcome-digest API新增per-user每24小時1次速率限制(in-memory sentAt Map)，防止惡意重複調用向用戶Telegram發送垃圾消息",
+      "file": "app/api/user/welcome-digest/route.ts",
+      "completed_at": "2026-03-13T14:00:00.000Z"
+    },
+    {
+      "id": "security-csp-header",
+      "category": "安全",
+      "description": "next.config.ts新增Content-Security-Policy安全頭：限制script/style/img/connect/frame來源，object-src none，base-uri self，form-action self，有效防止XSS攻擊",
+      "file": "next.config.ts",
+      "completed_at": "2026-03-13T14:00:00.000Z"
+    },
+    {
+      "id": "code-control-void-pollid",
+      "category": "代碼質量",
+      "description": "control/page.tsx消除void pollId/void pollId2代碼異味，將setInterval返回值分別命名為statsRefreshId/oppRefreshId，語義清晰且無ESLint警告",
+      "file": "app/(dashboard)/control/page.tsx",
+      "completed_at": "2026-03-13T14:00:00.000Z"
+    },
+    {
+      "id": "code-settings-client-dedupe-lang",
+      "category": "代碼質量",
+      "description": "SettingsClient.tsx移除冗余currentLang狀態(獨立useState+useEffect)，直接使用lang狀態，消除雙狀態同步邏輯；useState初始化同時適配SSR安全讀取",
+      "file": "app/(dashboard)/settings/SettingsClient.tsx",
+      "completed_at": "2026-03-13T14:00:00.000Z"
+    }
+  ],
+  "known_issues": [
+    {
+      "id": "perf-landing-db-queries",
+      "category": "性能",
+      "description": "落地頁 getUserCount 和 getWaitlistCount 各自建立 DB 查詢，可合併為一次查詢",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "seo-og-image",
+      "category": "SEO",
+      "description": "OG image /og-image.png 尚未建立，社群分享預覽無圖片",
+      "priority": "P1",
+      "status": "completed"
+    },
+    {
+      "id": "security-translate-rate-limit",
+      "category": "安全",
+      "description": "翻譯 API 缺乏 per-user 速率限制（每日次數），高頻調用可能消耗大量 Anthropic API 費用",
+      "priority": "P1",
+      "status": "completed"
+    },
+    {
+      "id": "ux-loading-skeleton",
+      "category": "UX",
+      "description": "Dashboard 各頁缺少 loading.tsx skeleton，路由切換體驗較差",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "code-error-boundary",
+      "category": "代碼質量",
+      "description": "缺少 React Error Boundary，client 端 JS 錯誤會導致整頁白屏",
+      "priority": "P1",
+      "status": "completed"
+    },
+    {
+      "id": "perf-translate-no-cache",
+      "category": "性能",
+      "description": "翻譯 API 無快取機制，同一文本重複翻譯會重複調用 Anthropic API",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "ux-empty-states",
+      "category": "UX",
+      "description": "雷達/機會頁在無資料時缺少引導性空狀態 UI（目前只顯示空列表）",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "ops-log-structured",
+      "category": "運維",
+      "description": "API 路由的 console.error 缺少結構化格式（沒有 timestamp、userId、route 欄位），難以排查線上問題",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "security-http-headers",
+      "category": "安全",
+      "description": "next.config.ts 缺少 HTTP 安全 headers（X-Frame-Options、CSP 相關、X-Content-Type-Options 等），存在 clickjacking 風險",
+      "priority": "P1",
+      "status": "completed"
+    },
+    {
+      "id": "code-prose-dedup",
+      "category": "代碼質量",
+      "description": "PROSE Tailwind CSS class 字串在 opportunities/todolist/archive 三個頁面重複，應提取為共用常量",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "security-advisor-msg-limit",
+      "category": "安全",
+      "description": "advisor API message 缺乏長度限制，惡意用戶可傳入超長 message 消耗 Anthropic API token",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "security-hardcoded-token",
+      "category": "安全",
+      "description": "welcome-digest/route.ts 中 TELEGRAM_BOT_TOKEN 硬編碼明文 fallback，token 洩露風險",
+      "priority": "P0",
+      "status": "completed"
+    },
+    {
+      "id": "ops-logger-remaining-routes",
+      "category": "運維",
+      "description": "7條路由(scan/todolist/stats/opportunity/signals-stream/opp-action/waitlist)仍使用 console.error 而非結構化 logger",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "ux-trad-chinese-api-responses",
+      "category": "UX",
+      "description": "scan 和 opportunity API 返回消息中有簡體字（扫描已启动、机会识别已启动）",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "ux-trad-chinese-frontend",
+      "category": "UX",
+      "description": "control/todolist/opportunities 頁面前端殘留簡體字（扫描已启动、机会分析已启动、请针对...）",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "ux-zh-tw-locale",
+      "category": "UX",
+      "description": "toLocaleDateString 使用 zh-CN locale，與介面繁體中文不一致",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "ux-overseas-trad-chinese",
+      "category": "UX",
+      "description": "radar/page.tsx CATEGORY_LABELS overseas_trends 標籤殘留簡體「海外趋势」",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "security-invite-rate-limit",
+      "category": "安全",
+      "description": "invite/validate API 無速率限制，可暴力枚舉邀請碼",
+      "priority": "P1",
+      "status": "completed"
+    },
+    {
+      "id": "ops-logger-new-routes",
+      "category": "運維",
+      "description": "4條路由(notify/telegram/signals-bookmarks/bookmark/outcome)缺少結構化 logger 和錯誤邊界",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "code-advisor-dom-query",
+      "category": "代碼質量",
+      "description": "advisor/page.tsx 快捷問題使用 document.querySelector + setTimeout 的脆弱 DOM 操作",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "compliance-privacy-public-route",
+      "category": "合規",
+      "description": "/privacy 未加入 middleware.ts 公開路由，隱私政策頁需登錄後才能訪問（合規問題）",
+      "priority": "P0",
+      "status": "completed"
+    },
+    {
+      "id": "seo-sitemap-privacy",
+      "category": "SEO",
+      "description": "sitemap.ts 缺少 /privacy 頁面條目",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "code-remove-legacy-auth",
+      "category": "代碼質量",
+      "description": "lib/auth.ts + app/api/auth/login + app/api/auth/logout + app/login/page.tsx 為 Clerk 替代前的遺留死代碼，存在安全混淆風險",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "ops-trial-route-logger",
+      "category": "運維",
+      "description": "user/trial/route.ts 缺少 try/catch 和結構化 logger，出錯時無法排查",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "code-frontend-console-errors",
+      "category": "代碼質量",
+      "description": "6個前端頁面（todolist/opportunities/radar/archive/control/advisor）存在 console.error 調用，線上環境洩露堆棧信息",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "code-api-any-types",
+      "category": "代碼質量",
+      "description": "opportunity/route.ts 和 advisor/route.ts 中多處 as any 類型斷言，降低類型安全性",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "ux-opportunities-simplified-chinese",
+      "category": "UX",
+      "description": "opportunities/page.tsx 中 3 處簡體殘留：「条信号」/「无信号数据」/「加载中…」",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "ux-lang-flag-tw",
+      "category": "UX",
+      "description": "settings/SettingsClient.tsx 和 control/page.tsx 語言切換器用 🇨🇳 旗幟，與繁體中文產品不符",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "code-notify-telegram-any-type",
+      "category": "代碼質量",
+      "description": "notify/telegram/route.ts DB 查詢結果仍用 as any，降低類型安全性",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "ops-opp-signals-route-safety",
+      "category": "運維",
+      "description": "opportunities/[id]/signals/route.ts 缺少 try/catch + logger，出錯時無法排查；DB 結果類型 as any",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "seo-json-ld",
+      "category": "SEO",
+      "description": "landing page 缺少 JSON-LD 結構化資料，搜尋引擎無法識別應用類型，影響富媒體搜尋結果",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "ops-opportunity-push-logger",
+      "category": "運維",
+      "description": "opportunity/route.ts 的 setTimeout 推送通知完全靜默（catch {} 吞掉所有錯誤），無法排查推送失敗",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "code-as-any-server-pages",
+      "category": "代碼質量",
+      "description": "layout.tsx/expired/page.tsx/settings/page.tsx/SettingsClient.tsx/invite/validate 存在 as any 類型斷言",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "ops-settings-route-logger",
+      "category": "運維",
+      "description": "user/settings/route.ts GET/POST 缺少 try/catch 和結構化 logger",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "ops-layout-migration-logger",
+      "category": "運維",
+      "description": "app/layout.tsx DB migration 使用 console.error，不符合結構化日誌規範",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "perf-radar-search-deferred",
+      "category": "性能",
+      "description": "radar/page.tsx 搜尋關鍵字過濾在每次 keystroke 同步阻塞大列表渲染",
+      "priority": "P2",
+      "status": "completed"
+    },
+    {
+      "id": "perf-api-cache-control",
+      "category": "性能",
+      "description": "/api/stats 和 /api/signals 缺少 Cache-Control 頭，瀏覽器無法快取重複請求",
+      "priority": "P2",
+      "status": "completed"
+    }
+  ]
+}

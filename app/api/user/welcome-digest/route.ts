@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server"
 import { auth } from "@clerk/nextjs/server"
 import { getDb } from "@/lib/db"
+import { logger } from "@/lib/logger"
 
-const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "***REMOVED***"
+// In-memory rate limit: max 1 welcome digest per user per 24 hours
+const sentAt = new Map<string, number>();
 
 interface OppRow {
   id: number
@@ -20,6 +22,12 @@ interface OppEmbed {
 export async function POST() {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  // Rate limit: max once per 24 hours per user
+  const lastSent = sentAt.get(userId) ?? 0;
+  if (Date.now() - lastSent < 24 * 60 * 60 * 1000) {
+    return NextResponse.json({ ok: false, reason: "rate_limited" });
+  }
 
   const db = getDb()
 
@@ -77,8 +85,14 @@ export async function POST() {
 
   const text = lines.join("\n")
 
+  const token = process.env.TELEGRAM_BOT_TOKEN
+  if (!token) {
+    logger.error("welcome-digest/POST", "TELEGRAM_BOT_TOKEN not configured", { userId })
+    return NextResponse.json({ ok: false, reason: "token_not_configured" })
+  }
+
   try {
-    const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -88,11 +102,16 @@ export async function POST() {
       }),
     })
     const data = await res.json()
-    if (!data.ok) console.error("[WelcomeDigest] Telegram error:", data)
+    if (!data.ok) {
+      logger.error("welcome-digest/POST", "Telegram API error", { userId, telegramError: data })
+    } else {
+      // Mark as sent (rate limit)
+      sentAt.set(userId, Date.now());
+    }
     return NextResponse.json({ ok: data.ok })
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e)
-    console.error("[WelcomeDigest] fetch error:", msg)
+    logger.error("welcome-digest/POST", "Telegram fetch failed", { userId, error: msg })
     return NextResponse.json({ ok: false })
   }
 }

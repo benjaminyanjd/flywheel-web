@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 export async function GET() {
   try {
@@ -21,7 +22,7 @@ export async function GET() {
 
     return NextResponse.json({ todos });
   } catch (err) {
-    console.error("Failed to fetch todo list:", err);
+    logger.error("todolist/GET", "Failed to fetch todo list", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json({ error: "Failed to fetch todo list" }, { status: 500 });
   }
 }

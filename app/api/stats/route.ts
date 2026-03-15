@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
 import { execSync } from "child_process";
+import { logger } from "@/lib/logger";
 
 function checkBotStatus(): "online" | "offline" {
   try {
@@ -32,6 +33,19 @@ export async function GET() {
          WHERE date(created_at) = date('now')`
       )
       .get() as { count: number };
+
+    const categoryCountRows = db
+      .prepare(
+        `SELECT category, COUNT(*) as count FROM signals
+         WHERE date(created_at) = date('now')
+         GROUP BY category`
+      )
+      .all() as { category: string; count: number }[];
+
+    const categoryCounts: Record<string, number> = {};
+    for (const row of categoryCountRows) {
+      categoryCounts[row.category] = row.count;
+    }
 
     const sourceRows = db
       .prepare(
@@ -77,15 +91,21 @@ export async function GET() {
 
     return NextResponse.json({
       todaySignals: todayCount.count,
+      categoryCounts,
       totalSignals: totalSignals.count,
       totalOpportunities: totalOpportunities.count,
       cost,
       signalsBySource,
       opportunityStatusCounts,
       botStatus,
+    }, {
+      headers: {
+        // Stats can be slightly stale — cache 30s, allow stale for 2m while revalidating
+        "Cache-Control": "private, max-age=30, stale-while-revalidate=120",
+      },
     });
   } catch (err) {
-    console.error("Failed to fetch stats:", err);
+    logger.error("stats/GET", "Failed to fetch stats", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json({ error: "Failed to fetch stats" }, { status: 500 });
   }
 }

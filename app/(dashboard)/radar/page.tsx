@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, Suspense, useCallback } from "react";
+import { useEffect, useRef, useState, Suspense, useCallback, useDeferredValue, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { useT } from "@/lib/i18n";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FlywheelLogo } from "@/components/flywheel-logo";
+import { useToast } from "@/components/toast";
 
 interface Signal {
   id: number;
@@ -22,15 +23,17 @@ interface Signal {
 }
 
 function relativeTime(dateStr: string, lang: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
+  // SQLite stores UTC without Z suffix; append Z so browsers parse as UTC
+  const normalized = dateStr.endsWith("Z") || dateStr.includes("+") ? dateStr : dateStr + "Z";
+  const diff = Date.now() - new Date(normalized).getTime();
   const mins = Math.floor(diff / 60000);
   if (lang === "zh") {
-    if (mins < 1) return "刚刚";
-    if (mins < 60) return `${mins}分钟前`;
+    if (mins < 1) return "剛剛";
+    if (mins < 60) return `${mins} 分鐘前`;
     const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours}小时前`;
+    if (hours < 24) return `${hours} 小時前`;
     const days = Math.floor(hours / 24);
-    return `${days}天前`;
+    return `${days} 天前`;
   } else {
     if (mins < 1) return "just now";
     if (mins < 60) return `${mins}m ago`;
@@ -47,12 +50,24 @@ function heatEmoji(score: number): string {
   return "💤";
 }
 
+function heatLabel(score: number, lang: string): string {
+  const labels = {
+    zh: { hot: "熱門", watch: "關注", normal: "一般" },
+    en: { hot: "Hot", watch: "Notable", normal: "Normal" },
+  };
+  const l = labels[lang as "zh" | "en"] ?? labels.en;
+  if (score >= 5) return l.hot;
+  if (score >= 3) return l.watch;
+  return l.normal;
+}
+
 function sourceBadgeStyle(source: string): { cls: string; label: string } {
   const map: Record<string, { cls: string; label: string }> = {
     reddit:          { cls: "bg-orange-500/15 text-orange-400 border border-orange-500/30", label: "R Reddit" },
     hacker_news:     { cls: "bg-red-500/15 text-red-400 border border-red-500/30",          label: "Y HN" },
     rss:             { cls: "bg-blue-500/15 text-blue-400 border border-blue-500/30",        label: "◉ RSS" },
-    kol_tweet:       { cls: "bg-slate-400/15 text-slate-300 border border-slate-400/30",     label: "✕ KOL" },
+    x_kol:           { cls: "bg-slate-400/15 text-slate-300 border border-slate-400/30",     label: "✕ KOL" },
+    alpha_rising:    { cls: "bg-rose-500/15 text-rose-400 border border-rose-500/30",        label: "🚀 Rising" },
     github_trending: { cls: "bg-purple-500/15 text-purple-400 border border-purple-500/30", label: "⬡ GitHub" },
   }
   return map[source] || { cls: "bg-slate-600/20 text-slate-400 border border-slate-600/30", label: source }
@@ -68,22 +83,39 @@ const CATEGORY_LABELS: Record<string, { zh: string; en: string }> = {
   ai_tech:         { zh: "AI 科技",  en: "AI Tech" },
   crypto_policy:   { zh: "加密政策", en: "Crypto" },
   new_tools:       { zh: "新工具",   en: "New Tools" },
-  overseas_trends: { zh: "海外趋势", en: "Overseas" },
+  overseas_trends: { zh: "海外趨勢", en: "Overseas" },
   x_kol:           { zh: "KOL",      en: "KOL" },
+  alpha_rising:    { zh: "KOL 崛起", en: "KOL Rising" },
+};
+
+// Map user_focus values to signal categories
+const FOCUS_TO_CATEGORY: Record<string, string[]> = {
+  ai: ["ai_tech"],
+  crypto: ["crypto_policy"],
+  saas: ["new_tools"],
+  overseas: ["overseas_trends"],
 };
 
 function RadarContent() {
   const searchParams = useSearchParams();
   const activeCategory = searchParams.get("category") ?? "all";
   const [signals, setSignals] = useState<Signal[]>([]);
+  const [loading, setLoading] = useState(true);
   const [newIds, setNewIds] = useState<Set<number>>(new Set());
   const [heatFilter, setHeatFilter] = useState<"all" | "high" | "mid" | "low">("all");
+  const [keyword, setKeyword] = useState("");
+  const [preferredCategories, setPreferredCategories] = useState<Set<string>>(new Set());
   const { t, lang } = useT();
+  const toast = useToast();
   const [translations, setTranslations] = useState<Record<number, { title: string; description: string }>>({});
   const [translating, setTranslating] = useState(false);
+  const prevTranslating = useRef(false);
   const eventSourceRef = useRef<EventSource | null>(null);
   const [bookmarks, setBookmarks] = useState<Set<number>>(new Set());
+  const [copiedId, setCopiedId] = useState<number | null>(null);
   const scrollKey = "scroll_radar";
+  // Defer keyword filtering to avoid blocking keystrokes
+  const deferredKeyword = useDeferredValue(keyword);
 
   // Load from localStorage cache on mount
   useEffect(() => {
@@ -93,21 +125,28 @@ function RadarContent() {
     } catch {}
   }, []);
 
-  // lang is managed by useT() hook above
+  // Toast for translation status
+  useEffect(() => {
+    if (translating && !prevTranslating.current) {
+      toast(t("radar_translating"), "info");
+    }
+    if (!translating && prevTranslating.current) {
+      toast(t("radar_translate_done"), "success");
+    }
+    prevTranslating.current = translating;
+  }, [translating, toast]);
 
   const translateSignals = useCallback(async (toTranslate: Signal[]) => {
     if (!toTranslate.length) return;
     setTranslating(true);
     try {
-      // Translate titles + descriptions in a single batched request
-      const BATCH = 20;
+      const BATCH = 9; // titles+descriptions per signal = 2 texts each, max 18 per API call
       const allTranslated: Record<number, { title: string; description: string }> = {};
       for (let i = 0; i < toTranslate.length; i += BATCH) {
         const batch = toTranslate.slice(i, i + BATCH);
         const titles = batch.map((s) => s.title);
         const descriptions = batch.map((s) => s.description || "");
-        // Combine titles and descriptions into one array to save API calls
-        const allTexts = [...titles, ...descriptions];
+        const allTexts = [...titles, ...descriptions]; // 9+9=18, within limit
         const res = await fetch("/api/translate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -119,7 +158,6 @@ function RadarContent() {
             description: res.translations?.[j + batch.length] || s.description,
           };
         });
-        // Update state progressively so user sees results sooner
         setTranslations((prev) => {
           const next = { ...prev, ...allTranslated };
           try { localStorage.setItem("flywheel-tr-cache", JSON.stringify(next)); } catch {}
@@ -127,7 +165,7 @@ function RadarContent() {
         });
       }
     } catch (e) {
-      console.error("translateSignals error:", e);
+      // translation failed silently; signals remain untranslated
     } finally {
       setTranslating(false);
     }
@@ -149,15 +187,34 @@ function RadarContent() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  // Load user preferences for category highlighting
   useEffect(() => {
-    // Load global recent signals (all categories)
+    fetch("/api/user/settings")
+      .then(r => r.json())
+      .then(data => {
+        if (data?.user_focus) {
+          const focusValues = data.user_focus.split(",").map((f: string) => f.trim());
+          const cats = new Set<string>();
+          for (const f of focusValues) {
+            const mapped = FOCUS_TO_CATEGORY[f];
+            if (mapped) mapped.forEach(c => cats.add(c));
+            if (f === "all") Object.values(FOCUS_TO_CATEGORY).flat().forEach(c => cats.add(c));
+          }
+          setPreferredCategories(cats);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
     fetch("/api/signals?limit=100")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) setSignals(data);
         else if (data.signals) setSignals(data.signals);
       })
-      .catch(console.error);
+      .catch(() => {/* loading failed, UI shows empty state */})
+      .finally(() => setLoading(false));
     // Load bookmarks
     fetch("/api/signals/bookmarks").then(r => r.json()).then((ids: number[]) => setBookmarks(new Set(ids))).catch(() => {});
   }, []);
@@ -175,7 +232,7 @@ function RadarContent() {
           return newOnes.length > 0 ? [...newOnes, ...prev] : prev;
         });
       })
-      .catch(console.error);
+      .catch(() => {/* category fetch failed silently */});
   }, [activeCategory]);
 
   useEffect(() => {
@@ -215,15 +272,52 @@ function RadarContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lang, signals]);
 
-  const filtered = signals.filter((s) => {
-    // Filter out signals with null/empty title
-    if (!s.title || s.title === "null") return false;
-    if (activeCategory !== "all" && s.category !== activeCategory) return false;
-    if (heatFilter === "high") return s.heat_score >= 5;
-    if (heatFilter === "mid") return s.heat_score >= 3 && s.heat_score < 5;
-    if (heatFilter === "low") return s.heat_score < 3;
-    return true;
-  });
+  // useMemo avoids re-filtering on unrelated state changes (e.g. copiedId, bookmarks UI)
+  const filtered = useMemo(() => {
+    const base = signals.filter((s) => {
+      if (!s.title || s.title === "null") return false;
+      if (activeCategory !== "all" && s.category !== activeCategory) return false;
+      if (heatFilter === "high") return s.heat_score >= 5;
+      if (heatFilter === "mid") return s.heat_score >= 3;
+      if (heatFilter === "low") return s.heat_score < 3;
+      return true;
+    }).filter((s) => {
+      if (!deferredKeyword.trim()) return true;
+      const kw = deferredKeyword.trim().toLowerCase();
+      const origTitle = s.title || "";
+      const origDesc = s.description || "";
+      const transTitle = translations[s.id]?.title || "";
+      const transDesc = translations[s.id]?.description || "";
+      return (origTitle + origDesc + transTitle + transDesc).toLowerCase().includes(kw);
+    });
+    // Sort preferred categories first when viewing "all"
+    if (activeCategory === "all" && preferredCategories.size > 0) {
+      base.sort((a, b) => {
+        const aPref = preferredCategories.has(a.category) ? 0 : 1;
+        const bPref = preferredCategories.has(b.category) ? 0 : 1;
+        return aPref - bPref;
+      });
+    }
+    return base;
+  }, [signals, activeCategory, heatFilter, deferredKeyword, lang, translations, preferredCategories]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col h-full bg-slate-900 p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <h1 className="text-xl font-bold text-slate-100">{t("radar_title")}</h1>
+        </div>
+        <div className="space-y-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-slate-800 border border-slate-700 rounded-lg p-5 animate-pulse">
+              <div className="h-4 bg-slate-700 rounded w-2/3 mb-3" />
+              <div className="h-3 bg-slate-700 rounded w-full" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full bg-slate-900 p-6">
@@ -233,21 +327,24 @@ function RadarContent() {
           {filtered.length}
         </span>
         {activeCategory !== "all" && CATEGORY_LABELS[activeCategory] && (
-          <span className="text-xs text-slate-500 border border-slate-700 px-2 py-0.5 rounded">
-            {lang === "zh" ? CATEGORY_LABELS[activeCategory].zh : CATEGORY_LABELS[activeCategory].en}
+          <span className={`text-xs border px-2 py-0.5 rounded ${preferredCategories.has(activeCategory) ? "text-amber-400 border-amber-500/50" : "text-slate-500 border-slate-700"}`}>
+            {preferredCategories.has(activeCategory) ? "★ " : ""}{lang === "zh" ? CATEGORY_LABELS[activeCategory].zh : CATEGORY_LABELS[activeCategory].en}
           </span>
         )}
         {/* Heat score filter tabs */}
         <div className="flex items-center gap-1 ml-2 bg-slate-800 border border-slate-700 rounded-lg p-1 overflow-x-auto">
           {([
-            { key: "all", label: lang === "zh" ? "全部" : "All" },
-            { key: "high", label: "🔥 ≥5" },
-            { key: "mid",  label: "⚡ 3-5" },
-            { key: "low",  label: "💤 <3" },
+            { key: "all", label: t("common_all"), ariaLabel: t("common_all") },
+            { key: "high", label: "🔥 ≥5", ariaLabel: "高熱度 (≥5)" },
+            { key: "mid",  label: "⚡ ≥3", ariaLabel: "值得關注 (≥3)" },
+            { key: "low",  label: "💤 <3", ariaLabel: "低熱度 (<3)" },
           ] as const).map((tab) => (
             <button
               key={tab.key}
+              type="button"
               onClick={() => setHeatFilter(tab.key)}
+              aria-label={tab.ariaLabel}
+              aria-pressed={heatFilter === tab.key}
               className={`text-xs px-3 py-1 rounded transition-colors ${
                 heatFilter === tab.key
                   ? "bg-slate-600 text-slate-100 font-semibold"
@@ -258,31 +355,39 @@ function RadarContent() {
             </button>
           ))}
         </div>
-        {translating && (
-          <span className="text-xs text-slate-500 ml-auto flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />{t("radar_translating")}
-          </span>
-        )}
+        {/* Keyword search */}
+        <input
+          type="text"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          placeholder={t("radar_search")}
+          aria-label={t("radar_search")}
+          className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-1.5 text-sm text-slate-200 placeholder-slate-500 w-48 focus:outline-none focus:border-slate-400"
+        />
       </div>
 
       {/* Today's summary */}
       {(() => {
-        const today = new Date().toLocaleDateString("zh-CN");
-        const todayCount = signals.filter(s => new Date(s.created_at).toLocaleDateString("zh-CN") === today).length;
-        const hotCount = signals.filter(s => s.heat_score >= 3).length;
+        const today = new Date().toLocaleDateString("zh-TW");
+        // Use filtered (current category view) for stats, not raw signals
+        const todayCount = filtered.filter(s => {
+          const d = s.created_at.endsWith("Z") || s.created_at.includes("+") ? s.created_at : s.created_at + "Z";
+          return new Date(d).toLocaleDateString("zh-TW") === today;
+        }).length;
+        const hotCount = filtered.filter(s => s.heat_score >= 3).length;
         if (todayCount === 0 && hotCount === 0) return null;
         return (
           <div className="flex items-center gap-3 mb-3 text-sm text-slate-400">
-            {todayCount > 0 && <span>📥 今日新增 <span className="text-slate-200 font-medium">{todayCount}</span> 條</span>}
+            {todayCount > 0 && <span>{t("radar_today_new")} <span className="text-slate-200 font-medium">{todayCount}</span> {t("radar_today_unit")}</span>}
             {hotCount > 0 && (
               <button
                 onClick={() => {
-                  setHeatFilter("high");
+                  setHeatFilter("mid");
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className="text-orange-400 hover:text-orange-300 transition-colors"
               >
-                🔥 <span className="font-medium">{hotCount}</span> 條值得關注 →
+                🔥 <span className="font-medium">{hotCount}</span> {t("radar_worth")}
               </button>
             )}
           </div>
@@ -323,20 +428,23 @@ function RadarContent() {
                         : signal.title}
                     </a>
                   </div>
-                  <p className="text-slate-400 text-sm line-clamp-2 mt-1.5">
-                    {lang === "zh" && translations[signal.id]
-                      ? translations[signal.id].description
-                      : signal.description}
-                  </p>
+                  {/* Hide description for KOL sources to avoid duplication */}
+                  {signal.source !== "x_kol" && signal.source !== "alpha_rising" && (
+                    <p className="text-slate-400 text-sm line-clamp-2 mt-1.5">
+                      {lang === "zh" && translations[signal.id]
+                        ? translations[signal.id].description
+                        : signal.description}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-col items-end gap-1.5 shrink-0">
                   <div className="flex items-center gap-1">
                     <Badge className={`${heatScoreBg(signal.heat_score)} text-xs`}>
                       <span
-                        title={`熱度 ${signal.heat_score.toFixed(1)} / 5.0（基於傳播速度 + 關鍵詞密度，≥3 值得關注）`}
+                        title={lang === "zh" ? `熱度 ${signal.heat_score.toFixed(1)} / 5.0（基於傳播速度 + 關鍵詞密度，≥3 值得關注）` : `Heat ${signal.heat_score.toFixed(1)} / 5.0 (based on spread velocity + keyword density, ≥3 worth watching)`}
                         className="cursor-help"
                       >
-                        {signal.heat_score.toFixed(1)}
+                        {heatLabel(signal.heat_score, lang)}
                       </span>
                     </Badge>
                     {signal.url && (
@@ -346,23 +454,53 @@ function RadarContent() {
                         rel="noopener noreferrer"
                         onClick={e => e.stopPropagation()}
                         className="text-slate-500 hover:text-slate-300 text-xs ml-1 shrink-0"
-                        title="查看原文"
+                        title={t("radar_view_original")}
                       >↗</a>
                     )}
+                    {/* Copy button */}
                     <button
+                      type="button"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        const text = `${signal.title}\n${signal.url}`;
+                        await navigator.clipboard.writeText(text);
+                        setCopiedId(signal.id);
+                        setTimeout(() => setCopiedId((prev) => prev === signal.id ? null : prev), 1500);
+                      }}
+                      className="text-slate-500 hover:text-slate-300 text-xs ml-1 shrink-0"
+                      title={t("radar_copy")}
+                      aria-label={t("radar_copy")}
+                    >
+                      {copiedId === signal.id ? "✓" : "📋"}
+                    </button>
+                    <button
+                      type="button"
                       onClick={async (e) => {
                         e.stopPropagation()
                         const isBookmarked = bookmarks.has(signal.id)
+                        // Optimistically update UI
                         if (isBookmarked) {
-                          await fetch(`/api/signals/${signal.id}/bookmark`, { method: "DELETE" })
                           setBookmarks(prev => { const s = new Set(prev); s.delete(signal.id); return s })
                         } else {
-                          await fetch(`/api/signals/${signal.id}/bookmark`, { method: "POST" })
                           setBookmarks(prev => new Set(prev).add(signal.id))
+                        }
+                        try {
+                          const method = isBookmarked ? "DELETE" : "POST"
+                          const res = await fetch(`/api/signals/${signal.id}/bookmark`, { method })
+                          if (!res.ok) throw new Error("bookmark failed")
+                        } catch {
+                          // Revert optimistic update on failure
+                          if (isBookmarked) {
+                            setBookmarks(prev => new Set(prev).add(signal.id))
+                          } else {
+                            setBookmarks(prev => { const s = new Set(prev); s.delete(signal.id); return s })
+                          }
                         }
                       }}
                       className={`text-base transition-colors ml-1 shrink-0 ${bookmarks.has(signal.id) ? "text-amber-400" : "text-slate-600 hover:text-slate-400"}`}
-                      title={bookmarks.has(signal.id) ? "取消收藏" : "收藏"}
+                      title={bookmarks.has(signal.id) ? t("radar_unbookmark") : t("radar_bookmark")}
+                      aria-label={bookmarks.has(signal.id) ? t("radar_unbookmark") : t("radar_bookmark")}
+                      aria-pressed={bookmarks.has(signal.id)}
                     >
                       🔖
                     </button>
@@ -374,16 +512,24 @@ function RadarContent() {
               </div>
             </Card>
           ))}
-          {filtered.length === 0 && (
+          {filtered.length === 0 && signals.length > 0 && (
+            <div className="flex flex-col items-center justify-center py-20 text-slate-500">
+              <p className="text-lg font-medium text-slate-400">{t("radar_empty_cat")}</p>
+              <p className="text-sm mt-1">{t("radar_empty_cat_desc")}</p>
+            </div>
+          )}
+          {filtered.length === 0 && signals.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 text-slate-500">
               <FlywheelLogo size={48} className="text-amber-400/40 animate-[spin_8s_linear_infinite] mb-4" />
-              <p className="text-lg font-medium text-slate-400">信號採集中</p>
-              <p className="text-sm mt-1">每 30 分鐘掃描一次，早 8 點見</p>
+              <p className="text-lg font-medium text-slate-400">{t("radar_empty_all")}</p>
+              <p className="text-sm mt-1">{t("radar_empty_all_desc")}</p>
               <button
-                onClick={() => { fetch("/api/scan", { method: "POST" }); }}
+                type="button"
+                onClick={() => { fetch("/api/scan", { method: "POST" }).catch(() => {/* scan trigger failed, ignore */}); }}
                 className="text-xs text-amber-400/60 hover:text-amber-400 underline mt-4"
+                aria-label={t("radar_manual_scan")}
               >
-                手動觸發掃描
+                {t("radar_manual_scan")}
               </button>
             </div>
           )}

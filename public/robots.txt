@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Allow: /privacy
+Disallow: /api/
+Disallow: /sign-in
+Disallow: /sign-up
+Disallow: /onboarding
+Disallow: /expired
+Disallow: /og-image
+
+Sitemap: https://flywheelsea.club/sitemap.xml

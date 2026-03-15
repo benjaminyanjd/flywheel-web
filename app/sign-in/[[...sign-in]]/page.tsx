@@ -1,65 +1,91 @@
+"use client";
 import { SignIn } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 import { FlywheelLogo } from "@/components/flywheel-logo";
+import { useT } from "@/lib/i18n";
 
 export default function SignInPage() {
+  const { t } = useT();
+
+  const features = [
+    { title: t("auth_f1_title"), desc: t("auth_f1_desc") },
+    { title: t("auth_f2_title"), desc: t("auth_f2_desc") },
+    { title: t("auth_f3_title"), desc: t("auth_f3_desc") },
+  ];
+
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col md:flex-row">
-      {/* Left: Product intro */}
-      <div className="flex flex-col justify-center px-8 py-10 md:px-16 md:w-1/2 border-b md:border-b-0 md:border-r border-slate-800">
-        <div className="max-w-md mx-auto w-full">
-          {/* Logo + title: always visible */}
-          <div className="flex items-center gap-3 mb-4">
-            <FlywheelLogo size={28} className="text-amber-400 animate-[spin_8s_linear_infinite]" />
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6 gap-6">
+      {/* Left: Product intro - no card, just text */}
+      <div className="hidden md:flex flex-col justify-between w-[420px] min-h-[540px] p-6">
+        <div>
+          {/* Logo */}
+          <div className="flex items-center gap-3 mb-10">
+            <FlywheelLogo size={32} className="text-amber-400 animate-[spin_8s_linear_infinite]" />
             <div>
-              <h1 className="text-xl font-bold text-slate-100">Flywheel</h1>
-              <p className="text-slate-400 text-xs">AI 市場情報助理</p>
+              <h1 className="text-2xl font-bold text-slate-100">Flywheel</h1>
+              <p className="text-slate-500 text-sm">{t("auth_subtitle")}</p>
             </div>
           </div>
 
-          {/* Main headline: always visible */}
-          <h2 className="text-2xl font-bold text-slate-100 mb-3 leading-tight">
-            每天早 8 點<br/>行動清單直達 Telegram
+          {/* Main headline */}
+          <h2 className="text-4xl font-bold text-slate-100 mb-4 leading-tight">
+            {t("auth_signin_h_pre")}<span className="text-amber-400">8</span>{t("auth_signin_h_mid")}<br/>{t("auth_signin_h_line2")}<br/>{t("auth_signin_h_line3")}
           </h2>
-          <p className="text-slate-400 text-sm mb-6 leading-relaxed">
-            每天早 8 點，把全球信號提煉成你今天可以行動的 3–5 件事。
+          <p className="text-amber-400/80 text-base mb-10 leading-relaxed">
+            {t("auth_signin_desc")}
           </p>
 
-          {/* Feature list: md+ only */}
-          <div className="hidden md:block space-y-4">
-            {[
-              { icon: "📡", title: "全源信號掃描", desc: "Reddit · HN · KOL · RSS · GitHub，每天 350+ 條信號" },
-              { icon: "💎", title: "AI 機會識別", desc: "自動從噪音中提煉高置信度機會" },
-              { icon: "📋", title: "落地方案生成", desc: "每條機會附帶第一步怎麼做" },
-            ].map(item => (
-              <div key={item.title} className="flex gap-3">
-                <span className="text-xl mt-0.5">{item.icon}</span>
+          {/* Feature list */}
+          <div className="space-y-5">
+            {features.map(item => (
+              <div key={item.title} className="flex gap-3 items-start">
+                <span className="w-2 h-2 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />
                 <div>
-                  <p className="text-slate-200 font-medium text-sm">{item.title}</p>
-                  <p className="text-slate-500 text-xs">{item.desc}</p>
+                  <p className="text-slate-200 font-semibold text-base">{item.title}</p>
+                  <p className="text-slate-500 text-sm">{item.desc}</p>
                 </div>
               </div>
             ))}
           </div>
+        </div>
 
-          {/* Bottom tags: always visible */}
-          <div className="mt-6 flex items-center gap-2 text-xs text-slate-600 flex-wrap">
-            <span>🔐 僅限邀請碼用戶</span>
-            <span>·</span>
-            <span>7 天免費試用</span>
-          </div>
+        {/* Bottom tags */}
+        <div className="flex items-center gap-2 text-sm text-slate-500 mt-8">
+          <a href="/" className="underline underline-offset-4 hover:text-slate-300 transition-colors">
+            {t("auth_invite_tag")}
+          </a>
         </div>
       </div>
 
       {/* Right: Clerk sign-in */}
-      <div className="flex flex-1 items-center justify-center p-8">
-        <SignIn
-          appearance={{
-            baseTheme: undefined,
-            variables: { colorBackground: "#1e293b", colorText: "#f1f5f9", colorPrimary: "#6366f1" },
-          }}
-          fallbackRedirectUrl="/radar"
-        />
-      </div>
+      <SignIn
+        appearance={{
+          baseTheme: dark,
+          variables: {
+            colorPrimary: "#f59e0b",
+            colorBackground: "#334155",
+            colorText: "#f1f5f9",
+            colorTextSecondary: "#e2e8f0",
+            colorInputBackground: "#1e293b",
+            colorInputText: "#f1f5f9",
+            colorNeutral: "#f1f5f9",
+          },
+          elements: {
+            headerTitle: { color: "#f1f5f9" },
+            headerSubtitle: { color: "#cbd5e1" },
+            formFieldLabel: { color: "#cbd5e1" },
+            socialButtonsBlockButton: { borderColor: "#64748b" },
+            dividerText: { color: "#94a3b8", opacity: "1" },
+            dividerLine: { backgroundColor: "#475569" },
+            footerActionText: { color: "#cbd5e1", opacity: "1" },
+            footerAction: { opacity: "1" },
+            footer: { opacity: "1" },
+            footerActionLink: { color: "#f59e0b" },
+            badge: { opacity: "1", color: "#64748b" },
+          }
+        }}
+        fallbackRedirectUrl="/radar"
+      />
     </div>
   );
 }

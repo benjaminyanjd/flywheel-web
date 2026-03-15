@@ -7,6 +7,7 @@ import { useT } from "@/lib/i18n";
 import { Separator } from "@/components/ui/separator";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { parseEmbed, type EmbedData } from "@/lib/parse-embed";
 
 interface ArchiveItem {
   id: number;
@@ -17,14 +18,6 @@ interface ArchiveItem {
   action: string;
   created_at: string;
   advisor_notes?: string | null;
-}
-
-interface EmbedData {
-  why_now?: string;
-  profit_logic?: string;
-  actions?: string[];
-  risks?: string[];
-  confidence?: number;
 }
 
 type StatusFilter = "all" | "todo" | "bias" | "action" | "missed" | "done" | "cancel";
@@ -47,23 +40,8 @@ const WINDOW_ICON: Record<string, string> = {
 
 // TABS generated inside component for i18n support
 
-function parseEmbed(raw: string): EmbedData | null {
-  try {
-    const d = typeof raw === "string" ? JSON.parse(raw) : raw;
-    return {
-      why_now: d.why_now || "",
-      profit_logic: d.profit_logic || "",
-      actions: Array.isArray(d.actions) ? d.actions : [],
-      risks: Array.isArray(d.risks) ? d.risks : [],
-      confidence: typeof d.confidence === "number" ? d.confidence : 0,
-    };
-  } catch {
-    return null;
-  }
-}
-
 function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("zh-CN", { month: "2-digit", day: "2-digit" });
+  return new Date(dateStr).toLocaleDateString("zh-TW", { month: "2-digit", day: "2-digit" });
 }
 
 export default function ArchivePage() {
@@ -100,7 +78,7 @@ export default function ArchivePage() {
         else if (data.items) setItems(data.items);
         else if (data.archive) setItems(data.archive);
       })
-      .catch(console.error)
+      .catch(() => {/* loading failed, UI shows empty state */})
       .finally(() => setLoading(false));
   }, []);
 
@@ -136,7 +114,7 @@ export default function ArchivePage() {
         <div className="flex items-center gap-3">
           <input
             type="text"
-            placeholder="搜索..."
+            placeholder={t("archive_search")}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-36 md:w-48"

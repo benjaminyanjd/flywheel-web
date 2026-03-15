@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
 import { spawn } from "child_process";
+import { logger } from "@/lib/logger";
 
 const COOLDOWN_SECONDS = 30 * 60; // 30 minutes
 
@@ -45,18 +46,24 @@ export async function POST() {
            WHERE created_at >= datetime("now", "-5 minutes")
            AND action = "pending"
            ORDER BY opp_rank DESC LIMIT 3`
-        ).all() as any[];
+        ).all() as { opp_title: string; opp_embed: string }[];
 
-        if (opps.length === 0) return;
+        if (opps.length === 0) {
+          logger.info("opportunity/push", "No new opportunities found for push notification");
+          return;
+        }
 
         const users = db2.prepare(
           `SELECT telegram_chat_id FROM user_settings
            WHERE telegram_chat_id IS NOT NULL AND telegram_chat_id != ""`
-        ).all() as any[];
+        ).all() as { telegram_chat_id: string }[];
 
-        if (users.length === 0) return;
+        if (users.length === 0) {
+          logger.info("opportunity/push", "No users with Telegram bound, skipping push");
+          return;
+        }
 
-        const lines = opps.map((o: any) => {
+        const lines = opps.map((o) => {
           let conf = "";
           try { conf = `  置信度：${JSON.parse(o.opp_embed).confidence}%`; } catch {}
           return `💎 *${o.opp_title}*${conf}`;
@@ -64,15 +71,27 @@ export async function POST() {
         const msg = `🔔 *Flywheel 新機會*\n\n${lines.join("\n\n")}\n\n🔗 [查看詳情](https://flywheelsea.club/opportunities)`;
 
         const token = process.env.TELEGRAM_BOT_TOKEN;
-        if (!token) return;
-        for (const user of users) {
-          await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ chat_id: user.telegram_chat_id, text: msg, parse_mode: "Markdown", disable_web_page_preview: true }),
-          }).catch(() => {});
+        if (!token) {
+          logger.warn("opportunity/push", "TELEGRAM_BOT_TOKEN not configured, skipping push");
+          return;
         }
-      } catch {}
+        let pushed = 0;
+        for (const user of users) {
+          try {
+            const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ chat_id: user.telegram_chat_id, text: msg, parse_mode: "Markdown", disable_web_page_preview: true }),
+            });
+            if (res.ok) pushed++;
+          } catch (e) {
+            logger.warn("opportunity/push", "Failed to push to user", { chatId: user.telegram_chat_id, error: e instanceof Error ? e.message : String(e) });
+          }
+        }
+        logger.info("opportunity/push", "Push notifications sent", { total: users.length, succeeded: pushed });
+      } catch (e) {
+        logger.error("opportunity/push", "Push notification batch failed", { error: e instanceof Error ? e.message : String(e) });
+      }
     }, 30000);
 
     // Update last_scan_at
@@ -81,9 +100,9 @@ export async function POST() {
        ON CONFLICT(user_id) DO UPDATE SET last_scan_at = datetime('now')`
     ).run(userId);
 
-    return NextResponse.json({ status: "started", message: "机会识别已启动，完成后刷新机会页面查看结果" });
+    return NextResponse.json({ status: "started", message: "機會識別已啟動，完成後重新整理機會頁面查看結果" });
   } catch (err) {
-    console.error("Opportunity error:", err);
+    logger.error("opportunity/POST", "Opportunity analysis failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json({ error: "Opportunity analysis failed" }, { status: 500 });
   }
 }

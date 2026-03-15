@@ -40,7 +40,7 @@ export default function ControlPage() {
     fetch("/api/stats")
       .then((res) => res.json())
       .then((data) => setStats(data))
-      .catch(console.error)
+      .catch(() => {/* loading failed, UI shows error state */})
       .finally(() => setStatsLoading(false));
   }
 
@@ -62,7 +62,7 @@ export default function ControlPage() {
   function formatCooldown(seconds: number): string {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
-    return `${m} 分 ${s.toString().padStart(2, "0")} 秒`;
+    return lang === "zh" ? `${m} 分 ${s.toString().padStart(2, "0")} 秒` : `${m}m ${s.toString().padStart(2, "0")}s`;
   }
 
   async function handleScan() {
@@ -76,18 +76,17 @@ export default function ControlPage() {
         setScanResult(null);
       } else {
         const newSignals = data.newSignals ?? 0;
-        toast(`✅ 掃描完成，新增 ${newSignals} 條信號`);
-        setScanResult(lang === "zh" ? "扫描已启动，约30秒后自动刷新统计..." : "Scan started, stats will refresh in ~30s...");
+        toast(`✅ ${t("ctrl_scan_done")} ${newSignals} ${t("ctrl_scan_done_unit")}`);
+        setScanResult(t("ctrl_scan_started"));
         let elapsed = 0;
-        const poll = setInterval(() => {
+        const statsRefreshId = setInterval(() => {
           elapsed += 10;
           loadStats();
-          if (elapsed >= 60) clearInterval(poll);
+          if (elapsed >= 60) clearInterval(statsRefreshId);
         }, 10000);
-        void poll;
       }
     } catch (err) {
-      toast("❌ 掃描失敗", "error");
+      toast("❌ " + t("ctrl_scan_fail"), "error");
       setScanResult(`${t("common_error_prefix")}${(err as Error).message}`);
     } finally {
       setScanLoading(false);
@@ -104,19 +103,17 @@ export default function ControlPage() {
         startCooldown(data.cooldown, setOppCooldown, oppTimerRef);
         setOppResult(null);
       } else {
-        toast("✅ 機會已生成");
-        setOppResult(lang === "zh" ? "机会分析已启动，约30秒后自动刷新统计..." : "Analysis started, stats will refresh in ~30s...");
+        toast("✅ " + t("ctrl_opp_done"));
+        setOppResult(t("ctrl_opp_started"));
         let elapsed = 0;
-        const poll = setInterval(() => {
+        const oppRefreshId = setInterval(() => {
           elapsed += 10;
           loadStats();
-          if (elapsed >= 60) clearInterval(poll);
+          if (elapsed >= 60) clearInterval(oppRefreshId);
         }, 10000);
-        void data;
-        void poll;
       }
     } catch (err) {
-      toast("❌ 生成失敗", "error");
+      toast("❌ " + t("ctrl_opp_fail"), "error");
       setOppResult(`${t("common_error_prefix")}${(err as Error).message}`);
     } finally {
       setOppLoading(false);
@@ -159,7 +156,7 @@ export default function ControlPage() {
             onClick={handleScan}
             disabled={scanLoading || scanCooldown > 0}
           >
-            {scanLoading ? t("ctrl_scan_running") : scanCooldown > 0 ? `掃描冷卻中，剩餘 ${formatCooldown(scanCooldown)}` : t("ctrl_scan_btn")}
+            {scanLoading ? t("ctrl_scan_running") : scanCooldown > 0 ? `${t("ctrl_scan_cooldown")} ${formatCooldown(scanCooldown)}` : t("ctrl_scan_btn")}
           </Button>
           {scanResult && (
             <pre className="mt-3 text-xs text-slate-400 bg-slate-900 rounded p-3 overflow-auto max-h-40">
@@ -179,7 +176,7 @@ export default function ControlPage() {
             onClick={handleOpportunity}
             disabled={oppLoading || oppCooldown > 0}
           >
-            {oppLoading ? t("ctrl_opp_running") : oppCooldown > 0 ? `冷卻中，剩餘 ${formatCooldown(oppCooldown)}` : t("ctrl_opp_btn")}
+            {oppLoading ? t("ctrl_opp_running") : oppCooldown > 0 ? `${t("ctrl_opp_cooldown")} ${formatCooldown(oppCooldown)}` : t("ctrl_opp_btn")}
           </Button>
           {oppResult && (
             <pre className="mt-3 text-xs text-slate-400 bg-slate-900 rounded p-3 overflow-auto max-h-40">
@@ -290,7 +287,7 @@ export default function ControlPage() {
                     : "bg-slate-700 border-slate-600 text-slate-400 hover:text-slate-200"
                 }`}
               >
-                {l === "zh" ? "🇨🇳 中文" : "🇺🇸 English"}
+                {l === "zh" ? "🇹🇼 繁體中文" : "🇺🇸 English"}
               </button>
             ))}
           </div>
