@@ -290,13 +290,16 @@ function RadarContent() {
       const transDesc = translations[s.id]?.description || "";
       return (origTitle + origDesc + transTitle + transDesc).toLowerCase().includes(kw);
     });
-    // Sort preferred categories first when viewing "all"
+    // Sort preferred categories first when viewing "all", then by time desc
     if (activeCategory === "all" && preferredCategories.size > 0) {
       base.sort((a, b) => {
         const aPref = preferredCategories.has(a.category) ? 0 : 1;
         const bPref = preferredCategories.has(b.category) ? 0 : 1;
-        return aPref - bPref;
+        if (aPref !== bPref) return aPref - bPref;
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       });
+    } else {
+      base.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     }
     return base;
   }, [signals, activeCategory, heatFilter, deferredKeyword, lang, translations, preferredCategories]);
