@@ -8,11 +8,40 @@ interface ShareCardProps {
   risks?: string[];
   actions?: string[];
   userInviteCode?: string;
+  lang?: string;
 }
 
-export function ShareCard({ title, whyNow, profitLogic, confidence, risks = [], actions = [], userInviteCode }: ShareCardProps) {
+const LABELS = {
+  zh: {
+    subtitle: "AI 市場情報助理",
+    confHigh: "高置信",
+    confMid: "中置信",
+    confLow: "低置信",
+    whyNow: "📌 為什麼現在",
+    profitLogic: "💰 盈利邏輯",
+    risks: "⚠️ 主要風險",
+    actions: "📋 行動清單",
+    footer: "每天早 8 點，全球信號提煉成行動清單",
+    inviteLabel: "邀請碼",
+  },
+  en: {
+    subtitle: "AI Market Intelligence",
+    confHigh: "High Confidence",
+    confMid: "Med Confidence",
+    confLow: "Low Confidence",
+    whyNow: "📌 WHY NOW",
+    profitLogic: "💰 PROFIT LOGIC",
+    risks: "⚠️ KEY RISKS",
+    actions: "📋 ACTION PLAN",
+    footer: "Daily at 8 AM · Global signals → actionable opportunities",
+    inviteLabel: "Invite Code",
+  },
+};
+
+export function ShareCard({ title, whyNow, profitLogic, confidence, risks = [], actions = [], userInviteCode, lang = "zh" }: ShareCardProps) {
+  const L = LABELS[lang as "zh" | "en"] ?? LABELS.zh;
   const confColor = confidence >= 70 ? "#10b981" : confidence >= 50 ? "#f59e0b" : "#ef4444";
-  const confLabel = confidence >= 70 ? "高置信" : confidence >= 50 ? "中置信" : "低置信";
+  const confLabel = confidence >= 70 ? L.confHigh : confidence >= 50 ? L.confMid : L.confLow;
 
   return (
     <div
@@ -38,7 +67,7 @@ export function ShareCard({ title, whyNow, profitLogic, confidence, risks = [], 
         </div>
         <div>
           <div style={{ fontSize: 17, fontWeight: 700, color: "#f1f5f9" }}>Flywheel</div>
-          <div style={{ fontSize: 11, color: "#64748b" }}>AI 市場情報助理</div>
+          <div style={{ fontSize: 11, color: "#64748b" }}>{L.subtitle}</div>
         </div>
         <div style={{
           marginLeft: "auto",
@@ -61,7 +90,7 @@ export function ShareCard({ title, whyNow, profitLogic, confidence, risks = [], 
 
       {/* Why Now */}
       <div style={{ marginBottom: 14 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: "#f59e0b", marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.05em" }}>📌 為什麼現在</div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: "#f59e0b", marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.05em" }}>{L.whyNow}</div>
         <div style={{ fontSize: 13, color: "#cbd5e1", lineHeight: 1.6 }}>
           {whyNow.length > 160 ? whyNow.slice(0, 160) + "…" : whyNow}
         </div>
@@ -69,7 +98,7 @@ export function ShareCard({ title, whyNow, profitLogic, confidence, risks = [], 
 
       {/* Profit Logic */}
       <div style={{ marginBottom: 14 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, color: "#34d399", marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.05em" }}>💰 盈利邏輯</div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: "#34d399", marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.05em" }}>{L.profitLogic}</div>
         <div style={{ fontSize: 13, color: "#cbd5e1", lineHeight: 1.6 }}>
           {profitLogic.length > 160 ? profitLogic.slice(0, 160) + "…" : profitLogic}
         </div>
@@ -78,7 +107,7 @@ export function ShareCard({ title, whyNow, profitLogic, confidence, risks = [], 
       {/* Risks */}
       {risks.length > 0 && (
         <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: "#f87171", marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.05em" }}>⚠️ 主要風險</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: "#f87171", marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.05em" }}>{L.risks}</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             {risks.slice(0, 3).map((r, i) => (
               <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
@@ -95,7 +124,7 @@ export function ShareCard({ title, whyNow, profitLogic, confidence, risks = [], 
       {/* Actions */}
       {actions.length > 0 && (
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: "#818cf8", marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.05em" }}>📋 行動清單</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: "#818cf8", marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.05em" }}>{L.actions}</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             {actions.slice(0, 3).map((a, i) => (
               <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
@@ -115,12 +144,12 @@ export function ShareCard({ title, whyNow, profitLogic, confidence, risks = [], 
       {/* Footer */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
-          <div style={{ fontSize: 12, color: "#94a3b8" }}>每天早 8 點，全球信號提煉成行動清單</div>
+          <div style={{ fontSize: 12, color: "#94a3b8" }}>{L.footer}</div>
           <div style={{ fontSize: 15, fontWeight: 600, color: "#f59e0b", marginTop: 2 }}>flywheelsea.club</div>
         </div>
         {userInviteCode && (
           <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: 11, color: "#64748b" }}>邀請碼</div>
+            <div style={{ fontSize: 11, color: "#64748b" }}>{L.inviteLabel}</div>
             <div style={{ fontSize: 16, fontWeight: 700, color: "#f59e0b", letterSpacing: "0.1em" }}>{userInviteCode}</div>
           </div>
         )}
