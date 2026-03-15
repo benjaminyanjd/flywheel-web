@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { ShareCard } from "./share-card";
+import { useT } from "@/lib/i18n";
 
 interface ShareCardModalProps {
   isOpen: boolean;
@@ -28,6 +29,7 @@ export function ShareCardModal({
 }: ShareCardModalProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
+  const { t, lang } = useT();
 
   if (!isOpen) return null;
 
@@ -64,7 +66,7 @@ export function ShareCardModal({
         className="flex flex-col items-center gap-4 p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="text-slate-400 text-sm">預覽分享卡片</div>
+        <div className="text-slate-400 text-sm">{t("opp_share_preview")}</div>
 
         {/* Card preview */}
         <div ref={cardRef}>
@@ -76,6 +78,7 @@ export function ShareCardModal({
             risks={risks}
             actions={actions}
             userInviteCode={userInviteCode}
+            lang={lang}
           />
         </div>
 
@@ -86,17 +89,17 @@ export function ShareCardModal({
             disabled={downloading}
             className="flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-900 font-semibold rounded-lg transition-colors disabled:opacity-50"
           >
-            {downloading ? "生成中…" : "⬇️ 儲存圖片"}
+            {downloading ? t("common_loading") : t("opp_share_save")}
           </button>
           <button
             onClick={onClose}
             className="px-4 py-2.5 text-slate-400 hover:text-slate-200 border border-slate-600 hover:border-slate-400 rounded-lg transition-colors"
           >
-            關閉
+            {t("common_close")}
           </button>
         </div>
 
-        <div className="text-slate-600 text-xs">長按圖片可直接分享到社交媒體</div>
+        <div className="text-slate-600 text-xs">{t("opp_share_hint")}</div>
       </div>
     </div>
   );

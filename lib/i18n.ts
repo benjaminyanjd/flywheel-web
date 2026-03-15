@@ -277,6 +277,9 @@ export const translations = {
     opp_filter_expired: "已過期",
     opp_filter_label: "時效",
     opp_share: "📤 分享卡片",
+    opp_share_preview: "預覽分享卡片",
+    opp_share_save: "⬇️ 儲存圖片",
+    opp_share_hint: "長按圖片可直接分享到社交媒體",
     opp_empty_title: "信號採集中",
     opp_empty_desc: "每 30 分鐘掃描一次，早 8 點見",
     opp_undo_marked: "已標記",
@@ -339,6 +342,7 @@ export const translations = {
 
     // Common
     common_loading: "載入中...",
+    common_close: "關閉",
     common_no_signal: "暫無信號",
     common_error_prefix: "錯誤：",
     common_expand: "展開",
@@ -735,6 +739,9 @@ export const translations = {
     opp_filter_expired: "Expired",
     opp_filter_label: "Freshness",
     opp_share: "📤 Share",
+    opp_share_preview: "Share Card Preview",
+    opp_share_save: "⬇️ Save Image",
+    opp_share_hint: "Long press to share directly to social media",
     opp_empty_title: "Scanning for signals",
     opp_empty_desc: "Scans every 30 min, see you at 8 AM",
     opp_undo_marked: "Marked as",
@@ -797,6 +804,7 @@ export const translations = {
 
     // Common
     common_loading: "Loading...",
+    common_close: "Close",
     common_no_signal: "No signals",
     common_error_prefix: "Error: ",
     common_expand: "Expand",
