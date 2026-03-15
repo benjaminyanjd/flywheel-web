@@ -63,9 +63,13 @@ export async function GET() {
             color: "#f1f5f9",
             marginBottom: "24px",
             maxWidth: "900px",
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "baseline",
+            gap: "12px",
           }}
         >
-          你的 AI{" "}
+          <span>你的 AI</span>
           <span style={{ color: "#fbbf24" }}>市場情報助理</span>
         </div>
 
