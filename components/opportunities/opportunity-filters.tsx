@@ -69,12 +69,12 @@ export function OpportunityFilters({
 
       {/* 時效篩選 */}
       <div className="flex items-center gap-2">
-        <span className="text-xs text-slate-500">時效：</span>
+        <span className="text-xs text-slate-500">{t("opp_filter_label")}：</span>
         <div className="flex items-center gap-1 bg-slate-800 border border-slate-700 rounded-lg p-1">
           {([
-            { key: "all", label: "全部" },
-            { key: "fresh", label: "⚡ 僅24h內" },
-            { key: "expired", label: "已過期" },
+            { key: "all", labelKey: "opp_filter_all" },
+            { key: "fresh", labelKey: "opp_filter_fresh" },
+            { key: "expired", labelKey: "opp_filter_expired" },
           ] as const).map((tab) => (
             <button
               key={tab.key}
@@ -89,7 +89,7 @@ export function OpportunityFilters({
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              {tab.label}
+              {t(tab.labelKey as Parameters<typeof t>[0])}
             </button>
           ))}
         </div>
