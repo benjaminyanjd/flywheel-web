@@ -144,7 +144,7 @@ export default function SettingsClient({ initialSettings }: Props) {
         setTimeout(() => setTgStatus("idle"), 2000);
         // Send welcome digest only on first-time binding
         if (!hasExistingTelegram && chatId) {
-          fetch("/api/user/welcome-digest", { method: "POST" }).catch(() => {})
+          fetch("/api/user/welcome-digest", { method: "POST" }).catch((err) => console.error("settings/welcomeDigest:", err))
           setHasExistingTelegram(true)
         }
       } else {

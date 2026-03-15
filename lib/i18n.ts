@@ -914,7 +914,7 @@ export const translations = {
   },
 } as const;
 
-type TKey = keyof typeof translations.zh;
+export type TKey = keyof typeof translations.zh;
 
 export function useT() {
   const [lang, setLangState] = useState<Lang>("zh");

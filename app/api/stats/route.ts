@@ -27,60 +27,47 @@ export async function GET() {
 
     const db = getDb();
 
-    const todayCount = db
+    // Query A: signals — one grouped query replaces 4 individual queries
+    const signalRows = db
       .prepare(
-        `SELECT COUNT(*) as count FROM signals
-         WHERE date(created_at) = date('now')`
+        `SELECT COUNT(*) AS total,
+                SUM(CASE WHEN date(created_at) = date("now") THEN 1 ELSE 0 END) AS today,
+                COALESCE(source, "unknown") AS source,
+                COALESCE(category, "unknown") AS category
+         FROM signals
+         GROUP BY source, category`
       )
-      .get() as { count: number };
+      .all() as { total: number; today: number; source: string; category: string }[];
 
-    const categoryCountRows = db
-      .prepare(
-        `SELECT category, COUNT(*) as count FROM signals
-         WHERE date(created_at) = date('now')
-         GROUP BY category`
-      )
-      .all() as { category: string; count: number }[];
-
+    let totalSignals = 0;
+    let todayCount = 0;
     const categoryCounts: Record<string, number> = {};
-    for (const row of categoryCountRows) {
-      categoryCounts[row.category] = row.count;
-    }
-
-    const sourceRows = db
-      .prepare(
-        `SELECT source, COUNT(*) as count FROM signals
-         GROUP BY source
-         ORDER BY count DESC`
-      )
-      .all() as { source: string; count: number }[];
-
     const signalsBySource: Record<string, number> = {};
-    for (const row of sourceRows) {
-      signalsBySource[row.source] = row.count;
+
+    for (const row of signalRows) {
+      totalSignals += row.total;
+      todayCount += row.today;
+      if (row.today > 0) {
+        categoryCounts[row.category] = (categoryCounts[row.category] ?? 0) + row.today;
+      }
+      signalsBySource[row.source] = (signalsBySource[row.source] ?? 0) + row.total;
     }
 
-    const totalSignals = db
-      .prepare("SELECT COUNT(*) as count FROM signals")
-      .get() as { count: number };
-
-    const totalOpportunities = db
-      .prepare("SELECT COUNT(*) as count FROM opportunity_actions WHERE (user_id = 'system' OR user_id = ?)")
-      .get(userId) as { count: number };
-
-    const statusRows = db
+    // Query B: opportunity_actions — one grouped query replaces 2 individual queries
+    const oppRows = db
       .prepare(
-        `SELECT action, COUNT(*) as count FROM opportunity_actions
-         WHERE (user_id = 'system' OR user_id = ?)
-         GROUP BY action`
+        `SELECT action, COUNT(*) as count FROM opportunity_actions GROUP BY action`
       )
-      .all(userId) as { action: string; count: number }[];
+      .all() as { action: string; count: number }[];
 
+    let totalOpportunities = 0;
     const opportunityStatusCounts: Record<string, number> = {};
-    for (const row of statusRows) {
+    for (const row of oppRows) {
+      totalOpportunities += row.count;
       opportunityStatusCounts[row.action] = row.count;
     }
 
+    // Query C: conversations count (unchanged)
     const conversationCount = db
       .prepare("SELECT COUNT(*) as count FROM conversations")
       .get() as { count: number };
@@ -90,10 +77,10 @@ export async function GET() {
     const botStatus = checkBotStatus();
 
     return NextResponse.json({
-      todaySignals: todayCount.count,
+      todaySignals: todayCount,
       categoryCounts,
-      totalSignals: totalSignals.count,
-      totalOpportunities: totalOpportunities.count,
+      totalSignals,
+      totalOpportunities,
       cost,
       signalsBySource,
       opportunityStatusCounts,
