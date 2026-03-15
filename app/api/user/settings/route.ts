@@ -22,11 +22,6 @@ const VALID_INTERVALS = [30, 60, 120, 360];
 const VALID_ROLES = ["indie_dev", "investor", "founder", "researcher"];
 const VALID_FOCUS = ["ai", "crypto", "saas", "overseas", "all"];
 const VALID_OPP_TYPES = ["tools", "arbitrage", "content", "all"];
-const VALID_PROFIT_SOURCE = ["crypto_trading", "ai_content", "info_arbitrage", "saas_tech", "early_investment"];
-const VALID_CORE_SKILLS = ["trading", "content_ops", "coding", "sales_biz"];
-const VALID_OPP_HORIZON = ["short_term", "mid_term", "long_term"];
-const VALID_RISK_LEVEL = ["conservative", "balanced", "aggressive"];
-const VALID_TIME_BUDGET = ["under_1h", "1_3h", "unlimited"];
 
 export async function POST(req: NextRequest) {
   try {
@@ -127,35 +122,10 @@ export async function PATCH(req: NextRequest) {
         ? body.opp_type.split(",").filter((t: string) => VALID_OPP_TYPES.includes(t.trim())).join(",") || null
         : null;
 
-    const profitSource =
-      typeof body.profit_source === "string"
-        ? body.profit_source.split(",").filter((v: string) => VALID_PROFIT_SOURCE.includes(v.trim())).join(",") || null
-        : null;
-
-    const coreSkills =
-      typeof body.core_skills === "string"
-        ? body.core_skills.split(",").filter((v: string) => VALID_CORE_SKILLS.includes(v.trim())).join(",") || null
-        : null;
-
-    const oppHorizon =
-      typeof body.opp_horizon === "string" && VALID_OPP_HORIZON.includes(body.opp_horizon)
-        ? body.opp_horizon
-        : null;
-
-    const riskLevel =
-      typeof body.risk_level === "string" && VALID_RISK_LEVEL.includes(body.risk_level)
-        ? body.risk_level
-        : null;
-
-    const timeBudget =
-      typeof body.time_budget === "string" && VALID_TIME_BUDGET.includes(body.time_budget)
-        ? body.time_budget
-        : null;
-
     const db = getDb();
     db.prepare(`INSERT OR IGNORE INTO user_settings (user_id) VALUES (?)`).run(userId);
-    db.prepare(`UPDATE user_settings SET user_role = ?, user_focus = ?, opp_type = ?, profit_source = ?, core_skills = ?, opp_horizon = ?, risk_level = ?, time_budget = ? WHERE user_id = ?`)
-      .run(userRole, userFocus, oppType, profitSource, coreSkills, oppHorizon, riskLevel, timeBudget, userId);
+    db.prepare(`UPDATE user_settings SET user_role = ?, user_focus = ?, opp_type = ? WHERE user_id = ?`)
+      .run(userRole, userFocus, oppType, userId);
 
     logger.info("user/settings/PATCH", "Preferences saved", { userId });
     return NextResponse.json({ success: true });
