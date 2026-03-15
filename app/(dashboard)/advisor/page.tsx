@@ -28,7 +28,7 @@ function AdvisorInner() {
       .then(data => {
         if (data.history?.length) setMessages(data.history);
       })
-      .catch(() => {})
+      .catch((err) => console.error("advisor/fetchHistory:", err))
       .finally(() => setHistoryLoading(false));
   }, []);
 

@@ -164,8 +164,8 @@ function RadarContent() {
           return next;
         });
       }
-    } catch (e) {
-      // translation failed silently; signals remain untranslated
+    } catch (err) {
+      console.error("radar/translateSignals:", err);
     } finally {
       setTranslating(false);
     }
@@ -203,7 +203,7 @@ function RadarContent() {
           setPreferredCategories(cats);
         }
       })
-      .catch(() => {});
+      .catch((err) => console.error("radar/fetchUserSettings:", err));
   }, []);
 
   useEffect(() => {
@@ -213,10 +213,10 @@ function RadarContent() {
         if (Array.isArray(data)) setSignals(data);
         else if (data.signals) setSignals(data.signals);
       })
-      .catch(() => {/* loading failed, UI shows empty state */})
+      .catch((err) => console.error("radar/fetchSignals:", err))
       .finally(() => setLoading(false));
     // Load bookmarks
-    fetch("/api/signals/bookmarks").then(r => r.json()).then((ids: number[]) => setBookmarks(new Set(ids))).catch(() => {});
+    fetch("/api/signals/bookmarks").then(r => r.json()).then((ids: number[]) => setBookmarks(new Set(ids))).catch((err) => console.error("radar/fetchBookmarks:", err));
   }, []);
 
   // When switching to a specific category, also fetch that category's latest signals
@@ -232,7 +232,7 @@ function RadarContent() {
           return newOnes.length > 0 ? [...newOnes, ...prev] : prev;
         });
       })
-      .catch(() => {/* category fetch failed silently */});
+      .catch((err) => console.error("radar/fetchCategorySignals:", err));
   }, [activeCategory]);
 
   useEffect(() => {
@@ -488,8 +488,8 @@ function RadarContent() {
                           const method = isBookmarked ? "DELETE" : "POST"
                           const res = await fetch(`/api/signals/${signal.id}/bookmark`, { method })
                           if (!res.ok) throw new Error("bookmark failed")
-                        } catch {
-                          // Revert optimistic update on failure
+                        } catch (err) {
+                          console.error("radar/toggleBookmark:", err);
                           if (isBookmarked) {
                             setBookmarks(prev => new Set(prev).add(signal.id))
                           } else {
@@ -525,7 +525,7 @@ function RadarContent() {
               <p className="text-sm mt-1">{t("radar_empty_all_desc")}</p>
               <button
                 type="button"
-                onClick={() => { fetch("/api/scan", { method: "POST" }).catch(() => {/* scan trigger failed, ignore */}); }}
+                onClick={() => { fetch("/api/scan", { method: "POST" }).catch((err) => console.error("radar/scanTrigger:", err)); }}
                 className="text-xs text-amber-400/60 hover:text-amber-400 underline mt-4"
                 aria-label={t("radar_manual_scan")}
               >

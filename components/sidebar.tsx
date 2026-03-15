@@ -72,7 +72,7 @@ function SidebarInner() {
           setSignalCount(data.todayCount ?? 0);
           if (data.categoryCounts) setCategoryCounts(data.categoryCounts);
         }
-      } catch {}
+      } catch (err) { console.error("sidebar/fetchStats:", err); }
     }
     fetchCount();
     const interval = setInterval(fetchCount, 30000);
@@ -82,7 +82,7 @@ function SidebarInner() {
   useEffect(() => {
     fetch("/api/user/trial").then(r => r.json()).then(d => {
       if (d.daysLeft !== null) setDaysLeft(d.daysLeft);
-    }).catch(() => {});
+    }).catch((err) => console.error("sidebar/fetchTrial:", err));
   }, []);
 
   const tabCls = (active: boolean) => cn(
