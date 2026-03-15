@@ -19,6 +19,9 @@ import ReactMarkdown from "react-markdown";
 import { useT } from "@/lib/i18n";
 import { FlywheelLogo } from "@/components/flywheel-logo";
 import remarkGfm from "remark-gfm";
+import { PROSE_CLASS } from "@/lib/prose-class";
+import { parseEmbed, type EmbedData } from "@/lib/parse-embed";
+import { readSSEStream } from "@/lib/sse";
 
 interface TodoItem {
   id: number;
@@ -28,32 +31,9 @@ interface TodoItem {
   created_at: string;
 }
 
-interface EmbedData {
-  why_now?: string;
-  profit_logic?: string;
-  actions?: string[];
-  risks?: string[];
-  confidence?: number;
-}
-
-function parseEmbed(raw: string): EmbedData | null {
-  try {
-    const d = typeof raw === "string" ? JSON.parse(raw) : raw;
-    return {
-      why_now: d.why_now || "",
-      profit_logic: d.profit_logic || "",
-      actions: Array.isArray(d.actions) ? d.actions : [],
-      risks: Array.isArray(d.risks) ? d.risks : [],
-      confidence: typeof d.confidence === "number" ? d.confidence : 0,
-    };
-  } catch {
-    return null;
-  }
-}
-
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr);
-  return d.toLocaleDateString("zh-CN", {
+  return d.toLocaleDateString("zh-TW", {
     month: "2-digit",
     day: "2-digit",
     hour: "2-digit",
@@ -82,7 +62,7 @@ export default function TodolistPage() {
         if (Array.isArray(data)) setTodos(data);
         else if (data.todos) setTodos(data.todos);
       })
-      .catch(console.error)
+      .catch(() => {/* loading failed, UI shows empty state */})
       .finally(() => setLoading(false));
   }, []);
 
@@ -95,8 +75,8 @@ export default function TodolistPage() {
         body: JSON.stringify({ action: "done" }),
       });
       setTodos((prev) => prev.filter((t) => t.id !== id));
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // action failed silently; item remains in list
     } finally {
       setActionLoading((prev) => ({ ...prev, [id]: false }));
     }
@@ -111,24 +91,13 @@ export default function TodolistPage() {
       const res = await fetch("/api/advisor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: `请针对以下机会给出行动建议: ${todo.opp_title}` }),
+        body: JSON.stringify({ message: `請針對以下機會給出行動建議: ${todo.opp_title}` }),
         signal: ctrl.signal,
       });
       if (!res.body) return;
-      const reader = res.body.getReader();
-      const dec = new TextDecoder();
-      let buf = "", acc = "";
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buf += dec.decode(value, { stream: true });
-        const lines = buf.split("\n"); buf = lines.pop() || "";
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-          try { const j = JSON.parse(line.slice(6)); if (j.text) acc += j.text; } catch {}
-        }
-        setAdvisorMap((p) => ({ ...p, [todo.id]: { text: acc, loading: true } }));
-      }
+      const acc = await readSSEStream(res.body, (text) => {
+        setAdvisorMap((p) => ({ ...p, [todo.id]: { text, loading: true } }));
+      });
       setAdvisorMap((p) => ({ ...p, [todo.id]: { text: acc, loading: false } }));
       // Save to DB
       await fetch(`/api/opportunities/${todo.id}/action`, {
@@ -139,8 +108,9 @@ export default function TodolistPage() {
       setTodos((prev) => prev.map((t) => t.id === todo.id ? { ...t, advisor_notes: acc } : t));
       setExpandedNotes((prev) => { const n = new Set(prev); n.add(todo.id); return n; });
     } catch (e) {
-      if ((e as Error).name !== "AbortError") console.error(e);
-      setAdvisorMap((p) => ({ ...p, [todo.id]: { text: "", loading: false } }));
+      if ((e as Error).name !== "AbortError") {
+        setAdvisorMap((p) => ({ ...p, [todo.id]: { text: "", loading: false } }));
+      }
     }
   }
 
@@ -161,8 +131,8 @@ export default function TodolistPage() {
       });
       setTodos((prev) => prev.filter((t) => t.id !== cancelTarget));
       setCancelDialogOpen(false);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      // cancel action failed silently
     } finally {
       setActionLoading((prev) => ({ ...prev, [cancelTarget!]: false }));
     }
@@ -170,8 +140,20 @@ export default function TodolistPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full bg-slate-900">
-        <span className="text-slate-400">{t("common_loading")}</span>
+      <div className="flex flex-col h-full bg-slate-900 p-6">
+        <div className="h-7 bg-slate-700 rounded w-32 mb-4 animate-pulse" />
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-slate-800 border border-slate-700 rounded-xl p-5 animate-pulse">
+              <div className="h-4 bg-slate-700 rounded w-3/4 mb-3" />
+              <div className="h-3 bg-slate-700 rounded w-1/2 mb-3" />
+              <div className="flex gap-2 mt-4">
+                <div className="h-8 bg-slate-700 rounded w-20" />
+                <div className="h-8 bg-slate-700 rounded w-20" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -183,8 +165,8 @@ export default function TodolistPage() {
       {todos.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-slate-500">
           <FlywheelLogo size={48} className="text-amber-400/40 animate-[spin_8s_linear_infinite] mb-4" />
-          <p className="text-lg font-medium text-slate-400">信號採集中</p>
-          <p className="text-sm mt-1">每 30 分鐘掃描一次，早 8 點見</p>
+          <p className="text-lg font-medium text-slate-400">{t("opp_empty_title")}</p>
+          <p className="text-sm mt-1">{t("opp_empty_desc")}</p>
         </div>
       ) : (
         <ScrollArea className="flex-1">
@@ -327,24 +309,7 @@ export default function TodolistPage() {
 
                         {/* Content */}
                         {(todo.advisor_notes || advisorMap[todo.id]?.text) && expandedNotes.has(todo.id) && (
-                          <div className="prose prose-invert max-w-none text-sm leading-relaxed
-                            [&_h1]:text-xl [&_h1]:font-bold [&_h1]:text-white [&_h1]:mt-5 [&_h1]:mb-3
-                            [&_h2]:text-base [&_h2]:font-bold [&_h2]:text-slate-100 [&_h2]:mt-5 [&_h2]:mb-2.5 [&_h2]:border-b-2 [&_h2]:border-slate-600 [&_h2]:pb-1.5
-                            [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-slate-200 [&_h3]:mt-4 [&_h3]:mb-1.5
-                            [&_p]:text-slate-300 [&_p]:leading-7 [&_p]:mb-3
-                            [&_ul]:text-slate-300 [&_ul]:space-y-1.5 [&_ul]:pl-5 [&_ul]:mb-3
-                            [&_ol]:text-slate-300 [&_ol]:space-y-1.5 [&_ol]:pl-5 [&_ol]:mb-3
-                            [&_li]:leading-7
-                            [&_strong]:text-white [&_strong]:font-bold
-                            [&_code]:bg-slate-700/80 [&_code]:text-amber-300 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_code]:font-mono [&_code]:border [&_code]:border-slate-600/50
-                            [&_pre]:bg-slate-800 [&_pre]:border [&_pre]:border-slate-600 [&_pre]:rounded-lg [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:my-3
-                            [&_pre_code]:bg-transparent [&_pre_code]:border-0 [&_pre_code]:p-0 [&_pre_code]:text-slate-300 [&_pre_code]:text-xs
-                            [&_table]:w-full [&_table]:border-collapse [&_table]:my-3 [&_table]:text-sm
-                            [&_thead]:bg-slate-700/60
-                            [&_th]:text-slate-200 [&_th]:font-semibold [&_th]:px-4 [&_th]:py-2.5 [&_th]:border [&_th]:border-slate-600 [&_th]:text-left
-                            [&_td]:text-slate-300 [&_td]:px-4 [&_td]:py-2 [&_td]:border [&_td]:border-slate-700
-                            [&_tr:nth-child(even)_td]:bg-slate-800/40
-                            [&_hr]:border-slate-600 [&_hr]:my-4">
+                          <div className={PROSE_CLASS}>
                             <ReactMarkdown remarkPlugins={[remarkGfm]}>
                               {todo.advisor_notes || advisorMap[todo.id]?.text || ""}
                             </ReactMarkdown>
@@ -355,7 +320,7 @@ export default function TodolistPage() {
                         )}
                         {/* Streaming content (auto-expand while generating) */}
                         {advisorMap[todo.id]?.loading && advisorMap[todo.id]?.text && (
-                          <div className="prose prose-invert max-w-none text-sm leading-relaxed [&_p]:text-slate-300 [&_p]:leading-7">
+                          <div className={PROSE_CLASS}>
                             <ReactMarkdown remarkPlugins={[remarkGfm]}>{advisorMap[todo.id].text}</ReactMarkdown>
                             <span className="inline-block w-1.5 h-4 bg-purple-400 animate-pulse ml-0.5 align-middle" />
                           </div>
@@ -385,7 +350,7 @@ export default function TodolistPage() {
                           onClick={() => setOutcomeForm(outcomeForm?.id === todo.id ? null : { id: todo.id, amount: "", note: "" })}
                           className="text-xs px-3 py-1.5 rounded border border-slate-600 text-slate-400 hover:text-emerald-400 hover:border-emerald-600 transition-colors"
                         >
-                          📈 記錄結果
+                          {t("todo_record")}
                         </button>
                       </div>
 
@@ -394,7 +359,7 @@ export default function TodolistPage() {
                           <div className="flex gap-2">
                             <input
                               type="number"
-                              placeholder="盈虧金額 (USD，正=盈 負=虧)"
+                              placeholder={t("todo_amount")}
                               value={outcomeForm.amount}
                               onChange={e => setOutcomeForm(f => f ? {...f, amount: e.target.value} : null)}
                               className="flex-1 text-xs bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-slate-200 placeholder:text-slate-600"
@@ -402,7 +367,7 @@ export default function TodolistPage() {
                           </div>
                           <input
                             type="text"
-                            placeholder="備注（可選）"
+                            placeholder={t("todo_note")}
                             value={outcomeForm.note}
                             onChange={e => setOutcomeForm(f => f ? {...f, note: e.target.value} : null)}
                             className="text-xs bg-slate-800 border border-slate-600 rounded px-2 py-1.5 text-slate-200 placeholder:text-slate-600"
@@ -411,7 +376,7 @@ export default function TodolistPage() {
                             <button
                               onClick={() => setOutcomeForm(null)}
                               className="text-xs text-slate-500 px-3 py-1 rounded hover:text-slate-300"
-                            >取消</button>
+                            >{t("todo_cancel_btn")}</button>
                             <button
                               onClick={async () => {
                                 await fetch(`/api/opportunities/${todo.id}/outcome`, {
@@ -422,11 +387,11 @@ export default function TodolistPage() {
                                     note: outcomeForm?.note || null,
                                   }),
                                 });
-                                toast("✅ 結果已記錄");
+                                toast(t("todo_outcome_saved"));
                                 setOutcomeForm(null);
                               }}
                               className="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded"
-                            >保存</button>
+                            >{t("todo_save")}</button>
                           </div>
                         </div>
                       )}

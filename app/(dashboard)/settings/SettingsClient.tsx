@@ -5,7 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { getLangStored, type Lang } from "@/lib/lang";
+import { useT } from "@/lib/i18n";
 import { useToast } from "@/components/toast";
+import { deriveFocus, PROFIT_SOURCE_KEYS, CORE_SKILL_KEYS, OPP_HORIZON_KEYS, RISK_LEVEL_KEYS, TIME_BUDGET_KEYS } from "@/lib/preferences";
 
 const CATEGORIES = [
   { value: "ai_tech", zh: "🤖 AI 科技", en: "🤖 AI Tech" },
@@ -15,13 +17,34 @@ const CATEGORIES = [
   { value: "x_kol", zh: "⭐ KOL 動態", en: "⭐ KOL" },
 ];
 
+interface UserSettings {
+  categories: string | null;
+  scan_interval: number | null;
+  notify_channel: string | null;
+  email: string | null;
+  telegram_chat_id: string | null;
+  user_role: string | null;
+  user_focus: string | null;
+  opp_type: string | null;
+  profit_source: string | null;
+  core_skills: string | null;
+  opp_horizon: string | null;
+  risk_level: string | null;
+  time_budget: string | null;
+}
+
 interface Props {
-  initialSettings: any;
+  initialSettings: UserSettings | null;
 }
 
 export default function SettingsClient({ initialSettings }: Props) {
   const toast = useToast();
-  const [lang, setLangState] = useState<Lang>("zh");
+  const { t: tr } = useT();
+  const [lang, setLangState] = useState<Lang>(() => {
+    // SSR-safe: default "zh", will be updated on client mount
+    if (typeof window !== "undefined") return getLangStored();
+    return "zh";
+  });
 
   useEffect(() => {
     setLangState(getLangStored());
@@ -46,15 +69,53 @@ export default function SettingsClient({ initialSettings }: Props) {
   });
   const [catStatus, setCatStatus] = useState<"idle" | "saving" | "saved">("idle");
 
-  // Language state
-  const [currentLang, setCurrentLang] = useState<Lang>("zh");
-  useEffect(() => {
-    setCurrentLang(getLangStored());
-  }, [lang]);
+  // 5-question preferences state
+  const [profitSource, setProfitSource] = useState<string[]>(() =>
+    initialSettings?.profit_source ? initialSettings.profit_source.split(",") : []
+  );
+  const [coreSkills, setCoreSkills] = useState<string[]>(() =>
+    initialSettings?.core_skills ? initialSettings.core_skills.split(",") : []
+  );
+  const [oppHorizon, setOppHorizon] = useState(initialSettings?.opp_horizon || "");
+  const [riskLevel, setRiskLevel] = useState(initialSettings?.risk_level || "");
+  const [timeBudget, setTimeBudget] = useState(initialSettings?.time_budget || "");
+  const [prefStatus, setPrefStatus] = useState<"idle" | "saving" | "saved">("idle");
+
+  function toggleMultiArr(arr: string[], val: string): string[] {
+    return arr.includes(val) ? arr.filter(v => v !== val) : [...arr, val];
+  }
+
+  async function savePreferences() {
+    setPrefStatus("saving");
+    try {
+      const res = await fetch("/api/user/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          profit_source: profitSource.join(",") || null,
+          core_skills: coreSkills.join(",") || null,
+          opp_horizon: oppHorizon || null,
+          risk_level: riskLevel || null,
+          time_budget: timeBudget || null,
+          user_focus: deriveFocus(profitSource),
+        }),
+      });
+      if (res.ok) {
+        setPrefStatus("saved");
+        toast(tr("settings_pref_toast_ok"));
+        setTimeout(() => setPrefStatus("idle"), 2000);
+      } else {
+        toast(tr("settings_tg_toast_fail"), "error");
+        setPrefStatus("idle");
+      }
+    } catch {
+      toast(tr("settings_tg_toast_fail"), "error");
+      setPrefStatus("idle");
+    }
+  }
 
   function switchLang(l: Lang) {
     localStorage.setItem("flywheel-lang", l);
-    setCurrentLang(l);
     setLangState(l);
     window.dispatchEvent(new CustomEvent("flywheel-lang-change", { detail: l }));
   }
@@ -79,7 +140,7 @@ export default function SettingsClient({ initialSettings }: Props) {
       });
       if (res.ok) {
         setTgStatus("saved");
-        toast("✅ Telegram 已綁定");
+        toast(tr("settings_tg_toast_ok"));
         setTimeout(() => setTgStatus("idle"), 2000);
         // Send welcome digest only on first-time binding
         if (!hasExistingTelegram && chatId) {
@@ -88,11 +149,11 @@ export default function SettingsClient({ initialSettings }: Props) {
         }
       } else {
         setTgStatus("error");
-        toast("❌ 保存失敗，請重試", "error");
+        toast(tr("settings_tg_toast_fail"), "error");
       }
     } catch {
       setTgStatus("error");
-      toast("❌ 保存失敗，請重試", "error");
+      toast(tr("settings_tg_toast_fail"), "error");
     }
   }
 
@@ -103,15 +164,15 @@ export default function SettingsClient({ initialSettings }: Props) {
       const data = await res.json();
       if (data.success) {
         setTgStatus("sent");
-        toast("✅ 測試消息已發送");
+        toast(tr("settings_tg_toast_test_ok"));
       } else {
         setTgStatus("error");
-        toast("❌ 保存失敗，請重試", "error");
+        toast(tr("settings_tg_toast_fail"), "error");
       }
       setTimeout(() => setTgStatus("idle"), 3000);
     } catch {
       setTgStatus("error");
-      toast("❌ 保存失敗，請重試", "error");
+      toast(tr("settings_tg_toast_fail"), "error");
     }
   }
 
@@ -125,63 +186,150 @@ export default function SettingsClient({ initialSettings }: Props) {
       });
       if (res.ok) {
         setCatStatus("saved");
-        toast("✅ 偏好已保存");
+        toast(tr("settings_cat_toast_ok"));
         setTimeout(() => setCatStatus("idle"), 2000);
       } else {
-        toast("❌ 保存失敗，請重試", "error");
+        toast(tr("settings_tg_toast_fail"), "error");
         setCatStatus("idle");
       }
     } catch {
-      toast("❌ 保存失敗，請重試", "error");
+      toast(tr("settings_tg_toast_fail"), "error");
       setCatStatus("idle");
     }
   }
 
-  const t = lang === "zh";
+  const btnClass = (selected: boolean) =>
+    `w-full text-left px-4 py-3 rounded-lg border text-sm transition-colors ${
+      selected
+        ? "border-amber-500 bg-amber-500/20 text-amber-300"
+        : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
+    }`;
+
+  const chipClass = (selected: boolean) =>
+    `px-4 py-2 rounded-lg border text-sm transition-colors ${
+      selected
+        ? "border-amber-500 bg-amber-500/20 text-amber-300"
+        : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
+    }`;
 
   return (
     <div className="min-h-screen bg-slate-900 p-4 md:p-8 pb-24 md:pb-8">
       <div className="max-w-2xl mx-auto space-y-6">
         <h1 className="text-2xl font-bold text-slate-100">
-          ⚙️ {t ? "設置" : "Settings"}
+          ⚙️ {tr("settings_title")}
         </h1>
+
+        {/* 5-Question Preferences */}
+        <Card className="bg-slate-800/50 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-slate-100 text-lg">
+              🎯 {tr("settings_profile_title")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            {/* Q1: Profit Source */}
+            <div>
+              <p className="text-slate-300 text-sm font-medium mb-2">{tr("onboard_profit_label")}</p>
+              <div className="flex flex-wrap gap-2">
+                {PROFIT_SOURCE_KEYS.map((o) => (
+                  <button key={o.value} onClick={() => setProfitSource(toggleMultiArr(profitSource, o.value))}
+                    className={chipClass(profitSource.includes(o.value))}>
+                    {tr(o.tKey)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Q2: Core Skills */}
+            <div>
+              <p className="text-slate-300 text-sm font-medium mb-2">{tr("onboard_skills_label")}</p>
+              <div className="flex flex-wrap gap-2">
+                {CORE_SKILL_KEYS.map((o) => (
+                  <button key={o.value} onClick={() => setCoreSkills(toggleMultiArr(coreSkills, o.value))}
+                    className={chipClass(coreSkills.includes(o.value))}>
+                    {tr(o.tKey)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Q3: Opportunity Horizon */}
+            <div>
+              <p className="text-slate-300 text-sm font-medium mb-2">{tr("onboard_horizon_label")}</p>
+              <div className="space-y-2">
+                {OPP_HORIZON_KEYS.map((o) => (
+                  <button key={o.value} onClick={() => setOppHorizon(o.value)}
+                    className={btnClass(oppHorizon === o.value)}>
+                    {tr(o.tKey)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Q4: Risk Level */}
+            <div>
+              <p className="text-slate-300 text-sm font-medium mb-2">{tr("onboard_risk_label")}</p>
+              <div className="space-y-2">
+                {RISK_LEVEL_KEYS.map((o) => (
+                  <button key={o.value} onClick={() => setRiskLevel(o.value)}
+                    className={btnClass(riskLevel === o.value)}>
+                    {tr(o.tKey)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Q5: Time Budget */}
+            <div>
+              <p className="text-slate-300 text-sm font-medium mb-2">{tr("onboard_time_label")}</p>
+              <div className="space-y-2">
+                {TIME_BUDGET_KEYS.map((o) => (
+                  <button key={o.value} onClick={() => setTimeBudget(o.value)}
+                    className={btnClass(timeBudget === o.value)}>
+                    {tr(o.tKey)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <Button
+              onClick={savePreferences}
+              disabled={prefStatus === "saving"}
+              className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 mt-2"
+            >
+              {prefStatus === "saving"
+                ? tr("settings_pref_saving")
+                : prefStatus === "saved"
+                ? tr("settings_pref_saved")
+                : tr("settings_pref_save")}
+            </Button>
+          </CardContent>
+        </Card>
 
         {/* Telegram Push */}
         <Card className="bg-slate-800 border-slate-700">
           <CardHeader>
             <CardTitle className="text-slate-100 text-lg">
-              ✈️ {t ? "Telegram 推送" : "Telegram Notifications"}
+              ✈️ {tr("settings_tg_title")}
             </CardTitle>
             <p className="text-slate-400 text-sm">
-              {t
-                ? "輸入你的 Telegram Chat ID 以接收機會推送通知"
-                : "Enter your Telegram Chat ID to receive opportunity push notifications"}
+              {tr("settings_tg_desc")}
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="bg-slate-700/30 rounded-lg p-3 text-sm text-slate-400 space-y-1 mb-2">
               <p className="text-slate-300 font-medium">
-                {t ? "如何獲取 Chat ID：" : "How to get your Chat ID:"}
+                {tr("settings_tg_howto")}
               </p>
-              {t ? (
-                <>
-                  <p>1. Telegram 搜索 <span className="font-mono text-amber-400">@userinfobot</span></p>
-                  <p>2. 發送任意消息</p>
-                  <p>3. 複製回覆裡的 <span className="font-mono text-amber-400">Id:</span> 數字貼到下方</p>
-                </>
-              ) : (
-                <>
-                  <p>1. Search <span className="font-mono text-amber-400">@userinfobot</span> on Telegram</p>
-                  <p>2. Send any message</p>
-                  <p>3. Copy the <span className="font-mono text-amber-400">Id:</span> number below</p>
-                </>
-              )}
+              <p>1. {tr("settings_tg_step1")} <span className="font-mono text-amber-400">@userinfobot</span></p>
+              <p>2. {tr("settings_tg_step2")}</p>
+              <p>3. {tr("settings_tg_step3_pre")} <span className="font-mono text-amber-400">Id:</span> {tr("settings_tg_step3_post")}</p>
             </div>
 
             <Input
               value={chatId}
               onChange={(e) => setChatId(e.target.value.replace(/\D/g, ""))}
-              placeholder={t ? "例如：5825881638" : "e.g. 5825881638"}
+              placeholder={tr("settings_tg_placeholder")}
               className="bg-slate-700 border-slate-600 text-slate-100 font-mono"
             />
 
@@ -192,8 +340,8 @@ export default function SettingsClient({ initialSettings }: Props) {
                 className="bg-amber-500 hover:bg-amber-400 text-slate-950"
               >
                 {tgStatus === "saving"
-                  ? t ? "保存中..." : "Saving..."
-                  : t ? "保存" : "Save"}
+                  ? tr("settings_tg_saving")
+                  : tr("settings_tg_save")}
               </Button>
               <Button
                 onClick={testTelegram}
@@ -202,19 +350,19 @@ export default function SettingsClient({ initialSettings }: Props) {
                 className="border-slate-600 text-slate-300 hover:bg-slate-700"
               >
                 {tgStatus === "testing"
-                  ? t ? "發送中..." : "Sending..."
-                  : t ? "發送測試消息" : "Send Test"}
+                  ? tr("settings_tg_testing")
+                  : tr("settings_tg_test")}
               </Button>
             </div>
 
             {tgStatus === "saved" && (
-              <p className="text-green-400 text-sm">✅ {t ? "已綁定" : "Saved"}</p>
+              <p className="text-green-400 text-sm">✅ {tr("settings_tg_saved")}</p>
             )}
             {tgStatus === "sent" && (
-              <p className="text-green-400 text-sm">✅ {t ? "測試消息已發送" : "Test message sent"}</p>
+              <p className="text-green-400 text-sm">✅ {tr("settings_tg_sent")}</p>
             )}
             {tgStatus === "error" && (
-              <p className="text-red-400 text-sm">❌ {t ? "發送失敗，請檢查 Chat ID" : "Failed, check your Chat ID"}</p>
+              <p className="text-red-400 text-sm">❌ {tr("settings_tg_error")}</p>
             )}
           </CardContent>
         </Card>
@@ -223,12 +371,10 @@ export default function SettingsClient({ initialSettings }: Props) {
         <Card className="bg-slate-800 border-slate-700">
           <CardHeader>
             <CardTitle className="text-slate-100 text-lg">
-              📡 {t ? "話題偏好" : "Topic Preferences"}
+              📡 {tr("settings_cat_title")}
             </CardTitle>
             <p className="text-slate-400 text-sm">
-              {t
-                ? "Flywheel 將優先掃描以下話題的信號"
-                : "Flywheel will prioritize scanning signals for these topics"}
+              {tr("settings_cat_desc")}
             </p>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -242,7 +388,7 @@ export default function SettingsClient({ initialSettings }: Props) {
                     : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
                 }`}
               >
-                {t ? cat.zh : cat.en}
+                {lang === "zh" ? cat.zh : cat.en}
               </button>
             ))}
             <Button
@@ -251,10 +397,10 @@ export default function SettingsClient({ initialSettings }: Props) {
               className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 mt-2"
             >
               {catStatus === "saving"
-                ? t ? "保存中..." : "Saving..."
+                ? tr("settings_cat_saving")
                 : catStatus === "saved"
-                ? t ? "✅ 已保存" : "✅ Saved"
-                : t ? "保存偏好" : "Save Preferences"}
+                ? tr("settings_cat_saved")
+                : tr("settings_cat_save")}
             </Button>
           </CardContent>
         </Card>
@@ -263,29 +409,29 @@ export default function SettingsClient({ initialSettings }: Props) {
         <Card className="bg-slate-800 border-slate-700">
           <CardHeader>
             <CardTitle className="text-slate-100 text-lg">
-              🌐 {t ? "語言設置" : "Language"}
+              🌐 {tr("settings_lang_title")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <button
               onClick={() => switchLang("zh")}
               className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
-                currentLang === "zh"
+                lang === "zh"
                   ? "border-amber-500 bg-amber-500/20 text-amber-300"
                   : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
               }`}
             >
-              🇨🇳 中文（信號自動翻譯）
+              {tr("settings_lang_zh")}
             </button>
             <button
               onClick={() => switchLang("en")}
               className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
-                currentLang === "en"
+                lang === "en"
                   ? "border-amber-500 bg-amber-500/20 text-amber-300"
                   : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
               }`}
             >
-              🇺🇸 English (show original)
+              {tr("settings_lang_en")}
             </button>
           </CardContent>
         </Card>

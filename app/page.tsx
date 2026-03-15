@@ -1,293 +1,58 @@
-import Link from "next/link"
-import WaitlistForm from "@/components/waitlist-form"
-import { FlywheelLogo } from "@/components/flywheel-logo"
 import { getDb } from "@/lib/db"
+import LandingContent from "@/components/landing-content"
 
 const USER_COUNT_BASE = 45  // base offset for social proof
+const QUOTA_TOTAL = 50      // total quota for this batch
 
-function getUserCount(): number {
+function getCounts(): { userCount: number; waitlistCount: number } {
   try {
     const db = getDb()
-    const subs = (db.prepare("SELECT COUNT(*) as cnt FROM user_subscriptions").get() as { cnt: number }).cnt
-    const wl = (db.prepare("SELECT COUNT(*) as cnt FROM waitlist").get() as { cnt: number }).cnt
-    return USER_COUNT_BASE + subs + wl
+    // Single query to get both counts at once
+    const row = db.prepare(`
+      SELECT
+        (SELECT COUNT(*) FROM user_subscriptions) as subs,
+        (SELECT COUNT(*) FROM waitlist) as wl
+    `).get() as { subs: number; wl: number }
+    return {
+      userCount: USER_COUNT_BASE + row.subs + row.wl,
+      waitlistCount: Math.min(row.wl + 36, QUOTA_TOTAL - 2),
+    }
   } catch {
-    return USER_COUNT_BASE
+    return { userCount: USER_COUNT_BASE, waitlistCount: 36 }
   }
 }
 
+// JSON-LD structured data for rich search results
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Flywheel",
+  "url": "https://flywheelsea.club",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "description": "每天早上 8 點，把全球信號提煉成你今天可以行動的 3–5 件事，直達 Telegram。自動掃描 Reddit、Hacker News、GitHub 等平台信號，AI 生成落地行動計劃。",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "description": "免費試用"
+  },
+  "inLanguage": "zh-TW",
+  "author": {
+    "@type": "Organization",
+    "name": "Flywheel"
+  }
+};
+
 export default function LandingPage() {
-  const userCount = getUserCount()
+  const { userCount, waitlistCount } = getCounts()
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-
-      {/* ── Header ── */}
-      <header className="border-b border-slate-800/60 px-6 py-4">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <FlywheelLogo size={22} className="text-amber-400 animate-[spin_8s_linear_infinite]" />
-            <span className="font-bold text-slate-100">Flywheel</span>
-          </div>
-          <div className="flex items-center gap-6">
-            <Link href="/sign-in" className="text-sm text-slate-400 hover:text-slate-200 transition-colors">
-              登入
-            </Link>
-            <a href="#waitlist-form"
-              className="text-sm bg-amber-500 hover:bg-amber-400 text-black px-4 py-1.5 rounded-lg transition-colors font-medium">
-              申請免費試用
-            </a>
-          </div>
-        </div>
-      </header>
-
-      {/* ── Hero：痛點先行 ── */}
-      <section className="max-w-4xl mx-auto px-6 pt-20 pb-8 text-center">
-        {/* slot count badge */}
-        <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-full px-4 py-1.5 text-xs text-amber-400 mb-10">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse inline-block"/>
-          內測中 · 本期限額 50 個 · 已申請 38 人
-        </div>
-
-        {/* 痛點 */}
-        <p className="text-slate-500 text-lg mb-3">每天刷完 Twitter、Reddit、TG 群……</p>
-
-        {/* 核心承諾 */}
-        <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6 font-[family-name:var(--font-display)]">
-          <span className="bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent">
-            還是不知道
-          </span>
-          <br/>
-          <span className="bg-gradient-to-r from-amber-400 to-amber-300 bg-clip-text text-transparent">
-            今天該做什麼？
-          </span>
-        </h1>
-
-        <p className="text-xl text-slate-400 mb-3 max-w-2xl mx-auto leading-relaxed">
-          Flywheel 每天早上 8 點，把全球信號提煉成<br/>
-          <strong className="text-slate-200">你今天可以行動的 3–5 件事</strong>，直達 Telegram。
-        </p>
-        <p className="text-sm text-slate-600 mb-10">
-          不是新聞摘要。是附帶「為什麼是現在」和「第一步怎麼做」的行動清單。
-        </p>
-
-        <div id="waitlist-form">
-          <WaitlistForm />
-        </div>
-      </section>
-
-      {/* 社会证明 */}
-      <p className="text-center text-sm text-slate-500 pb-6">
-        已有 {userCount} 位研究者和創業者在用 · 平均每天節省 2 小時信息篩選
-      </p>
-
-      {/* 三步流程 */}
-      <section className="max-w-4xl mx-auto px-6 py-12">
-        <h2 className="text-2xl font-bold text-center mb-10 text-slate-200">
-          三步，從信息過載到精準行動
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            {
-              step: "步驟 1",
-              stepColor: "text-blue-400",
-              borderColor: "border-l-blue-500",
-              title: "信號採集",
-              desc: "每 30 分鐘掃描 Reddit、HN、KOL 推文、GitHub、RSS 全球訂閱",
-            },
-            {
-              step: "步驟 2",
-              stepColor: "text-purple-400",
-              borderColor: "border-l-purple-500",
-              title: "AI 過濾評分",
-              desc: "識別「為什麼是現在」，剔除噪音，只留下有時間窗口的機會",
-            },
-            {
-              step: "步驟 3",
-              stepColor: "text-amber-400",
-              borderColor: "border-l-amber-500",
-              title: "每天早 8 點",
-              desc: "3–5 條行動清單推送到你的 Telegram，附帶第一步怎麼做",
-            },
-          ].map((item) => (
-            <div
-              key={item.step}
-              className={`bg-slate-900/50 border border-slate-800 border-l-4 ${item.borderColor} rounded-2xl p-6 text-center`}
-            >
-              <p className={`text-xs font-mono uppercase tracking-wider mb-2 ${item.stepColor}`}>
-                {item.step}
-              </p>
-              <p className="text-lg font-semibold text-slate-200 mb-2">{item.title}</p>
-              <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── 信號源標籤欄 ── */}
-      <div className="max-w-3xl mx-auto px-6 py-6 flex flex-wrap justify-center gap-2">
-        {[
-          { label: "R Reddit", cls: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
-          { label: "Y Hacker News", cls: "bg-red-500/10 text-red-400 border-red-500/20" },
-          { label: "✕ KOL 推文", cls: "bg-slate-400/10 text-slate-400 border-slate-500/20" },
-          { label: "◉ RSS 全球訂閱", cls: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
-          { label: "⬡ GitHub Trending", cls: "bg-purple-500/10 text-purple-400 border-purple-500/20" },
-        ].map(s => (
-          <span key={s.label} className={`text-xs px-3 py-1 rounded-full border font-medium ${s.cls}`}>
-            {s.label}
-          </span>
-        ))}
-        <span className="text-xs text-slate-600 self-center ml-1">每 30 分鐘掃描</span>
-      </div>
-
-      {/* ── 產品預覽卡片 ── */}
-      <section className="max-w-2xl mx-auto px-6 py-8">
-        <p className="text-xs text-slate-600 text-center mb-4 uppercase tracking-widest">今天早上你收到的</p>
-        <div className="bg-slate-900 border border-slate-700/60 rounded-2xl p-6 shadow-2xl shadow-slate-950/60">
-          {/* Telegram 樣式頭部 */}
-          <div className="flex items-center gap-2 mb-4 pb-4 border-b border-slate-800">
-            <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-xs font-bold text-black">
-              <FlywheelLogo size={16} className="text-black" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-slate-200">Flywheel Daily</p>
-              <p className="text-xs text-slate-500">今日 08:00</p>
-            </div>
-          </div>
-          {/* 消息內容 */}
-          <p className="text-xs text-slate-500 mb-3">📊 今日市場情報 · 3 條值得行動的機會</p>
-          <div className="space-y-3">
-            {[
-              {
-                badge: "🔴 高置信",
-                badgeCls: "bg-rose-500/20 text-rose-400 border border-rose-500/30",
-                title: "Perplexity AI 新一輪融資前夕 · AI 搜索賽道佈局窗口",
-                why: "Perplexity 估值談判中洩露的文件顯示 3 倍增長，窗口期約 2 週",
-                action: "研究競品 You.com / Kagi 的 B 端 API 商業模式，搶先佈局"
-              },
-              {
-                badge: "🟡 中置信",
-                badgeCls: "bg-amber-500/20 text-amber-400 border border-amber-500/30",
-                title: "Cloudflare Workers AI 免費額度限制即將調整",
-                why: "官方論壇帖子確認下月調整，現有免費項目需遷移",
-                action: "評估是否提前鎖定現有免費資源，或切換至替代方案"
-              },
-            ].map((item, i) => (
-              <div key={i} className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50">
-                <div className="flex items-start justify-between gap-2 mb-1.5">
-                  <span className="text-sm font-medium text-slate-100 leading-snug">{item.title}</span>
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium shrink-0 ${item.badgeCls}`}>{item.badge}</span>
-                </div>
-                <p className="text-xs text-slate-500 mb-1.5">⏰ 為什麼是現在：{item.why}</p>
-                <p className="text-xs text-amber-400">→ {item.action}</p>
-              </div>
-            ))}
-          </div>
-          <p className="text-xs text-slate-600 mt-4 text-right">查看全部 → flywheelsea.club</p>
-        </div>
-      </section>
-
-      {/* ── Before / After 對比 ── */}
-      <section className="max-w-4xl mx-auto px-6 py-16">
-        <h2 className="text-2xl font-bold text-center mb-10 text-slate-200">用了之後，什麼變了？</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Before */}
-          <div className="bg-rose-950/20 border border-slate-800 border-l-4 border-l-rose-500/50 rounded-2xl p-6">
-            <p className="text-xs font-mono text-slate-600 mb-4 uppercase tracking-wider">沒有 Flywheel</p>
-            <div className="space-y-3">
-              {[
-                "每天刷 Twitter 1 小時，腦子裡一片空白",
-                "看到有趣的事情，不知道該怎麼行動",
-                "機會出現了，3 天後才看到",
-                "靠運氣決定今天做什麼",
-                "信息太多，反而什麼都沒做",
-              ].map(t => (
-                <div key={t} className="flex items-start gap-2">
-                  <span className="text-rose-500 mt-0.5 shrink-0">✗</span>
-                  <span className="text-sm text-slate-500">{t}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          {/* After */}
-          <div className="bg-emerald-950/20 border border-slate-800 border-l-4 border-l-emerald-500/50 rounded-2xl p-6 shadow-lg shadow-emerald-500/5">
-            <p className="text-xs font-mono text-emerald-400 mb-4 uppercase tracking-wider">有了 Flywheel</p>
-            <div className="space-y-3">
-              {[
-                "早上 8 點收到今日值得關注的 3 條機會",
-                "每條機會附帶行動清單，打開就知道做什麼",
-                "信號實時掃描，機會出現即推送",
-                "AI 評分幫你過濾，只看高置信的",
-                "5 分鐘決策，剩下的時間用來執行",
-              ].map(t => (
-                <div key={t} className="flex items-start gap-2">
-                  <span className="text-emerald-500 mt-0.5 shrink-0">✓</span>
-                  <span className="text-sm text-slate-300">{t}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FAQ ── */}
-      <section className="max-w-2xl mx-auto px-6 py-16">
-        <h2 className="text-2xl font-bold text-center text-slate-100 mb-10">常見問題</h2>
-        <div className="space-y-4">
-          {[
-            {
-              q: "邀請碼從哪裡獲取？",
-              a: "填寫上方申請表單，我們會在 24 小時內通過 Telegram 聯繫你並發送邀請碼。"
-            },
-            {
-              q: "必須有 Telegram 才能用嗎？",
-              a: "是的，每天早 8 點的行動清單通過 Telegram 推送。如果還沒有帳號，註冊只需 1 分鐘。"
-            },
-            {
-              q: "7 天試用結束後會自動扣費嗎？",
-              a: "不會。試用期結束後系統暫停，不會自動續費。你可以隨時選擇訂閱繼續使用。"
-            },
-            {
-              q: "掃描哪些資訊源？",
-              a: "Reddit、Hacker News、KOL 推文、GitHub Trending、全球 RSS 訂閱，每 30 分鐘掃描一次，每天超過 350 條信號。"
-            },
-            {
-              q: "我的資料安全嗎？",
-              a: "我們只存儲你的 Telegram Chat ID 和偏好設置，不收集個人身份信息，不出售數據。"
-            },
-          ].map((item, i) => (
-            <details key={i} className="border border-slate-700/60 rounded-lg group">
-              <summary className="flex justify-between items-center p-4 cursor-pointer text-slate-200 font-medium hover:text-white select-none list-none">
-                {item.q}
-                <span className="text-slate-500 group-open:rotate-180 transition-transform">▾</span>
-              </summary>
-              <p className="px-4 pb-4 text-slate-400 text-sm leading-relaxed">{item.a}</p>
-            </details>
-          ))}
-        </div>
-      </section>
-
-      {/* ── 底部 CTA ── */}
-      <section className="max-w-2xl mx-auto px-6 py-20 text-center">
-        <p className="text-slate-600 text-sm mb-3">目前僅限邀請制 · 名額有限</p>
-        <h2 className="text-3xl font-bold mb-4 text-slate-100">今天就開始</h2>
-        <p className="text-slate-400 mb-8">
-          加入第一批用戶，每天早上 8 點<br/>
-          收到你的私人市場情報簡報。
-        </p>
-        <div id="waitlist-form-bottom">
-          <WaitlistForm />
-        </div>
-        <p className="text-xs text-slate-600 mt-4">試用結束後 $19.9/月，隨時取消</p>
-      </section>
-
-      {/* ── Footer ── */}
-      <footer className="border-t border-slate-800/60 py-8 text-center text-xs text-slate-700">
-        © 2026 Flywheel ·{" "}
-        <a href="https://t.me/BJMYan" className="hover:text-slate-500 transition-colors">聯繫支持</a>
-        {" · "}
-        <Link href="/sign-in" className="hover:text-slate-500 transition-colors">登入</Link>
-      </footer>
-
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+      />
+      <LandingContent userCount={userCount} waitlistCount={waitlistCount} quotaTotal={QUOTA_TOTAL} />
+    </>
   )
 }

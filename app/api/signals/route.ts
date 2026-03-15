@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 export async function GET(req: NextRequest) {
   try {
+    const { userId } = await auth();
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const { searchParams } = new URL(req.url);
     const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20", 10)));
@@ -37,9 +42,14 @@ export async function GET(req: NextRequest) {
       total: total.count,
       page,
       limit,
+    }, {
+      headers: {
+        // Signals list: cache 15s client-side, allow stale for 60s
+        "Cache-Control": "private, max-age=15, stale-while-revalidate=60",
+      },
     });
   } catch (err) {
-    console.error("Failed to fetch signals:", err);
+    logger.error("signals/GET", "Failed to fetch signals", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json({ error: "Failed to fetch signals" }, { status: 500 });
   }
 }

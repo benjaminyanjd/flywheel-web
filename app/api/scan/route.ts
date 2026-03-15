@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
 import { spawn } from "child_process";
+import { logger } from "@/lib/logger";
 
 const COOLDOWN_SECONDS = 30 * 60; // 30 minutes
 
@@ -42,9 +43,9 @@ export async function POST() {
        ON CONFLICT(user_id) DO UPDATE SET last_scan_at = datetime('now')`
     ).run(userId);
 
-    return NextResponse.json({ status: "started", message: "扫描已启动，新信号将通过雷达频道实时显示" });
+    return NextResponse.json({ status: "started", message: "掃描已啟動，新信號將透過雷達頻道即時顯示" });
   } catch (err) {
-    console.error("Scan error:", err);
+    logger.error("scan/POST", "Scan failed", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json({ error: "Scan failed" }, { status: 500 });
   }
 }

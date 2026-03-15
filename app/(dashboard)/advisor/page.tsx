@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useT } from "@/lib/i18n";
+import { readSSEStream } from "@/lib/sse";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -16,8 +17,20 @@ function AdvisorInner() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+
+  // Load conversation history on mount
+  useEffect(() => {
+    fetch("/api/advisor")
+      .then(r => r.json())
+      .then(data => {
+        if (data.history?.length) setMessages(data.history);
+      })
+      .catch(() => {})
+      .finally(() => setHistoryLoading(false));
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -25,8 +38,8 @@ function AdvisorInner() {
     }
   }, [messages]);
 
-  async function handleSend() {
-    const text = input.trim();
+  async function handleSend(textOverride?: string) {
+    const text = (textOverride ?? input).trim();
     if (!text || streaming) return;
 
     setInput("");
@@ -49,34 +62,26 @@ function AdvisorInner() {
         signal: controller.signal,
       });
 
-      if (!res.body) return;
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let rawBuffer = "";
-      let textAccum = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        rawBuffer += decoder.decode(value, { stream: true });
-        const lines = rawBuffer.split("\n");
-        rawBuffer = lines.pop() || "";
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-          try {
-            const json = JSON.parse(line.slice(6));
-            if (json.text) textAccum += json.text;
-          } catch {}
-        }
+      if (res.status === 429) {
+        const err = await res.json();
         setMessages((prev) => {
           const updated = [...prev];
-          updated[updated.length - 1] = { role: "assistant", content: textAccum };
+          updated[updated.length - 1] = { role: "assistant", content: err.message || t("advisor_rate_limit") };
           return updated;
         });
+        setStreaming(false);
+        return;
       }
+      if (!res.body) return;
+      await readSSEStream(res.body, (text) => {
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = { role: "assistant", content: text };
+          return updated;
+        });
+      });
     } catch (err) {
       if ((err as Error).name !== "AbortError") {
-        console.error(err);
         setMessages((prev) => {
           const updated = [...prev];
           updated[updated.length - 1] = {
@@ -104,7 +109,12 @@ function AdvisorInner() {
 
       <ScrollArea className="flex-1 mb-4" ref={scrollRef}>
         <div className="space-y-4 pr-4">
-          {messages.length === 0 && (
+          {historyLoading && (
+            <div className="flex items-center justify-center py-12">
+              <div className="w-5 h-5 border-2 border-slate-600 border-t-slate-300 rounded-full animate-spin" />
+            </div>
+          )}
+          {!historyLoading && messages.length === 0 && (
             <div className="flex flex-col items-center gap-6 py-12">
               <div className="text-center">
                 <p className="text-slate-300 text-lg font-medium mb-1">{t("advisor_welcome")}</p>
@@ -113,21 +123,14 @@ function AdvisorInner() {
               {/* 快捷問題 */}
               <div className="flex flex-col gap-2 w-full max-w-md">
                 {[
-                  "今天的信號裡哪些值得重點關注？",
-                  "幫我分析待辦清單裡的機會，下一步應該優先做什麼？",
-                  "AI Agent 賽道最近有什麼新進展和投資機會？",
+                  t("advisor_quick_q1"),
+                  t("advisor_quick_q2"),
+                  t("advisor_quick_q3"),
                 ].map((q) => (
                   <button
                     key={q}
                     className="text-left text-sm text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-500 rounded-lg px-4 py-3 transition-colors"
-                    onClick={() => {
-                      setInput(q);
-                      // auto-send
-                      setTimeout(() => {
-                        const btn = document.querySelector('[data-send-btn]') as HTMLButtonElement;
-                        btn?.click();
-                      }, 50);
-                    }}
+                    onClick={() => handleSend(q)}
                   >
                     {q}
                   </button>
@@ -179,7 +182,7 @@ function AdvisorInner() {
         <Button
           data-send-btn
           className="bg-blue-600 hover:bg-blue-700 text-white shrink-0 h-[44px]"
-          onClick={handleSend}
+          onClick={() => handleSend()}
           disabled={streaming || !input.trim()}
         >
           {t("advisor_send")}

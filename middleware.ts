@@ -6,13 +6,14 @@ const isPublicRoute = createRouteMatcher([
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/expired",
+  "/privacy",
+  "/og-image",
   "/api/webhooks/(.*)",
   "/api/waitlist",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
-  const { pathname } = req.nextUrl;
 
   // Public routes: allow through
   if (isPublicRoute(req)) {

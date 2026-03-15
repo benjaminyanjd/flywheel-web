@@ -8,31 +8,34 @@ import { getLangStored, useLang, type Lang } from "@/lib/lang";
 import { useT } from "@/lib/i18n";
 import { UserButton, useUser } from "@clerk/nextjs";
 import { FlywheelLogo } from "@/components/flywheel-logo";
+import { LangToggle } from "@/components/lang-toggle";
 
 const RADAR_CATEGORIES = [
   { value: "ai_tech",         zh: "AI 科技",  en: "AI Tech",  icon: "🤖" },
   { value: "crypto_policy",   zh: "加密政策", en: "Crypto",   icon: "₿" },
   { value: "new_tools",       zh: "新工具",   en: "New Tools",icon: "🔧" },
-  { value: "overseas_trends", zh: "海外趋势", en: "Overseas", icon: "🌍" },
+  { value: "overseas_trends", zh: "海外趨勢", en: "Overseas", icon: "🌍" },
   { value: "x_kol",           zh: "KOL",      en: "KOL",      icon: "⭐" },
+  { value: "alpha_rising",    zh: "KOL 崛起", en: "KOL Rising", icon: "🚀" },
 ];
 
 const OTHER_NAV: { href: string; zh: string; en: string; icon: string }[] = [
-  { href: "/opportunities", zh: "机会捕捉", en: "Opportunities", icon: "💎" },
-  { href: "/todolist",      zh: "待办清单",  en: "Todolist",     icon: "✅" },
-  { href: "/archive",       zh: "归档记录",  en: "Archive",      icon: "🗄️" },
-  { href: "/advisor",       zh: "顾问",      en: "Advisor",      icon: "🧠" },
-  { href: "/control",       zh: "掃描中心",    en: "Scan Center",      icon: "🔍" },
-  { href: "/settings",      zh: "设置",      en: "Settings",     icon: "🔧" },
+  { href: "/opportunities", zh: "機會捕捉", en: "Opportunities", icon: "💎" },
+  { href: "/todolist",      zh: "待辦清單",  en: "Todolist",     icon: "✅" },
+  { href: "/archive",       zh: "歸檔記錄",  en: "Archive",      icon: "🗄️" },
+  { href: "/advisor",       zh: "顧問",      en: "Advisor",      icon: "🧠" },
+  { href: "/control",       zh: "掃描中心",  en: "Scan Center",  icon: "🔍" },
+  { href: "/settings",      zh: "設置",      en: "Settings",     icon: "🔧" },
 ];
 
-const RADAR_LABEL = { zh: "雷达", en: "Radar" };
+const RADAR_LABEL = { zh: "雷達", en: "Radar" };
 
 function SidebarInner() {
   const { t } = useT();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [signalCount, setSignalCount] = useState<number | null>(null);
+  const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
   const [radarOpen, setRadarOpen] = useState(pathname.startsWith("/radar"));
   const [isMobile, setIsMobile] = useState(false);
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
@@ -67,6 +70,7 @@ function SidebarInner() {
         if (res.ok) {
           const data = await res.json();
           setSignalCount(data.todayCount ?? 0);
+          if (data.categoryCounts) setCategoryCounts(data.categoryCounts);
         }
       } catch {}
     }
@@ -91,23 +95,23 @@ function SidebarInner() {
       <div className="fixed bottom-0 left-0 right-0 z-50 bg-slate-800 border-t border-slate-700 flex">
         <Link href="/radar" className={tabCls(pathname.startsWith("/radar"))}>
           <span className="text-xl">📡</span>
-          <span className="text-xs mt-0.5">{lang === "zh" ? "雷达" : "Radar"}</span>
+          <span className="text-xs mt-0.5">{lang === "zh" ? "雷達" : "Radar"}</span>
         </Link>
         <Link href="/opportunities" className={tabCls(pathname.startsWith("/opportunities"))}>
           <span className="text-xl">💎</span>
-          <span className="text-xs mt-0.5">{lang === "zh" ? "机会" : "Opps"}</span>
+          <span className="text-xs mt-0.5">{lang === "zh" ? "機會" : "Opps"}</span>
         </Link>
         <Link href="/todolist" className={tabCls(pathname.startsWith("/todolist"))}>
           <span className="text-xl">✅</span>
-          <span className="text-xs mt-0.5">{lang === "zh" ? "待办" : "Todo"}</span>
+          <span className="text-xs mt-0.5">{lang === "zh" ? "待辦" : "Todo"}</span>
         </Link>
         <Link href="/archive" className={tabCls(pathname.startsWith("/archive"))}>
           <span className="text-xl">🗄️</span>
-          <span className="text-xs mt-0.5">{lang === "zh" ? "归档" : "Archive"}</span>
+          <span className="text-xs mt-0.5">{lang === "zh" ? "歸檔" : "Archive"}</span>
         </Link>
         <Link href="/advisor" className={tabCls(pathname.startsWith("/advisor") || pathname.startsWith("/control"))}>
-          <span className="text-xl">⚙️</span>
-          <span className="text-xs mt-0.5">{lang === "zh" ? "更多" : "More"}</span>
+          <span className="text-xl">🧠</span>
+          <span className="text-xs mt-0.5">{lang === "zh" ? "顧問" : "Advisor"}</span>
         </Link>
       </div>
     );
@@ -163,6 +167,11 @@ function SidebarInner() {
                   >
                     <span className="text-slate-500">{cat.icon}</span>
                     <span>{lang === "zh" ? cat.zh : cat.en}</span>
+                    {(categoryCounts[cat.value] ?? 0) > 0 && (
+                      <span className="text-[10px] bg-slate-700 text-slate-400 px-1.5 py-0.5 rounded-full ml-auto">
+                        {categoryCounts[cat.value]}
+                      </span>
+                    )}
                   </Link>
                 );
               })}
@@ -198,23 +207,26 @@ function SidebarInner() {
         </a>
       </nav>
 
-      {user && (
-        <div className="px-3 py-2 text-xs text-slate-500 truncate border-t border-slate-800">
-          {user.firstName || user.emailAddresses[0]?.emailAddress}
-        </div>
-      )}
       {daysLeft !== null && daysLeft <= 7 && (
         <div className="px-3 pb-2">
           <a href="/expired" className={`flex items-center gap-2 text-xs px-3 py-2 rounded-lg transition-colors ${
             daysLeft <= 2 ? "bg-red-900/30 text-red-400 hover:bg-red-900/50" : "bg-amber-900/30 text-amber-400 hover:bg-amber-900/50"
           }`}>
             <span>🕐</span>
-            <span>試用剩 {daysLeft} 天</span>
+            <span>{t("sidebar_trial_left")} {daysLeft} {t("sidebar_trial_days")}</span>
           </a>
         </div>
       )}
-      <div className="p-4 border-t border-slate-700">
+      <div className="px-3 pb-2">
+        <LangToggle className="w-full text-center" />
+      </div>
+      <div className="px-4 py-3 border-t border-slate-700 flex items-center gap-3">
         <UserButton />
+        {user && (
+          <span className="text-sm text-slate-300 truncate">
+            {user.firstName || user.emailAddresses[0]?.emailAddress}
+          </span>
+        )}
       </div>
     </aside>
   );

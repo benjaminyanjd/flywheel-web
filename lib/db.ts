@@ -42,33 +42,6 @@ export interface Opportunity {
   acted_at: string | null;
 }
 
-export interface Conversation {
-  id: number;
-  type: string;
-  input_summary: string | null;
-  output: string | null;
-  signal_ids: string | null;
-  window: string | null;
-  created_at: string;
-}
-
-// --- Multi-user additions ---
-
-export interface InviteCode {
-  code: string;
-  created_by: string;
-  used_by: string | null;
-  used_at: string | null;
-  is_used: number;
-}
-
-export interface UserSubscription {
-  user_id: string;
-  plan: string;
-  trial_end: string | null;
-  created_at: string;
-}
-
 export interface UserSettings {
   user_id: string;
   categories: string;
@@ -78,6 +51,14 @@ export interface UserSettings {
   email: string | null;
   onboarding_done: number;
   last_scan_at: string | null;
+  user_role: string | null;
+  user_focus: string | null;
+  opp_type: string | null;
+  profit_source: string | null;
+  core_skills: string | null;
+  opp_horizon: string | null;
+  risk_level: string | null;
+  time_budget: string | null;
 }
 
 export function runMigrations(): void {
@@ -113,9 +94,29 @@ export function runMigrations(): void {
     -- Invite codes are managed via DB directly, not seeded here
   `);
 
+  // User preferences columns
+  for (const col of [
+    'user_role TEXT DEFAULT NULL', 'user_focus TEXT DEFAULT NULL', 'opp_type TEXT DEFAULT NULL',
+    'profit_source TEXT DEFAULT NULL', 'core_skills TEXT DEFAULT NULL', 'opp_horizon TEXT DEFAULT NULL',
+    'risk_level TEXT DEFAULT NULL', 'time_budget TEXT DEFAULT NULL',
+  ]) {
+    try {
+      db.exec(`ALTER TABLE user_settings ADD COLUMN ${col}`);
+    } catch (_) {
+      // Column already exists, ignore
+    }
+  }
+
   // T-02: Add user_id to opportunity_actions for multi-user data isolation
   try {
     db.exec(`ALTER TABLE opportunity_actions ADD COLUMN user_id TEXT DEFAULT "system"`);
+  } catch (_) {
+    // Column already exists, ignore
+  }
+
+  // T-03: Add user_id to conversations for per-user rate limiting
+  try {
+    db.exec(`ALTER TABLE conversations ADD COLUMN user_id TEXT DEFAULT "system"`);
   } catch (_) {
     // Column already exists, ignore
   }

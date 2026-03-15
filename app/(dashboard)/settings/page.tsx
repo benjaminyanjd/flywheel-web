@@ -8,7 +8,24 @@ export default async function SettingsPage() {
   if (!userId) redirect("/sign-in");
 
   const db = getDb();
-  const settings = db.prepare("SELECT * FROM user_settings WHERE user_id = ?").get(userId) as any;
+  interface UserSettings {
+    user_id: string;
+    categories: string | null;
+    scan_interval: number | null;
+    notify_channel: string | null;
+    email: string | null;
+    telegram_chat_id: string | null;
+    onboarding_done: number | null;
+    user_role: string | null;
+    user_focus: string | null;
+    opp_type: string | null;
+    profit_source: string | null;
+    core_skills: string | null;
+    opp_horizon: string | null;
+    risk_level: string | null;
+    time_budget: string | null;
+  }
+  const settings = db.prepare("SELECT * FROM user_settings WHERE user_id = ?").get(userId) as UserSettings | null;
 
   return <SettingsClient initialSettings={settings} />;
 }

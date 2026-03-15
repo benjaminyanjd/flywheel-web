@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 export async function POST(
   req: NextRequest,
@@ -10,16 +11,22 @@ export async function POST(
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const { amount, note } = await req.json();
-  const db = getDb();
+  try {
+    const { amount, note } = await req.json();
+    const db = getDb();
 
-  db.prepare(`
-    UPDATE opportunity_actions
-    SET outcome_amount = ?, outcome_note = ?, outcome_at = CURRENT_TIMESTAMP
-    WHERE id = ? AND (user_id = ? OR user_id = 'system')
-  `).run(amount ?? null, note ?? null, id, userId);
+    db.prepare(`
+      UPDATE opportunity_actions
+      SET outcome_amount = ?, outcome_note = ?, outcome_at = CURRENT_TIMESTAMP
+      WHERE id = ? AND (user_id = ? OR user_id = 'system')
+    `).run(amount ?? null, note ?? null, id, userId);
 
-  return NextResponse.json({ ok: true });
+    logger.info("opportunities/outcome/POST", "Outcome recorded", { userId, oppId: id });
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    logger.error("opportunities/outcome/POST", "Failed to record outcome", { error: err instanceof Error ? err.message : String(err), userId, oppId: id });
+    return NextResponse.json({ error: "Failed to record outcome" }, { status: 500 });
+  }
 }
 
 export async function GET(

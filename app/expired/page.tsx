@@ -1,82 +1,38 @@
 import { auth } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
-import { FlywheelLogo } from "@/components/flywheel-logo";
+import { ExpiredContent } from "@/components/expired-content";
 
 export default async function ExpiredPage() {
   const { userId } = await auth();
   const db = getDb();
 
-  // 取用戶統計
-  let stats = { totalOpps: 0, actionedOpps: 0, trialStart: null as string | null };
+  // 取用戶統計與試用狀態
+  let totalOpps = 0;
+  let actionedOpps = 0;
+  let isActuallyExpired = true;
+  let daysLeft = 0;
+
   if (userId) {
-    const sub = db.prepare("SELECT created_at FROM user_subscriptions WHERE user_id = ?").get(userId) as any;
-    stats.trialStart = sub?.created_at ?? null;
-    stats.totalOpps = (db.prepare("SELECT COUNT(*) as c FROM opportunity_actions WHERE user_id = ? OR user_id = 'system'").get(userId) as any)?.c ?? 0;
-    stats.actionedOpps = (db.prepare("SELECT COUNT(*) as c FROM opportunity_actions WHERE action IN ('action','done') AND (user_id = ? OR user_id = 'system')").get(userId) as any)?.c ?? 0;
+    const sub = db.prepare("SELECT created_at, plan, trial_end FROM user_subscriptions WHERE user_id = ?").get(userId) as { created_at: string; plan: string; trial_end: string | null } | undefined;
+    // 只統計該用戶自己的機會（不含系統全局）
+    totalOpps = (db.prepare("SELECT COUNT(*) as c FROM opportunity_actions WHERE user_id = ?").get(userId) as { c: number } | undefined)?.c ?? 0;
+    actionedOpps = (db.prepare("SELECT COUNT(*) as c FROM opportunity_actions WHERE action IN ('action','done') AND user_id = ?").get(userId) as { c: number } | undefined)?.c ?? 0;
+    // 判斷是否真的過期
+    if (sub?.plan === "trial" && sub?.trial_end) {
+      const msLeft = new Date(sub.trial_end).getTime() - Date.now();
+      isActuallyExpired = msLeft <= 0;
+      daysLeft = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));
+    } else if (sub?.plan !== "expired") {
+      isActuallyExpired = false;
+    }
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-      <div className="text-center max-w-lg">
-        <div className="flex justify-center mb-4">
-          <FlywheelLogo size={52} className="text-amber-400/60 animate-[spin_8s_linear_infinite]" />
-        </div>
-        <h1 className="text-2xl font-bold text-slate-100 mb-2">試用期已結束</h1>
-        <p className="text-slate-400 mb-6">你的 7 天免費試用已到期。</p>
-
-        {/* 用戶試用期間數據 */}
-        <div className="bg-slate-800 rounded-xl p-5 mb-6 text-left border border-slate-700">
-          <p className="text-sm text-slate-400 mb-3">📊 你的試用報告</p>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-amber-400">{stats.totalOpps}</div>
-              <div className="text-xs text-slate-500 mt-1">共識別機會</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-emerald-400">{stats.actionedOpps}</div>
-              <div className="text-xs text-slate-500 mt-1">已行動機會</div>
-            </div>
-          </div>
-        </div>
-
-        {/* 定價 */}
-        <div className="bg-slate-800 rounded-xl p-5 mb-6 border border-amber-500/30 text-left">
-          <p className="text-sm font-semibold text-amber-400 mb-3">🚀 正式版方案</p>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-slate-200 font-medium">月度訂閱</p>
-                <p className="text-xs text-slate-500">無限信號掃描 + AI機會識別 + Telegram推送</p>
-              </div>
-              <span className="text-xl font-bold text-slate-100">$19.9<span className="text-sm text-slate-400">/月</span></span>
-            </div>
-            <hr className="border-slate-700" />
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-slate-200 font-medium">年度訂閱 <span className="text-xs bg-emerald-700 text-emerald-200 px-1.5 py-0.5 rounded ml-1">省 16%</span></p>
-                <p className="text-xs text-slate-500">全部功能 + 優先新功能體驗</p>
-              </div>
-              <span className="text-xl font-bold text-slate-100">$199<span className="text-sm text-slate-400">/年</span></span>
-            </div>
-          </div>
-        </div>
-
-        {/* 主要付款 CTA */}
-        <a
-          href="https://buy.stripe.com/placeholder"
-          className="inline-block w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-6 py-3 rounded-lg transition-colors mb-3 text-center"
-        >
-          立即訂閱 $19.9/月 →
-        </a>
-        {/* 次要 CTA - 聯繫 */}
-        <a
-          href="https://t.me/BJMYan"
-          className="inline-block w-full border border-slate-600 hover:border-slate-400 text-slate-400 hover:text-slate-200 px-6 py-3 rounded-lg transition-colors mb-3 text-center text-sm"
-        >
-          聯繫獲取授權
-        </a>
-        <p className="text-xs text-slate-600">發送邀請碼給好友，雙方各得 1 個月</p>
-      </div>
-    </div>
+    <ExpiredContent
+      isActuallyExpired={isActuallyExpired}
+      daysLeft={daysLeft}
+      totalOpps={totalOpps}
+      actionedOpps={actionedOpps}
+    />
   );
 }

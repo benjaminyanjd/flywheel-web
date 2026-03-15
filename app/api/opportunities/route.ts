@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
+import { logger } from "@/lib/logger";
 
 export async function GET() {
   try {
@@ -23,7 +24,7 @@ export async function GET() {
 
     return NextResponse.json({ opportunities });
   } catch (err) {
-    console.error("Failed to fetch opportunities:", err);
+    logger.error("opportunities/GET", "Failed to fetch opportunities", { error: err instanceof Error ? err.message : String(err) });
     return NextResponse.json({ error: "Failed to fetch opportunities" }, { status: 500 });
   }
 }
