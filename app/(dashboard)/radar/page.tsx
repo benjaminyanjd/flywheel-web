@@ -85,7 +85,7 @@ const CATEGORY_LABELS: Record<string, { zh: string; en: string }> = {
   new_tools:       { zh: "新工具",   en: "New Tools" },
   overseas_trends: { zh: "海外趨勢", en: "Overseas" },
   x_kol:           { zh: "KOL",      en: "KOL" },
-  alpha_rising:    { zh: "KOL 崛起", en: "KOL Rising" },
+  alpha_rising:    { zh: "Alpha",    en: "Alpha" },
 };
 
 // Map user_focus values to signal categories
@@ -374,7 +374,7 @@ function RadarContent() {
           const d = s.created_at.endsWith("Z") || s.created_at.includes("+") ? s.created_at : s.created_at + "Z";
           return new Date(d).toLocaleDateString("zh-TW") === today;
         }).length;
-        const hotCount = filtered.filter(s => s.heat_score >= 3).length;
+        const hotCount = filtered.length;
         if (todayCount === 0 && hotCount === 0) return null;
         return (
           <div className="flex items-center gap-3 mb-3 text-sm text-slate-400">

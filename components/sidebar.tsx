@@ -16,7 +16,7 @@ const RADAR_CATEGORIES = [
   { value: "new_tools",       zh: "新工具",   en: "New Tools",icon: "🔧" },
   { value: "overseas_trends", zh: "海外趨勢", en: "Overseas", icon: "🌍" },
   { value: "x_kol",           zh: "KOL",      en: "KOL",      icon: "⭐" },
-  { value: "alpha_rising",    zh: "KOL 崛起", en: "KOL Rising", icon: "🚀" },
+  { value: "alpha_rising",    zh: "Alpha",    en: "Alpha",       icon: "🚀" },
 ];
 
 const OTHER_NAV: { href: string; zh: string; en: string; icon: string }[] = [
