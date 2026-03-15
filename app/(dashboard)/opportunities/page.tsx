@@ -42,7 +42,13 @@ function OpportunitiesContent() {
   const filtered = h.opportunities.filter((opp) => {
     if (h.effectiveDateFilter === "today") {
       const today = new Date().toLocaleDateString("zh-TW");
-      if (new Date(opp.created_at).toLocaleDateString("zh-TW") !== today) return false;
+      if (new Date(opp.created_at + " UTC").toLocaleDateString("zh-TW") !== today) return false;
+    }
+    // Freshness filter
+    if (h.freshnessFilter !== "all") {
+      const hoursAgo = (Date.now() - new Date(opp.created_at + " UTC").getTime()) / (1000 * 60 * 60);
+      if (h.freshnessFilter === "fresh" && hoursAgo > 24) return false;
+      if (h.freshnessFilter === "expired" && hoursAgo <= 48) return false;
     }
     if (h.confFilter === "all") return true;
     const raw = (() => { try { return JSON.parse(opp.opp_embed); } catch { return {}; } })();
@@ -74,6 +80,8 @@ function OpportunitiesContent() {
         setDateFilter={h.setDateFilter}
         confFilter={h.confFilter}
         setConfFilter={h.setConfFilter}
+        freshnessFilter={h.freshnessFilter}
+        setFreshnessFilter={h.setFreshnessFilter}
         count={h.opportunities.length}
         latestDate={h.opportunities[0]?.created_at}
         t={h.t}

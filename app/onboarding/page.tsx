@@ -297,13 +297,7 @@ export default function OnboardingPage() {
               >
                 {t("onboard_next")}
               </Button>
-              <button
-                type="button"
-                onClick={() => setStep(2)}
-                className="w-full text-center text-sm text-slate-500 hover:text-slate-400 transition-colors"
-              >
-                {t("onboard_skip")}
-              </button>
+
             </CardContent>
           </Card>
         )}
@@ -386,23 +380,13 @@ export default function OnboardingPage() {
                 placeholder={t("onboard_tg_example")}
                 className="bg-slate-700 border-slate-600 text-slate-100 font-mono"
               />
-              <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  onClick={finish}
-                  disabled={saving}
-                  className="flex-1 text-slate-400 hover:text-slate-200"
-                >
-                  {t("onboard_tg_later")}
-                </Button>
-                <Button
-                  onClick={finishWithTelegram}
-                  disabled={saving}
-                  className="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950"
-                >
-                  {saving ? t("onboard_tg_saving") : t("onboard_tg_done")}
-                </Button>
-              </div>
+              <Button
+                onClick={finishWithTelegram}
+                disabled={saving || !telegramId}
+                className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950"
+              >
+                {saving ? t("onboard_tg_saving") : t("onboard_tg_done")}
+              </Button>
             </CardContent>
           </Card>
         )}

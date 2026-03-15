@@ -27,5 +27,7 @@ export default async function SettingsPage() {
   }
   const settings = db.prepare("SELECT * FROM user_settings WHERE user_id = ?").get(userId) as UserSettings | null;
 
-  return <SettingsClient initialSettings={settings} />;
+  const hasTelegram = !!settings?.telegram_chat_id;
+
+  return <SettingsClient initialSettings={settings} hasTelegram={hasTelegram} />;
 }

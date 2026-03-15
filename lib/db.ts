@@ -59,6 +59,7 @@ export interface UserSettings {
   opp_horizon: string | null;
   risk_level: string | null;
   time_budget: string | null;
+  opp_dislike: string | null;
 }
 
 export function runMigrations(): void {
@@ -99,6 +100,7 @@ export function runMigrations(): void {
     'user_role TEXT DEFAULT NULL', 'user_focus TEXT DEFAULT NULL', 'opp_type TEXT DEFAULT NULL',
     'profit_source TEXT DEFAULT NULL', 'core_skills TEXT DEFAULT NULL', 'opp_horizon TEXT DEFAULT NULL',
     'risk_level TEXT DEFAULT NULL', 'time_budget TEXT DEFAULT NULL',
+    'opp_dislike TEXT DEFAULT NULL',
   ]) {
     try {
       db.exec(`ALTER TABLE user_settings ADD COLUMN ${col}`);
