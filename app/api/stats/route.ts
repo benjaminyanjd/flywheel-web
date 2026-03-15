@@ -31,9 +31,9 @@ export async function GET() {
     const signalRows = db
       .prepare(
         `SELECT COUNT(*) AS total,
-                SUM(CASE WHEN date(created_at) = date("now") THEN 1 ELSE 0 END) AS today,
-                COALESCE(source, "unknown") AS source,
-                COALESCE(category, "unknown") AS category
+                SUM(CASE WHEN date(created_at) = date('now') THEN 1 ELSE 0 END) AS today,
+                COALESCE(source, 'unknown') AS source,
+                COALESCE(category, 'unknown') AS category
          FROM signals
          GROUP BY source, category`
       )
