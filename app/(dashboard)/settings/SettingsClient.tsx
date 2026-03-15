@@ -29,9 +29,10 @@ interface UserSettings {
 
 interface Props {
   initialSettings: UserSettings | null;
+  hasTelegram: boolean;
 }
 
-export default function SettingsClient({ initialSettings }: Props) {
+export default function SettingsClient({ initialSettings, hasTelegram }: Props) {
   const toast = useToast();
   const { t: tr } = useT();
   const [lang, setLangState] = useState<Lang>(() => {
@@ -155,8 +156,15 @@ export default function SettingsClient({ initialSettings }: Props) {
           ⚙️ {tr("settings_title")}
         </h1>
 
+        {!hasTelegram && (
+          <div className="bg-amber-900/30 border border-amber-700/50 rounded-lg px-4 py-3 flex items-center justify-between mb-2">
+            <span className="text-amber-300 text-sm">⚡ 尚未綁定 Telegram，無法收到機會推送</span>
+            <a href="#telegram" className="text-amber-400 hover:underline text-sm font-medium shrink-0 ml-4">立即綁定 →</a>
+          </div>
+        )}
+
         {/* Telegram Push */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card id="telegram" className="bg-slate-800 border-slate-700">
           <CardHeader>
             <CardTitle className="text-slate-100 text-lg">
               ✈️ {tr("settings_tg_title")}

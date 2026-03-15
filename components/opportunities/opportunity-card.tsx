@@ -67,19 +67,29 @@ export const OpportunityCard = React.memo(function OpportunityCard({
 
           {/* Header */}
           <div className="flex items-start justify-between mb-3 min-w-0">
-            <h3 className="text-slate-100 font-semibold text-base leading-snug pr-4 min-w-0 break-words">
-              💡 {displayTitle}
-            </h3>
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-xs text-slate-500 border border-slate-600 px-2 py-0.5 rounded">
-                {new Date(opp.created_at).toLocaleDateString("zh-TW", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}
-              </span>
+            <div className="flex items-start gap-2 pr-4 min-w-0 flex-wrap">
+              <h3 className="text-slate-100 font-semibold text-base leading-snug break-words">
+                💡 {displayTitle}
+              </h3>
               {(() => {
-                const hoursAgo = (Date.now() - new Date(opp.created_at).getTime()) / (1000 * 60 * 60);
-                if (hoursAgo > 48) return <span className="text-xs text-red-400 ml-2" title={t("opp_stale_48h")}>⏰ {t("opp_stale_48h")}</span>;
-                if (hoursAgo > 24) return <span className="text-xs text-amber-400 ml-2" title={t("opp_stale_24h")}>⚠️ {t("opp_stale_24h")}</span>;
+                const hoursAgo = (Date.now() - new Date(opp.created_at + " UTC").getTime()) / (1000 * 60 * 60);
+                if (hoursAgo > 48) return (
+                  <span className="text-xs text-slate-500 bg-slate-700/50 rounded-full px-2 py-0.5 shrink-0 self-center">
+                    已過期
+                  </span>
+                );
+                if (hoursAgo <= 24) return (
+                  <span className="text-xs text-amber-400 bg-amber-400/10 rounded-full px-2 py-0.5 shrink-0 self-center">
+                    24h 內
+                  </span>
+                );
                 return null;
               })()}
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-xs text-slate-500 border border-slate-600 px-2 py-0.5 rounded">
+                {new Date(opp.created_at + " UTC").toLocaleDateString("zh-TW", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+              </span>
               <span className={`text-xs font-bold px-2 py-0.5 rounded ${accent} text-white`}>{pct}%</span>
               {badge && opp.action !== "action" && (
                 <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${badge.cls}`}>{badge.label}</span>

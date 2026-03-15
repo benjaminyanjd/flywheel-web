@@ -16,6 +16,7 @@ export function useOpportunities() {
   const [actionLoading, setActionLoading] = useState<Record<string, boolean>>({});
   const [confFilter, setConfFilter] = useState<"all" | "high" | "mid" | "low">("all");
   const [dateFilter, setDateFilter] = useState<"today" | "all">("today");
+  const [freshnessFilter, setFreshnessFilter] = useState<"all" | "fresh" | "expired">("all");
   const [advisorMap, setAdvisorMap] = useState<Record<number, AdvisorState>>({});
   const [todoSuccess, setTodoSuccess] = useState<Record<number, boolean>>({});
   const [signalSources, setSignalSources] = useState<Record<number, import("./types").SignalSource[]>>({});
@@ -215,6 +216,8 @@ export function useOpportunities() {
     setConfFilter,
     dateFilter,
     setDateFilter,
+    freshnessFilter,
+    setFreshnessFilter,
     effectiveDateFilter,
     advisorMap,
     todoSuccess,
