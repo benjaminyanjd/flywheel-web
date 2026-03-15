@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { getLangStored, type Lang } from "@/lib/lang";
 import { useT } from "@/lib/i18n";
 import { useToast } from "@/components/toast";
-import { deriveFocus, PROFIT_SOURCE_KEYS, CORE_SKILL_KEYS, OPP_HORIZON_KEYS, RISK_LEVEL_KEYS, TIME_BUDGET_KEYS } from "@/lib/preferences";
 
 const CATEGORIES = [
   { value: "ai_tech", zh: "🤖 AI 科技", en: "🤖 AI Tech" },
@@ -26,11 +25,6 @@ interface UserSettings {
   user_role: string | null;
   user_focus: string | null;
   opp_type: string | null;
-  profit_source: string | null;
-  core_skills: string | null;
-  opp_horizon: string | null;
-  risk_level: string | null;
-  time_budget: string | null;
 }
 
 interface Props {
@@ -69,50 +63,6 @@ export default function SettingsClient({ initialSettings }: Props) {
   });
   const [catStatus, setCatStatus] = useState<"idle" | "saving" | "saved">("idle");
 
-  // 5-question preferences state
-  const [profitSource, setProfitSource] = useState<string[]>(() =>
-    initialSettings?.profit_source ? initialSettings.profit_source.split(",") : []
-  );
-  const [coreSkills, setCoreSkills] = useState<string[]>(() =>
-    initialSettings?.core_skills ? initialSettings.core_skills.split(",") : []
-  );
-  const [oppHorizon, setOppHorizon] = useState(initialSettings?.opp_horizon || "");
-  const [riskLevel, setRiskLevel] = useState(initialSettings?.risk_level || "");
-  const [timeBudget, setTimeBudget] = useState(initialSettings?.time_budget || "");
-  const [prefStatus, setPrefStatus] = useState<"idle" | "saving" | "saved">("idle");
-
-  function toggleMultiArr(arr: string[], val: string): string[] {
-    return arr.includes(val) ? arr.filter(v => v !== val) : [...arr, val];
-  }
-
-  async function savePreferences() {
-    setPrefStatus("saving");
-    try {
-      const res = await fetch("/api/user/settings", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          profit_source: profitSource.join(",") || null,
-          core_skills: coreSkills.join(",") || null,
-          opp_horizon: oppHorizon || null,
-          risk_level: riskLevel || null,
-          time_budget: timeBudget || null,
-          user_focus: deriveFocus(profitSource),
-        }),
-      });
-      if (res.ok) {
-        setPrefStatus("saved");
-        toast(tr("settings_pref_toast_ok"));
-        setTimeout(() => setPrefStatus("idle"), 2000);
-      } else {
-        toast(tr("settings_tg_toast_fail"), "error");
-        setPrefStatus("idle");
-      }
-    } catch {
-      toast(tr("settings_tg_toast_fail"), "error");
-      setPrefStatus("idle");
-    }
-  }
 
   function switchLang(l: Lang) {
     localStorage.setItem("flywheel-lang", l);
@@ -198,113 +148,12 @@ export default function SettingsClient({ initialSettings }: Props) {
     }
   }
 
-  const btnClass = (selected: boolean) =>
-    `w-full text-left px-4 py-3 rounded-lg border text-sm transition-colors ${
-      selected
-        ? "border-amber-500 bg-amber-500/20 text-amber-300"
-        : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
-    }`;
-
-  const chipClass = (selected: boolean) =>
-    `px-4 py-2 rounded-lg border text-sm transition-colors ${
-      selected
-        ? "border-amber-500 bg-amber-500/20 text-amber-300"
-        : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
-    }`;
-
   return (
     <div className="min-h-screen bg-slate-900 p-4 md:p-8 pb-24 md:pb-8">
       <div className="max-w-2xl mx-auto space-y-6">
         <h1 className="text-2xl font-bold text-slate-100">
           ⚙️ {tr("settings_title")}
         </h1>
-
-        {/* 5-Question Preferences */}
-        <Card className="bg-slate-800/50 border-slate-700">
-          <CardHeader>
-            <CardTitle className="text-slate-100 text-lg">
-              🎯 {tr("settings_profile_title")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            {/* Q1: Profit Source */}
-            <div>
-              <p className="text-slate-300 text-sm font-medium mb-2">{tr("onboard_profit_label")}</p>
-              <div className="flex flex-wrap gap-2">
-                {PROFIT_SOURCE_KEYS.map((o) => (
-                  <button key={o.value} onClick={() => setProfitSource(toggleMultiArr(profitSource, o.value))}
-                    className={chipClass(profitSource.includes(o.value))}>
-                    {tr(o.tKey)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Q2: Core Skills */}
-            <div>
-              <p className="text-slate-300 text-sm font-medium mb-2">{tr("onboard_skills_label")}</p>
-              <div className="flex flex-wrap gap-2">
-                {CORE_SKILL_KEYS.map((o) => (
-                  <button key={o.value} onClick={() => setCoreSkills(toggleMultiArr(coreSkills, o.value))}
-                    className={chipClass(coreSkills.includes(o.value))}>
-                    {tr(o.tKey)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Q3: Opportunity Horizon */}
-            <div>
-              <p className="text-slate-300 text-sm font-medium mb-2">{tr("onboard_horizon_label")}</p>
-              <div className="space-y-2">
-                {OPP_HORIZON_KEYS.map((o) => (
-                  <button key={o.value} onClick={() => setOppHorizon(o.value)}
-                    className={btnClass(oppHorizon === o.value)}>
-                    {tr(o.tKey)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Q4: Risk Level */}
-            <div>
-              <p className="text-slate-300 text-sm font-medium mb-2">{tr("onboard_risk_label")}</p>
-              <div className="space-y-2">
-                {RISK_LEVEL_KEYS.map((o) => (
-                  <button key={o.value} onClick={() => setRiskLevel(o.value)}
-                    className={btnClass(riskLevel === o.value)}>
-                    {tr(o.tKey)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Q5: Time Budget */}
-            <div>
-              <p className="text-slate-300 text-sm font-medium mb-2">{tr("onboard_time_label")}</p>
-              <div className="space-y-2">
-                {TIME_BUDGET_KEYS.map((o) => (
-                  <button key={o.value} onClick={() => setTimeBudget(o.value)}
-                    className={btnClass(timeBudget === o.value)}>
-                    {tr(o.tKey)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <Button
-              onClick={savePreferences}
-              disabled={prefStatus === "saving"}
-              className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 mt-2"
-            >
-              {prefStatus === "saving"
-                ? tr("settings_pref_saving")
-                : prefStatus === "saved"
-                ? tr("settings_pref_saved")
-                : tr("settings_pref_save")}
-            </Button>
-          </CardContent>
-        </Card>
 
         {/* Telegram Push */}
         <Card className="bg-slate-800 border-slate-700">
