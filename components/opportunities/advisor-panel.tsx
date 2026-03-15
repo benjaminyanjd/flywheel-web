@@ -22,13 +22,13 @@ export function AdvisorPanel({ adv, oppId, oppTitle, finalText, todoSuccess, onA
   if (!adv?.open) return null;
 
   return (
-    <div className="border-t border-slate-700/60">
-      <div className="flex items-center justify-between px-5 py-2.5 bg-slate-900/60">
-        <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">{t("opp_plan_title")}</span>
+    <div className="border-t border-gray-100">
+      <div className="flex items-center justify-between px-5 py-2.5 bg-gray-50">
+        <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-700 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded-full">{t("opp_plan_title")}</span>
         {!adv.loading && adv.text && (
           <div className="flex items-center gap-2">
             <button
-              className="text-xs text-slate-400 hover:text-slate-200 transition-colors px-2 py-1 rounded border border-slate-600 hover:border-slate-400"
+              className="text-xs text-gray-400 hover:text-gray-600 transition-colors px-2 py-1 rounded border border-gray-200 hover:border-gray-400"
               onClick={() => {
                 const blob = new Blob([adv.text], { type: "text/markdown" });
                 const url = URL.createObjectURL(blob);
@@ -40,11 +40,11 @@ export function AdvisorPanel({ adv, oppId, oppTitle, finalText, todoSuccess, onA
               }}
             >{t("opp_download")}</button>
             {todoSuccess ? (
-              <span className="text-xs text-emerald-400 font-semibold">{t("opp_added")}</span>
+              <span className="text-xs text-green-600 font-semibold">{t("opp_added")}</span>
             ) : (
               <Button
                 size="sm"
-                className="h-6 px-3 text-xs bg-blue-600 hover:bg-blue-700 text-white"
+                className="h-6 px-3 text-xs bg-black hover:bg-gray-800 text-white rounded-xl"
                 onClick={() => onAddTodo(oppId)}
               >
                 {t("opp_add_todo")}
@@ -55,15 +55,15 @@ export function AdvisorPanel({ adv, oppId, oppTitle, finalText, todoSuccess, onA
       </div>
       <div className="px-5 py-4 max-h-[500px] overflow-y-auto">
         {adv.loading && !adv.text && (
-          <div className="flex items-center gap-2 text-slate-400 text-sm py-2">
-            <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+          <div className="flex items-center gap-2 text-gray-400 text-sm py-2">
+            <span className="w-2 h-2 rounded-full bg-gray-400 animate-pulse" />
             {t("opp_plan_loading")}
           </div>
         )}
         <div className={PROSE_CLASS}>
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{adv.text}</ReactMarkdown>
           {adv.loading && adv.text && (
-            <span className="inline-block w-1.5 h-4 bg-purple-400 animate-pulse ml-0.5 align-middle" />
+            <span className="inline-block w-1.5 h-4 bg-gray-400 animate-pulse ml-0.5 align-middle" />
           )}
         </div>
       </div>

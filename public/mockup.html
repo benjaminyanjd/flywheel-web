@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flywheel — 重设计原型</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        brand: '#F59E0B',
+      }
+    }
+  }
+}
+</script>
+<style>
+  body { background: #080C14; font-family: -apple-system, 'Inter', sans-serif; }
+  .card-collapsed { cursor: pointer; }
+  .card-expanded { display: none; }
+  .expanded .card-expanded { display: block; }
+  .expanded .chevron { transform: rotate(180deg); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 2px; }
+  /* Ring */
+  .conf-ring { transform: rotate(-90deg); }
+</style>
+</head>
+<body class="text-slate-200 min-h-screen">
+
+<!-- Layout -->
+<div class="flex h-screen overflow-hidden">
+
+  <!-- Sidebar -->
+  <div class="w-16 flex flex-col items-center py-6 gap-6 border-r border-white/5 bg-[#0a0f1a] shrink-0">
+    <!-- Logo -->
+    <div class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
+      <svg class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M4.93 4.93l2.12 2.12m9.9 9.9l2.12 2.12M4.93 19.07l2.12-2.12m9.9-9.9l2.12-2.12"/>
+      </svg>
+    </div>
+    
+    <div class="flex flex-col gap-4 mt-2">
+      <!-- Opportunities (active) -->
+      <button onclick="showPage('opportunities')" id="nav-opportunities"
+        class="nav-btn w-10 h-10 rounded-xl flex items-center justify-center text-amber-400 bg-amber-500/15 border border-amber-500/25 transition-all">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        </svg>
+      </button>
+      <!-- Radar -->
+      <button onclick="showPage('radar')" id="nav-radar"
+        class="nav-btn w-10 h-10 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-all">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/>
+        </svg>
+      </button>
+      <!-- Todo -->
+      <button onclick="showPage('todo')" id="nav-todo"
+        class="nav-btn w-10 h-10 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-all">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+        </svg>
+      </button>
+      <!-- Settings -->
+      <button onclick="showPage('settings')" id="nav-settings"
+        class="nav-btn w-10 h-10 rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-all">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Avatar at bottom -->
+    <div class="mt-auto w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-sm font-bold text-white">
+      B
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 overflow-hidden flex flex-col">
+
+    <!-- ===== OPPORTUNITIES PAGE ===== -->
+    <div id="page-opportunities" class="flex flex-col h-full overflow-hidden">
+      <!-- Header -->
+      <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/5">
+        <div class="flex items-center gap-4">
+          <div>
+            <h1 class="text-lg font-semibold text-white tracking-tight">今日機會</h1>
+            <p class="text-xs text-slate-500 mt-0.5">最後更新 12 分鐘前</p>
+          </div>
+          <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/25">4</span>
+        </div>
+        <!-- Filter bar -->
+        <div class="flex items-center gap-1 bg-white/5 rounded-lg p-0.5 border border-white/5">
+          <button class="text-xs px-3 py-1.5 rounded-md bg-white/10 text-white font-medium">全部</button>
+          <button class="text-xs px-3 py-1.5 rounded-md text-slate-400 hover:text-white transition-colors">24h 新鮮</button>
+          <button class="text-xs px-3 py-1.5 rounded-md text-slate-400 hover:text-white transition-colors">高置信</button>
+        </div>
+      </div>
+
+      <!-- Cards -->
+      <div class="flex-1 overflow-y-auto px-6 py-4 space-y-3">
+
+        <!-- Card 1 — Hot, expanded -->
+        <div class="opp-card expanded rounded-2xl border border-white/8 bg-[#0d1421] overflow-hidden" onclick="toggleCard(this)">
+          <div class="card-collapsed p-4">
+            <div class="flex items-center gap-3">
+              <!-- Confidence ring -->
+              <div class="relative w-11 h-11 shrink-0">
+                <svg class="w-11 h-11 conf-ring" viewBox="0 0 44 44">
+                  <circle cx="22" cy="22" r="18" stroke="#1e293b" stroke-width="3" fill="none"/>
+                  <circle cx="22" cy="22" r="18" stroke="#10b981" stroke-width="3" fill="none"
+                    stroke-dasharray="95 113" stroke-linecap="round"/>
+                </svg>
+                <span class="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-emerald-400">85</span>
+              </div>
+              <!-- Title -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 shrink-0">高置信</span>
+                  <h3 class="text-sm font-semibold text-white truncate">Venus 黑客事件：CAKE/THE 价格错位短线交易</h3>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5 truncate">Venus Protocol 遭攻擊後 CAKE 短線被砸，鏈上出現明顯價差套利視窗</p>
+              </div>
+              <!-- Time + chevron -->
+              <div class="flex items-center gap-2 shrink-0">
+                <span class="text-[11px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">2h 內</span>
+                <svg class="chevron w-4 h-4 text-slate-600 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Expanded content -->
+          <div class="card-expanded border-t border-white/5">
+            <!-- Tabs -->
+            <div class="flex gap-0 px-4 pt-3">
+              <button onclick="switchTab(event,'tab-why')" class="opp-tab text-xs px-3 py-2 rounded-t-lg border-b-2 border-amber-400 text-amber-400 font-medium bg-amber-500/5" data-tab="tab-why-1">為什麼現在</button>
+              <button onclick="switchTab(event,'tab-profit')" class="opp-tab text-xs px-3 py-2 rounded-t-lg border-b-2 border-transparent text-slate-500 hover:text-slate-300 transition-colors" data-tab="tab-profit-1">盈利邏輯</button>
+              <button onclick="switchTab(event,'tab-action')" class="opp-tab text-xs px-3 py-2 rounded-t-lg border-b-2 border-transparent text-slate-500 hover:text-slate-300 transition-colors" data-tab="tab-action-1">行動清單</button>
+              <button onclick="switchTab(event,'tab-risk')" class="opp-tab text-xs px-3 py-2 rounded-t-lg border-b-2 border-transparent text-slate-500 hover:text-slate-300 transition-colors" data-tab="tab-risk-1">風險</button>
+            </div>
+            <div class="bg-white/[0.02] px-4 py-3 min-h-[80px]">
+              <div id="tab-why-1" class="tab-content active text-xs text-slate-300 leading-relaxed">Venus Protocol 在今晨被攻擊，CAKE 因清算被砸至異常低點。Binance 官方尚未回應，市場恐慌情緒造成短期超賣，鏈上 DEX/CEX 出現明顯價差視窗，歷史上類似事件回彈幅度平均 15-30%。</div>
+              <div id="tab-profit-1" class="tab-content text-xs text-slate-300 leading-relaxed">在 Pancakeswap 低買 CAKE，同步在 Binance 高賣，鎖定套利差價。或直接持有 CAKE 等待情緒回彈，目標回彈至攻擊前價位。</div>
+              <div id="tab-action-1" class="tab-content text-xs text-slate-300 leading-relaxed space-y-1.5">
+                <div class="flex gap-2"><span class="text-amber-400 font-bold shrink-0">1.</span> 查看 CAKE 鏈上深度，確認 DEX 現貨價</div>
+                <div class="flex gap-2"><span class="text-amber-400 font-bold shrink-0">2.</span> 在 Pancakeswap 建倉，設定 5% 止損</div>
+                <div class="flex gap-2"><span class="text-amber-400 font-bold shrink-0">3.</span> 關注 Venus 官方推特，等待修復公告</div>
+              </div>
+              <div id="tab-risk-1" class="tab-content text-xs text-slate-300 leading-relaxed space-y-1.5">
+                <div class="flex gap-2"><span class="text-red-400 shrink-0">•</span> 攻擊若持續擴大，CAKE 可能繼續下跌</div>
+                <div class="flex gap-2"><span class="text-red-400 shrink-0">•</span> 流動性極低時滑點可能超出預期</div>
+              </div>
+            </div>
+            <!-- Actions -->
+            <div class="flex items-center gap-2 px-4 py-3 border-t border-white/5">
+              <button class="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black transition-colors shadow-lg shadow-amber-500/20">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                立即行動
+              </button>
+              <button class="text-xs px-3 py-2 rounded-lg border border-white/10 text-slate-400 hover:text-white hover:border-white/20 transition-colors">
+                加入待辦
+              </button>
+              <div class="ml-auto flex items-center gap-1">
+                <button class="w-8 h-8 rounded-lg text-slate-600 hover:text-slate-300 hover:bg-white/5 flex items-center justify-center transition-colors" title="不感興趣">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </button>
+                <button class="w-8 h-8 rounded-lg text-slate-600 hover:text-slate-300 hover:bg-white/5 flex items-center justify-center transition-colors" title="分享">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 — Medium, collapsed -->
+        <div class="opp-card rounded-2xl border border-white/6 bg-[#0d1421] hover:border-white/10 transition-all overflow-hidden" onclick="toggleCard(this)">
+          <div class="card-collapsed p-4">
+            <div class="flex items-center gap-3">
+              <div class="relative w-11 h-11 shrink-0">
+                <svg class="w-11 h-11 conf-ring" viewBox="0 0 44 44">
+                  <circle cx="22" cy="22" r="18" stroke="#1e293b" stroke-width="3" fill="none"/>
+                  <circle cx="22" cy="22" r="18" stroke="#f59e0b" stroke-width="3" fill="none"
+                    stroke-dasharray="72 113" stroke-linecap="round"/>
+                </svg>
+                <span class="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-amber-400">64</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/20 shrink-0">中置信</span>
+                  <h3 class="text-sm font-semibold text-white truncate">ETH 機構多重買入共振 → 內容+輕倉做多雙線機會</h3>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5 truncate">Fidelity + 兩個大型基金同日增持 ETH，看多情緒共振</p>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <span class="text-[11px] text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">5h 內</span>
+                <svg class="chevron w-4 h-4 text-slate-600 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="card-expanded border-t border-white/5">
+            <div class="flex gap-0 px-4 pt-3">
+              <button class="text-xs px-3 py-2 rounded-t-lg border-b-2 border-amber-400 text-amber-400 font-medium bg-amber-500/5">為什麼現在</button>
+            </div>
+            <div class="bg-white/[0.02] px-4 py-3 min-h-[80px]">
+              <p class="text-xs text-slate-300 leading-relaxed">Fidelity ETH ETF 今日淨流入 $1.2B，同步有兩個鏈上巨鯨在 2850 附近建倉。機構共振信號通常預示 3-5 天的趨勢行情。</p>
+            </div>
+            <div class="flex items-center gap-2 px-4 py-3 border-t border-white/5">
+              <button class="flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black transition-colors shadow-lg shadow-amber-500/20">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                立即行動
+              </button>
+              <button class="text-xs px-3 py-2 rounded-lg border border-white/10 text-slate-400 hover:text-white hover:border-white/20 transition-colors">加入待辦</button>
+              <div class="ml-auto flex items-center gap-1">
+                <button class="w-8 h-8 rounded-lg text-slate-600 hover:text-slate-300 hover:bg-white/5 flex items-center justify-center transition-colors">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 — Low, collapsed -->
+        <div class="opp-card rounded-2xl border border-white/6 bg-[#0d1421] hover:border-white/10 transition-all overflow-hidden" onclick="toggleCard(this)">
+          <div class="card-collapsed p-4">
+            <div class="flex items-center gap-3">
+              <div class="relative w-11 h-11 shrink-0">
+                <svg class="w-11 h-11 conf-ring" viewBox="0 0 44 44">
+                  <circle cx="22" cy="22" r="18" stroke="#1e293b" stroke-width="3" fill="none"/>
+                  <circle cx="22" cy="22" r="18" stroke="#64748b" stroke-width="3" fill="none"
+                    stroke-dasharray="52 113" stroke-linecap="round"/>
+                </svg>
+                <span class="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-slate-400">46</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-700/60 text-slate-400 border border-slate-600/30 shrink-0">低置信</span>
+                  <h3 class="text-sm font-semibold text-white truncate">Base 鏈 AI Meme 情緒輪動 → 提前布局觀察倉</h3>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5 truncate">Base 上新 AI Meme 代幣熱度急升，KOL 提前佈局跡象明顯</p>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <span class="text-[11px] text-slate-500 bg-slate-700/30 px-2 py-0.5 rounded-full border border-slate-600/20">已過期</span>
+                <svg class="chevron w-4 h-4 text-slate-600 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="card-expanded border-t border-white/5 bg-white/[0.01]">
+            <div class="px-4 py-3 text-xs text-slate-500">此機會已超過 48 小時，時效性存疑。</div>
+          </div>
+        </div>
+
+        <!-- Signal Sources footer on last card -->
+        <div class="rounded-2xl border border-white/6 bg-[#0d1421] hover:border-white/10 transition-all overflow-hidden" onclick="toggleCard(this)">
+          <div class="card-collapsed p-4">
+            <div class="flex items-center gap-3">
+              <div class="relative w-11 h-11 shrink-0">
+                <svg class="w-11 h-11 conf-ring" viewBox="0 0 44 44">
+                  <circle cx="22" cy="22" r="18" stroke="#1e293b" stroke-width="3" fill="none"/>
+                  <circle cx="22" cy="22" r="18" stroke="#10b981" stroke-width="3" fill="none"
+                    stroke-dasharray="90 113" stroke-linecap="round"/>
+                </svg>
+                <span class="absolute inset-0 flex items-center justify-center text-[11px] font-bold text-emerald-400">80</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 shrink-0">高置信</span>
+                  <h3 class="text-sm font-semibold text-white truncate">Tax Token「Builder Game」敘事內容機會</h3>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5 truncate">稅代幣新敘事崛起，早期 KOL 搶佔話語權窗口</p>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <span class="text-[11px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">1h 內</span>
+                <svg class="chevron w-4 h-4 text-slate-600 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== RADAR PAGE ===== -->
+    <div id="page-radar" class="flex flex-col h-full overflow-hidden hidden">
+      <!-- Header -->
+      <div class="px-6 pt-5 pb-3 border-b border-white/5">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h1 class="text-lg font-semibold text-white tracking-tight">信號雷達</h1>
+            <p class="text-xs text-slate-500 mt-0.5">實時掃描 280+ 信號源</p>
+          </div>
+          <!-- Stats -->
+          <div class="flex items-center gap-4 text-xs">
+            <div class="flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="text-slate-500">今日</span>
+              <span class="text-white font-semibold">117</span>
+            </div>
+            <div class="w-px h-3 bg-slate-700"></div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-orange-400">🔥</span>
+              <span class="text-slate-500">熱門</span>
+              <span class="text-white font-semibold">23</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Category tabs -->
+        <div class="flex items-center gap-1 overflow-x-auto scrollbar-none pb-0.5">
+          <button class="radar-cat text-xs px-3 py-1.5 rounded-lg bg-white/8 text-white font-medium border border-white/10 shrink-0 transition-all" onclick="switchCat(this)">全部</button>
+          <button class="radar-cat text-xs px-3 py-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/5 shrink-0 transition-all" onclick="switchCat(this)">⭐ KOL</button>
+          <button class="radar-cat text-xs px-3 py-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/5 shrink-0 transition-all" onclick="switchCat(this)">🤖 AI/Tech</button>
+          <button class="radar-cat text-xs px-3 py-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/5 shrink-0 transition-all" onclick="switchCat(this)">🏛 政策</button>
+          <button class="radar-cat text-xs px-3 py-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/5 shrink-0 transition-all" onclick="switchCat(this)">🛠 新工具</button>
+          <button class="radar-cat text-xs px-3 py-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/5 shrink-0 transition-all ring-1 ring-amber-500/30" onclick="switchCat(this)">🚀 Alpha ★</button>
+          <button class="radar-cat text-xs px-3 py-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/5 shrink-0 transition-all" onclick="switchCat(this)">🌏 海外</button>
+        </div>
+        
+        <!-- Search -->
+        <div class="mt-3">
+          <input type="text" placeholder="搜尋信號..." 
+            class="w-full bg-white/5 border border-white/8 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 outline-none focus:border-amber-500/40 focus:bg-white/8 transition-all"/>
+        </div>
+      </div>
+
+      <!-- Signal list -->
+      <div class="flex-1 overflow-y-auto divide-y divide-white/4">
+
+        <!-- Signal row — hot -->
+        <div class="flex items-start gap-3 px-5 py-3.5 hover:bg-white/[0.02] transition-colors group">
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold bg-orange-500/15 text-orange-400 border border-orange-500/20 shrink-0 mt-0.5">5</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-[10px] font-medium px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 border border-blue-500/20 shrink-0">RSS</span>
+              <a href="#" class="text-sm font-medium text-slate-200 hover:text-amber-400 truncate transition-colors">Venus Protocol exploit confirmed — $4.2M drained from CAKE/THE pools</a>
+            </div>
+            <p class="text-xs text-slate-500 line-clamp-1">On-chain analysis shows the attacker used a flash loan to manipulate the oracle price...</p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+            <span class="text-[11px] text-slate-600">2m</span>
+            <button class="w-7 h-7 rounded text-slate-600 hover:text-amber-400 flex items-center justify-center transition-colors">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            </button>
+            <button class="w-7 h-7 rounded text-slate-600 hover:text-slate-300 flex items-center justify-center transition-colors">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </button>
+          </div>
+          <span class="text-[11px] text-slate-600 shrink-0 group-hover:opacity-0 transition-opacity">2m</span>
+        </div>
+
+        <!-- Signal row — medium -->
+        <div class="flex items-start gap-3 px-5 py-3.5 hover:bg-white/[0.02] transition-colors group">
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold bg-yellow-500/10 text-yellow-400 border border-yellow-500/15 shrink-0 mt-0.5">4</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-[10px] font-medium px-1.5 py-0.5 rounded bg-slate-700 text-slate-400 border border-slate-600/40 shrink-0">KOL</span>
+              <a href="#" class="text-sm font-medium text-slate-200 hover:text-amber-400 truncate transition-colors">以太坊基金会 OTC 抛售 ETH — 短期情绪压力交易机会</a>
+            </div>
+          </div>
+          <span class="text-[11px] text-slate-600 shrink-0">14m</span>
+        </div>
+
+        <!-- Signal row -->
+        <div class="flex items-start gap-3 px-5 py-3.5 hover:bg-white/[0.02] transition-colors group">
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold bg-yellow-500/10 text-yellow-400 border border-yellow-500/15 shrink-0 mt-0.5">3</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-[10px] font-medium px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-400 border border-orange-500/20 shrink-0">Reddit</span>
+              <a href="#" class="text-sm font-medium text-slate-200 hover:text-amber-400 truncate transition-colors">OpenAI launches GPT-5 with native tool use — massive upgrade for agent workflows</a>
+            </div>
+            <p class="text-xs text-slate-500 line-clamp-1">The new model supports parallel tool calls and dramatically reduced latency...</p>
+          </div>
+          <span class="text-[11px] text-slate-600 shrink-0">32m</span>
+        </div>
+
+        <!-- Alpha signal -->
+        <div class="flex items-start gap-3 px-5 py-3.5 hover:bg-white/[0.02] transition-colors group bg-rose-500/[0.02]">
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold bg-yellow-500/10 text-yellow-400 border border-yellow-500/15 shrink-0 mt-0.5">3</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-[10px] font-medium px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-400 border border-rose-500/20 shrink-0">Alpha</span>
+              <a href="#" class="text-sm font-medium text-slate-200 hover:text-amber-400 truncate transition-colors">👀 @superteamusa trending — 20+ KOLs followed in 24h</a>
+            </div>
+            <p class="text-xs text-slate-500 line-clamp-1">Solana 生態創始人/開發者/運營者社群，專注美國市場，聚焦 AI/支付/消費品等鏈上創業</p>
+          </div>
+          <span class="text-[11px] text-slate-600 shrink-0">1h</span>
+        </div>
+
+        <!-- Low signal -->
+        <div class="flex items-start gap-3 px-5 py-3.5 hover:bg-white/[0.02] transition-colors group">
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold bg-slate-700/40 text-slate-500 border border-slate-600/20 shrink-0 mt-0.5">2</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-[10px] font-medium px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-400 border border-purple-500/20 shrink-0">GitHub</span>
+              <a href="#" class="text-sm font-medium text-slate-400 hover:text-slate-200 truncate transition-colors">microsoft/playwright-mcp — MCP server for browser automation</a>
+            </div>
+          </div>
+          <span class="text-[11px] text-slate-600 shrink-0">2h</span>
+        </div>
+
+        <div class="flex items-start gap-3 px-5 py-3.5 hover:bg-white/[0.02] transition-colors group">
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold bg-slate-700/40 text-slate-500 border border-slate-600/20 shrink-0 mt-0.5">2</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <span class="text-[10px] font-medium px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 border border-red-500/20 shrink-0">HN</span>
+              <a href="#" class="text-sm font-medium text-slate-400 hover:text-slate-200 truncate transition-colors">AI agents are quietly rewriting how we think about automation</a>
+            </div>
+          </div>
+          <span class="text-[11px] text-slate-600 shrink-0">3h</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS PAGE ===== -->
+    <div id="page-settings" class="flex flex-col h-full overflow-y-auto hidden">
+      <div class="px-6 pt-5 pb-4 border-b border-white/5">
+        <h1 class="text-lg font-semibold text-white">設定</h1>
+        <p class="text-xs text-slate-500 mt-0.5">管理你的偏好和通知</p>
+      </div>
+      <div class="px-6 py-5 space-y-6 max-w-lg">
+        <!-- Telegram binding — prominent -->
+        <div class="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center">
+              <svg class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4 20-7z"/><path d="M22 2 11 13"/></svg>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-amber-400">綁定 Telegram 即時推送</p>
+              <p class="text-xs text-slate-400">每天 3 次機會推送，不錯過重要信號</p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <input placeholder="輸入 Chat ID" class="flex-1 bg-black/30 border border-amber-500/30 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 outline-none focus:border-amber-400/60 transition-all"/>
+            <button class="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-sm font-semibold transition-colors">綁定</button>
+          </div>
+        </div>
+
+        <!-- Profile -->
+        <div class="space-y-2">
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">個人偏好</p>
+          <div class="rounded-xl border border-white/6 bg-white/3 divide-y divide-white/5">
+            <div class="flex items-center justify-between p-4">
+              <div>
+                <p class="text-sm text-white">獲利模式</p>
+                <p class="text-xs text-slate-500 mt-0.5">加密交易、AI/內容變現</p>
+              </div>
+              <button class="text-xs text-amber-400 hover:text-amber-300 transition-colors">修改</button>
+            </div>
+            <div class="flex items-center justify-between p-4">
+              <div>
+                <p class="text-sm text-white">機會偏好</p>
+                <p class="text-xs text-slate-500 mt-0.5">短期套利，平衡風險</p>
+              </div>
+              <button class="text-xs text-amber-400 hover:text-amber-300 transition-colors">修改</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Language -->
+        <div class="space-y-2">
+          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">語言</p>
+          <div class="flex gap-2">
+            <button class="flex-1 py-2.5 rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-400 text-sm font-medium transition-all">繁體中文</button>
+            <button class="flex-1 py-2.5 rounded-xl border border-white/8 text-slate-400 hover:text-white hover:border-white/15 text-sm transition-all">English</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== TODO PAGE ===== -->
+    <div id="page-todo" class="flex flex-col h-full overflow-hidden hidden">
+      <div class="px-6 pt-5 pb-4 border-b border-white/5">
+        <h1 class="text-lg font-semibold text-white">待辦清單</h1>
+        <p class="text-xs text-slate-500 mt-0.5">已保存 3 個機會</p>
+      </div>
+      <div class="px-6 py-4 space-y-3">
+        <div class="rounded-xl border border-white/6 bg-white/3 p-4 flex items-center gap-3">
+          <div class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-white truncate">Strategy 1M BTC 計畫敘事 → BTC 中期多頭布局視窗</p>
+            <p class="text-xs text-slate-500 mt-0.5">加入於 2 天前</p>
+          </div>
+          <button class="text-xs text-slate-600 hover:text-slate-300 transition-colors">刪除</button>
+        </div>
+        <div class="rounded-xl border border-white/6 bg-white/3 p-4 flex items-center gap-3">
+          <div class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-white truncate">DEX 大額換幣低滑點工具 → Uniswap 套利效率提升</p>
+            <p class="text-xs text-slate-500 mt-0.5">加入於 1 天前</p>
+          </div>
+          <button class="text-xs text-slate-600 hover:text-slate-300 transition-colors">刪除</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Floating label -->
+<div class="fixed bottom-4 right-4 text-xs text-slate-600 bg-[#0d1421] border border-white/6 px-3 py-1.5 rounded-lg">
+  Flywheel 重設計原型 — 僅供參考
+</div>
+
+<script>
+function toggleCard(card) {
+  card.classList.toggle('expanded');
+}
+
+function switchTab(e, group) {
+  e.stopPropagation();
+  const card = e.target.closest('.opp-card');
+  if (!card) return;
+  
+  // Remove active from all tabs in this card
+  card.querySelectorAll('.opp-tab').forEach(t => {
+    t.classList.remove('border-amber-400', 'text-amber-400', 'font-medium', 'bg-amber-500/5');
+    t.classList.add('border-transparent', 'text-slate-500');
+  });
+  e.target.classList.add('border-amber-400', 'text-amber-400', 'font-medium', 'bg-amber-500/5');
+  e.target.classList.remove('border-transparent', 'text-slate-500');
+  
+  // Show correct tab content
+  const tabId = e.target.dataset.tab;
+  card.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  const target = document.getElementById(tabId);
+  if (target) target.classList.add('active');
+}
+
+function showPage(page) {
+  document.querySelectorAll('[id^="page-"]').forEach(p => p.classList.add('hidden'));
+  document.getElementById('page-' + page).classList.remove('hidden');
+  
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.classList.remove('text-amber-400', 'bg-amber-500/15', 'border-amber-500/25', 'border');
+    b.classList.add('text-slate-500');
+  });
+  const btn = document.getElementById('nav-' + page);
+  if (btn) {
+    btn.classList.add('text-amber-400', 'bg-amber-500/15', 'border', 'border-amber-500/25');
+    btn.classList.remove('text-slate-500');
+  }
+}
+
+function switchCat(btn) {
+  document.querySelectorAll('.radar-cat').forEach(b => {
+    b.classList.remove('bg-white/8', 'text-white', 'font-medium', 'border', 'border-white/10');
+    b.classList.add('text-slate-500');
+  });
+  btn.classList.add('bg-white/8', 'text-white', 'font-medium', 'border', 'border-white/10');
+  btn.classList.remove('text-slate-500');
+}
+</script>
+</body>
+</html>

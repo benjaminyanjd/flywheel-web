@@ -87,12 +87,12 @@ function SidebarInner() {
 
   const tabCls = (active: boolean) => cn(
     "flex-1 flex flex-col items-center justify-center py-2 transition-colors text-xs",
-    active ? "text-indigo-400 bg-slate-700/50" : "text-slate-400 hover:text-slate-200"
+    active ? "text-black font-semibold" : "text-gray-400 hover:text-gray-600"
   );
 
   if (isMobile) {
     return (
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-slate-800 border-t border-slate-700 flex">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 flex">
         <Link href="/radar" className={tabCls(pathname.startsWith("/radar"))}>
           <span className="text-xl">📡</span>
           <span className="text-xs mt-0.5">{lang === "zh" ? "雷達" : "Radar"}</span>
@@ -118,13 +118,13 @@ function SidebarInner() {
   }
 
   return (
-    <aside className="hidden md:flex w-56 bg-slate-800 border-r border-slate-700 flex-col h-screen sticky top-0">
-      <div className="p-4 border-b border-slate-700">
+    <aside className="hidden md:flex w-56 bg-white border-r border-gray-200 flex-col h-screen sticky top-0">
+      <div className="p-4 border-b border-gray-200">
         <div className="flex items-center gap-2.5">
-          <FlywheelLogo size={22} className="text-amber-400 animate-[spin_8s_linear_infinite] shrink-0" />
+          <FlywheelLogo size={22} className="text-black animate-[spin_8s_linear_infinite] shrink-0" />
           <div>
-            <h1 className="text-base font-bold text-slate-100 leading-tight">Flywheel</h1>
-            <p className="text-[10px] text-slate-500 leading-tight">{t("sidebar_subtitle")}</p>
+            <h1 className="text-base font-bold text-gray-900 leading-tight">Flywheel</h1>
+            <p className="text-[10px] text-gray-400 leading-tight">{t("sidebar_subtitle")}</p>
           </div>
         </div>
       </div>
@@ -135,22 +135,22 @@ function SidebarInner() {
           <button
             onClick={() => setRadarOpen((o) => !o)}
             className={cn(
-              "w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
+              "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
               isRadarActive
-                ? "bg-slate-700 text-slate-100"
-                : "text-slate-400 hover:text-slate-100 hover:bg-slate-700/50"
+                ? "bg-gray-100 text-gray-900 font-medium"
+                : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
             )}
           >
             <span>📡</span>
             <span className="flex-1 text-left">{RADAR_LABEL[lang]}</span>
             <span className={cn(
-              "text-xs text-slate-500 transition-transform duration-200",
+              "text-xs text-gray-400 transition-transform duration-200",
               radarOpen ? "rotate-180" : ""
             )}>▾</span>
           </button>
 
           {radarOpen && (
-            <div className="ml-3 mt-0.5 space-y-0.5 border-l border-slate-700 pl-3">
+            <div className="ml-3 mt-0.5 space-y-0.5 border-l border-gray-200 pl-3">
               {RADAR_CATEGORIES.map((cat) => {
                 const href = `/radar?category=${cat.value}`;
                 const isActive = isRadarActive && activeCategory === cat.value;
@@ -161,14 +161,14 @@ function SidebarInner() {
                     className={cn(
                       "flex items-center gap-2 px-2 py-1.5 rounded text-xs transition-colors",
                       isActive
-                        ? "bg-slate-600/80 text-slate-100 font-medium"
-                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-700/40"
+                        ? "bg-gray-100 text-gray-900 font-medium"
+                        : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
                     )}
                   >
-                    <span className="text-slate-500">{cat.icon}</span>
+                    <span className="text-gray-400">{cat.icon}</span>
                     <span>{lang === "zh" ? cat.zh : cat.en}</span>
                     {(categoryCounts[cat.value] ?? 0) > 0 && (
-                      <span className="text-[10px] bg-slate-700 text-slate-400 px-1.5 py-0.5 rounded-full ml-auto">
+                      <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full ml-auto">
                         {categoryCounts[cat.value]}
                       </span>
                     )}
@@ -185,10 +185,10 @@ function SidebarInner() {
             key={item.href}
             href={item.href}
             className={cn(
-              "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
+              "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
               pathname.startsWith(item.href)
-                ? "bg-slate-700 text-slate-100"
-                : "text-slate-400 hover:text-slate-100 hover:bg-slate-700/50"
+                ? "bg-gray-100 text-gray-900 font-medium"
+                : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
             )}
           >
             <span>{item.icon}</span>
@@ -200,7 +200,7 @@ function SidebarInner() {
           href="https://t.me/BJMYan"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors text-slate-400 hover:text-slate-100 hover:bg-slate-700/50"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors text-gray-500 hover:text-gray-900 hover:bg-gray-50"
         >
           <span>💬</span>
           <span>{t ? t("feedback") : "反饋建議"}</span>
@@ -210,7 +210,7 @@ function SidebarInner() {
       {daysLeft !== null && daysLeft <= 7 && (
         <div className="px-3 pb-2">
           <a href="/expired" className={`flex items-center gap-2 text-xs px-3 py-2 rounded-lg transition-colors ${
-            daysLeft <= 2 ? "bg-red-900/30 text-red-400 hover:bg-red-900/50" : "bg-amber-900/30 text-amber-400 hover:bg-amber-900/50"
+            daysLeft <= 2 ? "bg-red-50 text-red-600 hover:bg-red-100" : "bg-amber-50 text-amber-600 hover:bg-amber-100"
           }`}>
             <span>🕐</span>
             <span>{t("sidebar_trial_left")} {daysLeft} {t("sidebar_trial_days")}</span>
@@ -220,10 +220,10 @@ function SidebarInner() {
       <div className="px-3 pb-2">
         <LangToggle className="w-full text-center" />
       </div>
-      <div className="px-4 py-3 border-t border-slate-700 flex items-center gap-3">
+      <div className="px-4 py-3 border-t border-gray-200 flex items-center gap-3">
         <UserButton />
         {user && (
-          <span className="text-sm text-slate-300 truncate">
+          <span className="text-sm text-gray-600 truncate">
             {user.firstName || user.emailAddresses[0]?.emailAddress}
           </span>
         )}
@@ -234,7 +234,7 @@ function SidebarInner() {
 
 export function Sidebar() {
   return (
-    <Suspense fallback={<aside className="w-56 bg-slate-800 border-r border-slate-700 h-screen" />}>
+    <Suspense fallback={<aside className="w-56 bg-white border-r border-gray-200 h-screen" />}>
       <SidebarInner />
     </Suspense>
   );

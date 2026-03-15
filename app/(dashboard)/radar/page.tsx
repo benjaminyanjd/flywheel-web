@@ -63,20 +63,20 @@ function heatLabel(score: number, lang: string): string {
 
 function sourceBadgeStyle(source: string): { cls: string; label: string } {
   const map: Record<string, { cls: string; label: string }> = {
-    reddit:          { cls: "bg-orange-500/15 text-orange-400 border border-orange-500/30", label: "R Reddit" },
-    hacker_news:     { cls: "bg-red-500/15 text-red-400 border border-red-500/30",          label: "Y HN" },
-    rss:             { cls: "bg-blue-500/15 text-blue-400 border border-blue-500/30",        label: "◉ RSS" },
-    x_kol:           { cls: "bg-slate-400/15 text-slate-300 border border-slate-400/30",     label: "✕ KOL" },
-    alpha_rising:    { cls: "bg-rose-500/15 text-rose-400 border border-rose-500/30",        label: "🚀 Rising" },
-    github_trending: { cls: "bg-purple-500/15 text-purple-400 border border-purple-500/30", label: "⬡ GitHub" },
+    reddit:          { cls: "bg-orange-50 text-orange-600 border border-orange-200", label: "R Reddit" },
+    hacker_news:     { cls: "bg-red-50 text-red-600 border border-red-200",          label: "Y HN" },
+    rss:             { cls: "bg-blue-50 text-blue-600 border border-blue-200",        label: "◉ RSS" },
+    x_kol:           { cls: "bg-gray-100 text-gray-600 border border-gray-200",       label: "✕ KOL" },
+    alpha_rising:    { cls: "bg-rose-50 text-rose-600 border border-rose-200",        label: "🚀 Rising" },
+    github_trending: { cls: "bg-purple-50 text-purple-600 border border-purple-200", label: "⬡ GitHub" },
   }
-  return map[source] || { cls: "bg-slate-600/20 text-slate-400 border border-slate-600/30", label: source }
+  return map[source] || { cls: "bg-gray-100 text-gray-500 border border-gray-200", label: source }
 }
 
 function heatScoreBg(score: number): string {
-  if (score >= 5) return "bg-green-900/50 text-green-300";
-  if (score >= 3) return "bg-yellow-900/50 text-yellow-300";
-  return "bg-slate-700 text-slate-400";
+  if (score >= 5) return "bg-orange-50 text-orange-600 border border-orange-200";
+  if (score >= 3) return "bg-yellow-50 text-yellow-600 border border-yellow-200";
+  return "bg-gray-100 text-gray-400 border border-gray-200";
 }
 
 const CATEGORY_LABELS: Record<string, { zh: string; en: string }> = {
@@ -306,15 +306,15 @@ function RadarContent() {
 
   if (loading) {
     return (
-      <div className="flex flex-col h-full bg-slate-900 p-6">
+      <div className="flex flex-col h-full bg-white p-6">
         <div className="flex items-center gap-3 mb-4">
-          <h1 className="text-xl font-bold text-slate-100">{t("radar_title")}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t("radar_title")}</h1>
         </div>
         <div className="space-y-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-slate-800 border border-slate-700 rounded-lg p-5 animate-pulse">
-              <div className="h-4 bg-slate-700 rounded w-2/3 mb-3" />
-              <div className="h-3 bg-slate-700 rounded w-full" />
+            <div key={i} className="bg-white border border-gray-100 rounded-2xl p-5 animate-pulse">
+              <div className="h-4 bg-gray-100 rounded w-2/3 mb-3" />
+              <div className="h-3 bg-gray-100 rounded w-full" />
             </div>
           ))}
         </div>
@@ -323,19 +323,19 @@ function RadarContent() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-slate-900 p-6">
+    <div className="flex flex-col h-full bg-white p-6">
       <div className="flex flex-wrap items-center gap-3 mb-4">
-        <h1 className="text-xl font-bold text-slate-100">{t("radar_title")}</h1>
-        <span className="bg-emerald-600/20 text-emerald-400 border border-emerald-600/40 text-xs font-bold px-2 py-0.5 rounded-full">
+        <h1 className="text-2xl font-bold text-gray-900">{t("radar_title")}</h1>
+        <span className="bg-gray-100 text-gray-600 border border-gray-200 text-xs font-bold px-2 py-0.5 rounded-full">
           {filtered.length}
         </span>
         {activeCategory !== "all" && CATEGORY_LABELS[activeCategory] && (
-          <span className={`text-xs border px-2 py-0.5 rounded ${preferredCategories.has(activeCategory) ? "text-amber-400 border-amber-500/50" : "text-slate-500 border-slate-700"}`}>
+          <span className={`text-xs border px-2 py-0.5 rounded ${preferredCategories.has(activeCategory) ? "text-black border-black" : "text-gray-400 border-gray-200"}`}>
             {preferredCategories.has(activeCategory) ? "★ " : ""}{lang === "zh" ? CATEGORY_LABELS[activeCategory].zh : CATEGORY_LABELS[activeCategory].en}
           </span>
         )}
         {/* Heat score filter tabs */}
-        <div className="flex items-center gap-1 ml-2 bg-slate-800 border border-slate-700 rounded-lg p-1 overflow-x-auto">
+        <div className="flex items-center gap-1 ml-2 bg-gray-50 rounded-2xl p-1 overflow-x-auto">
           {([
             { key: "all", label: t("common_all"), ariaLabel: t("common_all") },
             { key: "high", label: "🔥 ≥5", ariaLabel: "高熱度 (≥5)" },
@@ -348,10 +348,10 @@ function RadarContent() {
               onClick={() => setHeatFilter(tab.key)}
               aria-label={tab.ariaLabel}
               aria-pressed={heatFilter === tab.key}
-              className={`text-xs px-3 py-1 rounded transition-colors ${
+              className={`text-xs px-3 py-1 rounded-full transition-colors ${
                 heatFilter === tab.key
-                  ? "bg-slate-600 text-slate-100 font-semibold"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "bg-black text-white font-semibold"
+                  : "text-gray-500 hover:text-gray-700"
               }`}
             >
               {tab.label}
@@ -365,7 +365,7 @@ function RadarContent() {
           onChange={(e) => setKeyword(e.target.value)}
           placeholder={t("radar_search")}
           aria-label={t("radar_search")}
-          className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-1.5 text-sm text-slate-200 placeholder-slate-500 w-48 focus:outline-none focus:border-slate-400"
+          className="border border-gray-200 bg-white rounded-xl px-3 py-1.5 text-sm text-gray-900 placeholder-gray-400 w-48 focus:outline-none focus:border-gray-400"
         />
       </div>
 
@@ -380,15 +380,15 @@ function RadarContent() {
         const hotCount = filtered.length;
         if (todayCount === 0 && hotCount === 0) return null;
         return (
-          <div className="flex items-center gap-3 mb-3 text-sm text-slate-400">
-            {todayCount > 0 && <span>{t("radar_today_new")} <span className="text-slate-200 font-medium">{todayCount}</span> {t("radar_today_unit")}</span>}
+          <div className="flex items-center gap-3 mb-3 text-sm text-gray-400">
+            {todayCount > 0 && <span>{t("radar_today_new")} <span className="text-gray-700 font-medium">{todayCount}</span> {t("radar_today_unit")}</span>}
             {hotCount > 0 && (
               <button
                 onClick={() => {
                   setHeatFilter("mid");
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
-                className="text-orange-400 hover:text-orange-300 transition-colors"
+                className="text-orange-500 hover:text-orange-600 transition-colors"
               >
                 🔥 <span className="font-medium">{hotCount}</span> {t("radar_worth")}
               </button>
@@ -398,15 +398,15 @@ function RadarContent() {
       })()}
 
       <ScrollArea className="flex-1">
-        <div className="space-y-4 pr-4">
+        <div className="space-y-0 pr-4">
           {filtered.map((signal) => (
-            <Card
+            <div
               key={signal.id}
-              className={`bg-slate-800 border-slate-700 p-5 transition-all duration-500 ${
+              className={`border-b border-gray-100 p-4 transition-all duration-500 hover:bg-gray-50 ${
                 newIds.has(signal.id)
-                  ? "ring-2 ring-blue-500/50 animate-in fade-in slide-in-from-top-2"
+                  ? "ring-2 ring-blue-200 animate-in fade-in slide-in-from-top-2 bg-blue-50/30"
                   : ""
-              } ${bookmarks.has(signal.id) ? "border-l-2 border-l-amber-400" : "border-l-2 border-l-transparent"}`}
+              } ${bookmarks.has(signal.id) ? "border-l-2 border-l-black" : ""}`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
@@ -424,7 +424,7 @@ function RadarContent() {
                       href={signal.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-slate-100 font-medium hover:text-blue-400 truncate"
+                      className="text-gray-900 font-medium hover:text-blue-500 truncate"
                     >
                       {lang === "zh" && translations[signal.id]
                         ? translations[signal.id].title
@@ -433,7 +433,7 @@ function RadarContent() {
                   </div>
                   {/* Hide description for KOL sources to avoid duplication */}
                   {signal.source !== "x_kol" && signal.source !== "alpha_rising" && (
-                    <p className="text-slate-400 text-sm line-clamp-2 mt-1.5">
+                    <p className="text-gray-500 text-sm line-clamp-2 mt-1.5">
                       {lang === "zh" && translations[signal.id]
                         ? translations[signal.id].description
                         : signal.description}
@@ -456,7 +456,7 @@ function RadarContent() {
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={e => e.stopPropagation()}
-                        className="text-slate-500 hover:text-slate-300 text-xs ml-1 shrink-0"
+                        className="text-gray-300 hover:text-gray-600 text-xs ml-1 shrink-0"
                         title={t("radar_view_original")}
                       >↗</a>
                     )}
@@ -470,7 +470,7 @@ function RadarContent() {
                         setCopiedId(signal.id);
                         setTimeout(() => setCopiedId((prev) => prev === signal.id ? null : prev), 1500);
                       }}
-                      className="text-slate-500 hover:text-slate-300 text-xs ml-1 shrink-0"
+                      className="text-gray-300 hover:text-gray-600 text-xs ml-1 shrink-0"
                       title={t("radar_copy")}
                       aria-label={t("radar_copy")}
                     >
@@ -500,7 +500,7 @@ function RadarContent() {
                           }
                         }
                       }}
-                      className={`text-base transition-colors ml-1 shrink-0 ${bookmarks.has(signal.id) ? "text-amber-400" : "text-slate-600 hover:text-slate-400"}`}
+                      className={`text-base transition-colors ml-1 shrink-0 ${bookmarks.has(signal.id) ? "text-black" : "text-gray-300 hover:text-gray-500"}`}
                       title={bookmarks.has(signal.id) ? t("radar_unbookmark") : t("radar_bookmark")}
                       aria-label={bookmarks.has(signal.id) ? t("radar_unbookmark") : t("radar_bookmark")}
                       aria-pressed={bookmarks.has(signal.id)}
@@ -508,28 +508,28 @@ function RadarContent() {
                       🔖
                     </button>
                   </div>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-gray-400">
                     {relativeTime(signal.created_at, lang)}
                   </span>
                 </div>
               </div>
-            </Card>
+            </div>
           ))}
           {filtered.length === 0 && signals.length > 0 && (
-            <div className="flex flex-col items-center justify-center py-20 text-slate-500">
-              <p className="text-lg font-medium text-slate-400">{t("radar_empty_cat")}</p>
+            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+              <p className="text-lg font-medium text-gray-500">{t("radar_empty_cat")}</p>
               <p className="text-sm mt-1">{t("radar_empty_cat_desc")}</p>
             </div>
           )}
           {filtered.length === 0 && signals.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-20 text-slate-500">
-              <FlywheelLogo size={48} className="text-amber-400/40 animate-[spin_8s_linear_infinite] mb-4" />
-              <p className="text-lg font-medium text-slate-400">{t("radar_empty_all")}</p>
+            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+              <FlywheelLogo size={48} className="text-gray-300 animate-[spin_8s_linear_infinite] mb-4" />
+              <p className="text-lg font-medium text-gray-500">{t("radar_empty_all")}</p>
               <p className="text-sm mt-1">{t("radar_empty_all_desc")}</p>
               <button
                 type="button"
                 onClick={() => { fetch("/api/scan", { method: "POST" }).catch((err) => console.error("radar/scanTrigger:", err)); }}
-                className="text-xs text-amber-400/60 hover:text-amber-400 underline mt-4"
+                className="text-xs text-gray-400 hover:text-gray-600 underline mt-4"
                 aria-label={t("radar_manual_scan")}
               >
                 {t("radar_manual_scan")}
@@ -544,7 +544,7 @@ function RadarContent() {
 
 export default function RadarPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center h-full bg-slate-900"><span className="text-slate-400">...</span></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center h-full bg-white"><span className="text-gray-400">...</span></div>}>
       <RadarContent />
     </Suspense>
   );

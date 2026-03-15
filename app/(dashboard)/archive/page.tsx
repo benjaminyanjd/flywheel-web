@@ -23,12 +23,12 @@ interface ArchiveItem {
 type StatusFilter = "all" | "todo" | "bias" | "action" | "missed" | "done" | "cancel";
 
 const STATUS_STYLES: Record<string, { pill: string; accent: string }> = {
-  todo:   { pill: "bg-blue-600/20 text-blue-300 border border-blue-600/40",   accent: "bg-blue-500" },
-  bias:   { pill: "bg-orange-600/20 text-orange-300 border border-orange-600/40", accent: "bg-orange-500" },
-  action: { pill: "bg-green-600/20 text-green-300 border border-green-600/40",  accent: "bg-green-500" },
-  missed: { pill: "bg-slate-600/30 text-slate-400 border border-slate-600/40",  accent: "bg-slate-500" },
-  done:   { pill: "bg-emerald-600/20 text-emerald-300 border border-emerald-600/40", accent: "bg-emerald-500" },
-  cancel: { pill: "bg-red-600/20 text-red-400 border border-red-600/40",       accent: "bg-red-500" },
+  todo:   { pill: "bg-blue-50 text-blue-600 border border-blue-200",   accent: "bg-blue-500" },
+  bias:   { pill: "bg-orange-50 text-orange-600 border border-orange-200", accent: "bg-orange-500" },
+  action: { pill: "bg-green-50 text-green-600 border border-green-200",  accent: "bg-green-500" },
+  missed: { pill: "bg-gray-100 text-gray-400 border border-gray-200",  accent: "bg-gray-400" },
+  done:   { pill: "bg-emerald-50 text-emerald-600 border border-emerald-200", accent: "bg-emerald-500" },
+  cancel: { pill: "bg-red-50 text-red-500 border border-red-200",       accent: "bg-red-500" },
 };
 
 const WINDOW_ICON: Record<string, string> = {
@@ -37,8 +37,6 @@ const WINDOW_ICON: Record<string, string> = {
   evening: "🌆",
   night: "🌙",
 };
-
-// TABS generated inside component for i18n support
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("zh-TW", { month: "2-digit", day: "2-digit" });
@@ -100,26 +98,26 @@ export default function ArchivePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full bg-slate-900">
-        <span className="text-slate-400">{t("common_loading")}</span>
+      <div className="flex items-center justify-center h-full bg-white">
+        <span className="text-gray-400">{t("common_loading")}</span>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-slate-900 p-6">
+    <div className="flex flex-col h-full bg-white p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-xl font-bold text-slate-100">{t("archive_title")}</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t("archive_title")}</h1>
         <div className="flex items-center gap-3">
           <input
             type="text"
             placeholder={t("archive_search")}
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-36 md:w-48"
+            className="border border-gray-200 bg-white rounded-xl px-3 py-1.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-gray-400 w-36 md:w-48"
           />
-          <span className="text-sm text-slate-500">{t("archive_total")} {items.length} {t("archive_records")}</span>
+          <span className="text-sm text-gray-400">{t("archive_total")} {items.length} {t("archive_records")}</span>
         </div>
       </div>
 
@@ -129,7 +127,7 @@ export default function ArchivePage() {
           <button
             key={key}
             onClick={() => setActiveTab(key as StatusFilter)}
-            className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${cfg.pill} ${activeTab === key ? "ring-2 ring-white/20" : "opacity-70 hover:opacity-100"}`}
+            className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${cfg.pill} ${activeTab === key ? "ring-2 ring-black/10" : "opacity-70 hover:opacity-100"}`}
           >
             {cfg.label} · {statusCounts[key] || 0}
           </button>
@@ -138,7 +136,7 @@ export default function ArchivePage() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as StatusFilter)} className="mb-4">
-        <TabsList className="bg-slate-800 border border-slate-700">
+        <TabsList className="bg-gray-50 border border-gray-100">
           {TABS.map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value}>{tab.label}</TabsTrigger>
           ))}
@@ -148,7 +146,7 @@ export default function ArchivePage() {
       <ScrollArea className="flex-1">
         <div className="space-y-2 pr-4">
           {filtered.map((item, idx) => {
-            const cfg = STATUS_CONFIG[item.action] ?? { label: item.action, pill: "bg-slate-600/20 text-slate-400 border border-slate-600/40", accent: "bg-slate-500" };
+            const cfg = STATUS_CONFIG[item.action] ?? { label: item.action, pill: "bg-gray-100 text-gray-400 border border-gray-200", accent: "bg-gray-400" };
             const isOpen = expanded.has(item.id);
             const embed = isOpen ? parseEmbed(item.opp_embed) : null;
             const confidence = embed?.confidence ?? 0;
@@ -156,62 +154,62 @@ export default function ArchivePage() {
             const winIcon = WINDOW_ICON[item.opp_window] ?? "⏱";
 
             return (
-              <div key={item.id} className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+              <div key={item.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
                 {/* Row */}
                 <button
                   onClick={() => toggleExpand(item.id)}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-slate-700/40 transition-colors group"
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors group"
                 >
                   {/* Accent dot */}
                   <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${cfg.accent}`} />
 
                   {/* Rank */}
-                  <span className="text-slate-600 font-mono text-xs w-4 shrink-0">{idx + 1}</span>
+                  <span className="text-gray-300 font-mono text-xs w-4 shrink-0">{idx + 1}</span>
 
                   {/* Title */}
-                  <span className="flex-1 text-slate-200 text-sm font-medium truncate group-hover:text-white transition-colors">
+                  <span className="flex-1 text-gray-700 text-sm font-medium truncate group-hover:text-gray-900 transition-colors">
                     {item.opp_title}
                   </span>
 
                   {/* Meta */}
                   <div className="flex items-center gap-3 shrink-0">
-                    <span className="text-slate-500 text-xs">{winIcon} {item.opp_window}</span>
-                    <span className="text-slate-500 text-xs">{formatDate(item.created_at)}</span>
+                    <span className="text-gray-400 text-xs">{winIcon} {item.opp_window}</span>
+                    <span className="text-gray-400 text-xs">{formatDate(item.created_at)}</span>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${cfg.pill}`}>{cfg.label}</span>
-                    <span className={`text-slate-500 text-xs transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}>▾</span>
+                    <span className={`text-gray-400 text-xs transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}>▾</span>
                   </div>
                 </button>
 
                 {/* Expanded detail */}
                 {isOpen && embed && (
-                  <div className="border-t border-slate-700">
+                  <div className="border-t border-gray-100">
                     <div className={`h-0.5 w-full ${cfg.accent} opacity-60`} />
                     <div className="flex gap-0 p-5 text-sm">
                       {/* Left */}
                       <div className="flex-1 space-y-4 pr-5 min-w-0">
                         {embed.why_now && (
                           <div>
-                            <p className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-1.5">{t("opp_section_whynow")}</p>
-                            <p className="text-slate-300 leading-relaxed">{embed.why_now}</p>
+                            <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1.5">{t("opp_section_whynow")}</p>
+                            <p className="text-gray-500 leading-relaxed">{embed.why_now}</p>
                           </div>
                         )}
                         {embed.profit_logic && (
                           <>
-                            <Separator className="bg-slate-700" />
+                            <Separator className="bg-gray-100" />
                             <div>
-                              <p className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-1.5">{t("opp_section_profit")}</p>
-                              <p className="text-slate-300 leading-relaxed">{embed.profit_logic}</p>
+                              <p className="text-xs font-bold text-green-600 uppercase tracking-widest mb-1.5">{t("opp_section_profit")}</p>
+                              <p className="text-gray-500 leading-relaxed">{embed.profit_logic}</p>
                             </div>
                           </>
                         )}
                         {(embed.risks?.length ?? 0) > 0 && (
                           <>
-                            <Separator className="bg-slate-700" />
+                            <Separator className="bg-gray-100" />
                             <div>
-                              <p className="text-xs font-bold text-red-400 uppercase tracking-widest mb-1.5">{t("opp_section_risks")}</p>
+                              <p className="text-xs font-bold text-red-500 uppercase tracking-widest mb-1.5">{t("opp_section_risks")}</p>
                               <ul className="space-y-1">
                                 {embed.risks!.map((r, i) => (
-                                  <li key={i} className="flex gap-2 text-red-400/80">
+                                  <li key={i} className="flex gap-2 text-red-400">
                                     <span className="shrink-0">•</span><span>{r}</span>
                                   </li>
                                 ))}
@@ -219,9 +217,9 @@ export default function ArchivePage() {
                             </div>
                           </>
                         )}
-                        <div className="flex items-center gap-2 pt-1 border-t border-slate-700/60 text-xs text-slate-500">
+                        <div className="flex items-center gap-2 pt-1 border-t border-gray-100 text-xs text-gray-400">
                           <span>{t("opp_confidence")}</span>
-                          <span className={confidencePct >= 70 ? "text-emerald-400 font-semibold" : confidencePct >= 50 ? "text-amber-400 font-semibold" : "text-red-400 font-semibold"}>
+                          <span className={confidencePct >= 70 ? "text-green-600 font-semibold" : confidencePct >= 50 ? "text-yellow-600 font-semibold" : "text-red-500 font-semibold"}>
                             {confidencePct}%
                           </span>
                         </div>
@@ -229,12 +227,12 @@ export default function ArchivePage() {
 
                       {/* Right: actions */}
                       {(embed.actions?.length ?? 0) > 0 && (
-                        <div className="w-96 shrink-0 bg-slate-900/60 rounded-lg border border-slate-600/50 p-5 ml-2">
-                          <p className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-3">{t("opp_section_actions")}</p>
+                        <div className="w-96 shrink-0 bg-gray-50 rounded-xl border border-gray-100 p-5 ml-2">
+                          <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">{t("opp_section_actions")}</p>
                           <ol className="space-y-3">
                             {embed.actions!.map((a, i) => (
-                              <li key={i} className="flex gap-3 text-slate-300">
-                                <span className="shrink-0 w-6 h-6 rounded-full bg-slate-700 text-slate-400 text-xs flex items-center justify-center font-bold mt-0.5">{i + 1}</span>
+                              <li key={i} className="flex gap-3 text-gray-600">
+                                <span className="shrink-0 w-6 h-6 rounded-full bg-gray-200 text-gray-500 text-xs flex items-center justify-center font-bold mt-0.5">{i + 1}</span>
                                 <span className="leading-relaxed">{a}</span>
                               </li>
                             ))}
@@ -245,9 +243,9 @@ export default function ArchivePage() {
                   </div>
                 )}
 
-                {/* Advisor notes section — show if exists */}
+                {/* Advisor notes section */}
                 {item.advisor_notes && (
-                  <div className="border-t border-slate-700 px-5 py-3">
+                  <div className="border-t border-gray-100 px-5 py-3">
                     <div className="flex items-center gap-2">
                       <button
                         onClick={(e) => {
@@ -260,12 +258,12 @@ export default function ArchivePage() {
                         }}
                         className="flex items-center gap-2 flex-1 text-left"
                       >
-                        <p className="inline-flex items-center gap-1 text-xs font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">{t("opp_plan_title")}</p>
-                        <span className={`text-purple-400 text-xs transition-transform duration-200 ${expandedNotes.has(item.id) ? "rotate-180" : ""}`}>▾</span>
-                        <span className="text-xs text-slate-500">{expandedNotes.has(item.id) ? t("common_collapse") : t("common_expand")}</span>
+                        <p className="inline-flex items-center gap-1 text-xs font-semibold text-gray-700 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded-full">{t("opp_plan_title")}</p>
+                        <span className={`text-gray-400 text-xs transition-transform duration-200 ${expandedNotes.has(item.id) ? "rotate-180" : ""}`}>▾</span>
+                        <span className="text-xs text-gray-400">{expandedNotes.has(item.id) ? t("common_collapse") : t("common_expand")}</span>
                       </button>
                       <button
-                        className="text-xs text-slate-400 hover:text-slate-200 transition-colors px-2 py-1 rounded border border-slate-600 hover:border-slate-400"
+                        className="text-xs text-gray-400 hover:text-gray-600 transition-colors px-2 py-1 rounded border border-gray-200 hover:border-gray-400"
                         onClick={(e) => {
                           e.stopPropagation();
                           const blob = new Blob([item.advisor_notes!], { type: "text/markdown" });
@@ -279,17 +277,17 @@ export default function ArchivePage() {
                       >⬇ .md</button>
                     </div>
                     {expandedNotes.has(item.id) && (
-                      <div className="mt-3 prose prose-invert max-w-none text-sm leading-relaxed
-                        [&_h1]:text-xl [&_h1]:font-bold [&_h1]:text-white [&_h1]:mt-4 [&_h1]:mb-2
-                        [&_h2]:text-base [&_h2]:font-bold [&_h2]:text-slate-100 [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:border-b [&_h2]:border-slate-600 [&_h2]:pb-1
-                        [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-slate-200 [&_h3]:mt-3 [&_h3]:mb-1
-                        [&_p]:text-slate-300 [&_p]:leading-7 [&_p]:mb-2
-                        [&_ul]:text-slate-300 [&_ul]:space-y-1 [&_ul]:pl-5 [&_ul]:mb-2
-                        [&_ol]:text-slate-300 [&_ol]:space-y-1 [&_ol]:pl-5 [&_ol]:mb-2
+                      <div className="mt-3 prose max-w-none text-sm leading-relaxed
+                        [&_h1]:text-xl [&_h1]:font-bold [&_h1]:text-gray-900 [&_h1]:mt-4 [&_h1]:mb-2
+                        [&_h2]:text-base [&_h2]:font-bold [&_h2]:text-gray-900 [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:border-b [&_h2]:border-gray-200 [&_h2]:pb-1
+                        [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-gray-700 [&_h3]:mt-3 [&_h3]:mb-1
+                        [&_p]:text-gray-600 [&_p]:leading-7 [&_p]:mb-2
+                        [&_ul]:text-gray-600 [&_ul]:space-y-1 [&_ul]:pl-5 [&_ul]:mb-2
+                        [&_ol]:text-gray-600 [&_ol]:space-y-1 [&_ol]:pl-5 [&_ol]:mb-2
                         [&_li]:leading-6
-                        [&_strong]:text-white [&_strong]:font-bold
-                        [&_code]:bg-slate-700/80 [&_code]:text-amber-300 [&_code]:px-1 [&_code]:rounded [&_code]:text-xs
-                        [&_hr]:border-slate-600 [&_hr]:my-3">
+                        [&_strong]:text-gray-900 [&_strong]:font-bold
+                        [&_code]:bg-gray-100 [&_code]:text-gray-700 [&_code]:px-1 [&_code]:rounded [&_code]:text-xs
+                        [&_hr]:border-gray-200 [&_hr]:my-3">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>{item.advisor_notes}</ReactMarkdown>
                       </div>
                     )}
@@ -300,7 +298,7 @@ export default function ArchivePage() {
           })}
 
           {filtered.length === 0 && (
-            <div className="text-center text-slate-500 py-16">{t("archive_empty")}</div>
+            <div className="text-center text-gray-400 py-16">{t("archive_empty")}</div>
           )}
         </div>
       </ScrollArea>

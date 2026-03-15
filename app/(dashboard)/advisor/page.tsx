@@ -104,21 +104,21 @@ function AdvisorInner() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-slate-900 p-6">
-      <h1 className="text-xl font-bold text-slate-100 mb-4">{t("advisor_title")}</h1>
+    <div className="flex flex-col h-full bg-white p-6">
+      <h1 className="text-2xl font-bold text-gray-900 mb-4">{t("advisor_title")}</h1>
 
       <ScrollArea className="flex-1 mb-4" ref={scrollRef}>
         <div className="space-y-4 pr-4">
           {historyLoading && (
             <div className="flex items-center justify-center py-12">
-              <div className="w-5 h-5 border-2 border-slate-600 border-t-slate-300 rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-gray-200 border-t-gray-500 rounded-full animate-spin" />
             </div>
           )}
           {!historyLoading && messages.length === 0 && (
             <div className="flex flex-col items-center gap-6 py-12">
               <div className="text-center">
-                <p className="text-slate-300 text-lg font-medium mb-1">{t("advisor_welcome")}</p>
-                <p className="text-slate-500 text-sm">{t("advisor_welcome_sub")}</p>
+                <p className="text-gray-700 text-lg font-medium mb-1">{t("advisor_welcome")}</p>
+                <p className="text-gray-400 text-sm">{t("advisor_welcome_sub")}</p>
               </div>
               {/* 快捷問題 */}
               <div className="flex flex-col gap-2 w-full max-w-md">
@@ -129,7 +129,7 @@ function AdvisorInner() {
                 ].map((q) => (
                   <button
                     key={q}
-                    className="text-left text-sm text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-500 rounded-lg px-4 py-3 transition-colors"
+                    className="text-left text-sm text-gray-600 bg-white hover:bg-gray-50 border border-gray-200 hover:border-gray-300 rounded-xl px-4 py-3 transition-colors"
                     onClick={() => handleSend(q)}
                   >
                     {q}
@@ -144,24 +144,24 @@ function AdvisorInner() {
               className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[80%] rounded-lg px-4 py-3 text-sm whitespace-pre-wrap ${
+                className={`max-w-[80%] rounded-xl px-4 py-3 text-sm whitespace-pre-wrap ${
                   msg.role === "user"
-                    ? "bg-blue-600 text-blue-50"
-                    : "bg-slate-800 text-slate-200 border border-slate-700"
+                    ? "bg-black text-white"
+                    : "bg-gray-50 text-gray-700 border border-gray-100"
                 }`}
               >
                 {msg.content}
                 {streaming &&
                   i === messages.length - 1 &&
                   msg.role === "assistant" && (
-                    <span className="inline-block w-2 h-4 bg-blue-400 animate-pulse ml-0.5" />
+                    <span className="inline-block w-2 h-4 bg-gray-400 animate-pulse ml-0.5" />
                   )}
               </div>
             </div>
           ))}
           {streaming && messages[messages.length - 1]?.content === "" && (
             <div className="flex justify-start">
-              <div className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-sm text-slate-400">
+              <div className="bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm text-gray-400">
                 <span className="animate-pulse">...</span>
               </div>
             </div>
@@ -171,7 +171,7 @@ function AdvisorInner() {
 
       <div className="flex gap-2 items-end">
         <Textarea
-          className="bg-slate-800 border-slate-700 text-slate-100 placeholder:text-slate-500 resize-none flex-1 min-h-[44px] max-h-[120px]"
+          className="border border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 resize-none flex-1 min-h-[44px] max-h-[120px] rounded-xl"
           placeholder={t("advisor_placeholder")}
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -181,7 +181,7 @@ function AdvisorInner() {
         />
         <Button
           data-send-btn
-          className="bg-blue-600 hover:bg-blue-700 text-white shrink-0 h-[44px]"
+          className="bg-black hover:bg-gray-800 text-white shrink-0 h-[44px] rounded-xl"
           onClick={() => handleSend()}
           disabled={streaming || !input.trim()}
         >
