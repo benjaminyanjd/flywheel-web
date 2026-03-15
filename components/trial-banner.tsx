@@ -6,8 +6,8 @@ export function TrialBanner({ daysLeft }: { daysLeft: number }) {
   return (
     <div className={`flex items-center justify-between px-4 py-2.5 text-sm border-b ${
       daysLeft <= 2
-        ? "bg-red-900/30 border-red-700/50 text-red-300"
-        : "bg-amber-900/30 border-amber-700/50 text-amber-300"
+        ? "bg-red-50 border-red-200 text-red-600"
+        : "bg-amber-50 border-amber-200 text-amber-600"
     }`}>
       <span>{t("trial_banner_pre")} {daysLeft} {t("trial_banner_days")} {t("trial_banner_post")}</span>
       <a href="/expired" className="hover:underline font-medium shrink-0">{t("trial_banner_link")}</a>

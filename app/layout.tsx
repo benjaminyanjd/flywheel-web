@@ -76,9 +76,9 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="zh-TW" className={`dark ${notoSerifTC.variable}`}>
+      <html lang="zh-TW" className={`${notoSerifTC.variable}`}>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-900 text-slate-100 min-h-screen`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900 min-h-screen`}
         >
           {children}
         </body>

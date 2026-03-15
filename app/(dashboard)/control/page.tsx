@@ -76,7 +76,7 @@ export default function ControlPage() {
         setScanResult(null);
       } else {
         const newSignals = data.newSignals ?? 0;
-        toast(`✅ ${t("ctrl_scan_done")} ${newSignals} ${t("ctrl_scan_done_unit")}`);
+        toast(`${t("ctrl_scan_done")} ${newSignals} ${t("ctrl_scan_done_unit")}`);
         setScanResult(t("ctrl_scan_started"));
         let elapsed = 0;
         const statsRefreshId = setInterval(() => {
@@ -86,7 +86,7 @@ export default function ControlPage() {
         }, 10000);
       }
     } catch (err) {
-      toast("❌ " + t("ctrl_scan_fail"), "error");
+      toast(t("ctrl_scan_fail"), "error");
       setScanResult(`${t("common_error_prefix")}${(err as Error).message}`);
     } finally {
       setScanLoading(false);
@@ -103,7 +103,7 @@ export default function ControlPage() {
         startCooldown(data.cooldown, setOppCooldown, oppTimerRef);
         setOppResult(null);
       } else {
-        toast("✅ " + t("ctrl_opp_done"));
+        toast(t("ctrl_opp_done"));
         setOppResult(t("ctrl_opp_started"));
         let elapsed = 0;
         const oppRefreshId = setInterval(() => {
@@ -113,7 +113,7 @@ export default function ControlPage() {
         }, 10000);
       }
     } catch (err) {
-      toast("❌ " + t("ctrl_opp_fail"), "error");
+      toast(t("ctrl_opp_fail"), "error");
       setOppResult(`${t("common_error_prefix")}${(err as Error).message}`);
     } finally {
       setOppLoading(false);
@@ -131,90 +131,90 @@ export default function ControlPage() {
   };
 
   const STATUS_COLORS: Record<string, string> = {
-    todo: "bg-blue-600 text-blue-100",
-    bias: "bg-orange-600 text-orange-100",
-    action: "bg-green-600 text-green-100",
-    missed: "bg-gray-600 text-gray-100",
-    done: "bg-emerald-600 text-emerald-100",
-    cancel: "bg-red-600 text-red-100",
-    cancelled: "bg-red-600 text-red-100",
+    todo: "bg-blue-50 text-blue-600 border border-blue-200",
+    bias: "bg-orange-50 text-orange-600 border border-orange-200",
+    action: "bg-green-50 text-green-600 border border-green-200",
+    missed: "bg-gray-100 text-gray-500 border border-gray-200",
+    done: "bg-emerald-50 text-emerald-600 border border-emerald-200",
+    cancel: "bg-red-50 text-red-500 border border-red-200",
+    cancelled: "bg-red-50 text-red-500 border border-red-200",
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-900 p-6">
-      <h1 className="text-xl font-bold text-slate-100 mb-4">{t("ctrl_title")}</h1>
+    <div className="flex flex-col h-full bg-white p-6">
+      <h1 className="text-2xl font-bold text-gray-900 mb-4">{t("ctrl_title")}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Manual Scan */}
-        <Card className="bg-slate-800 border-slate-700 p-5">
-          <h3 className="text-slate-100 font-semibold mb-3">{t("ctrl_scan_title")}</h3>
-          <p className="text-sm text-slate-400 mb-4">
+        <Card className="bg-white border border-gray-100 rounded-2xl p-5">
+          <h3 className="text-gray-900 font-semibold mb-3">{t("ctrl_scan_title")}</h3>
+          <p className="text-sm text-gray-500 mb-4">
             {t("ctrl_scan_desc")}
           </p>
           <Button
-            className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+            className="bg-black hover:bg-gray-800 text-white w-full rounded-xl"
             onClick={handleScan}
             disabled={scanLoading || scanCooldown > 0}
           >
             {scanLoading ? t("ctrl_scan_running") : scanCooldown > 0 ? `${t("ctrl_scan_cooldown")} ${formatCooldown(scanCooldown)}` : t("ctrl_scan_btn")}
           </Button>
           {scanResult && (
-            <pre className="mt-3 text-xs text-slate-400 bg-slate-900 rounded p-3 overflow-auto max-h-40">
+            <pre className="mt-3 text-xs text-gray-500 bg-gray-50 rounded-xl p-3 overflow-auto max-h-40">
               {scanResult}
             </pre>
           )}
         </Card>
 
         {/* Manual Opportunity */}
-        <Card className="bg-slate-800 border-slate-700 p-5">
-          <h3 className="text-slate-100 font-semibold mb-3">{t("ctrl_opp_title")}</h3>
-          <p className="text-sm text-slate-400 mb-4">
+        <Card className="bg-white border border-gray-100 rounded-2xl p-5">
+          <h3 className="text-gray-900 font-semibold mb-3">{t("ctrl_opp_title")}</h3>
+          <p className="text-sm text-gray-500 mb-4">
             {t("ctrl_opp_desc")}
           </p>
           <Button
-            className="bg-purple-600 hover:bg-purple-700 text-white w-full"
+            className="bg-black hover:bg-gray-800 text-white w-full rounded-xl"
             onClick={handleOpportunity}
             disabled={oppLoading || oppCooldown > 0}
           >
             {oppLoading ? t("ctrl_opp_running") : oppCooldown > 0 ? `${t("ctrl_opp_cooldown")} ${formatCooldown(oppCooldown)}` : t("ctrl_opp_btn")}
           </Button>
           {oppResult && (
-            <pre className="mt-3 text-xs text-slate-400 bg-slate-900 rounded p-3 overflow-auto max-h-40">
+            <pre className="mt-3 text-xs text-gray-500 bg-gray-50 rounded-xl p-3 overflow-auto max-h-40">
               {oppResult}
             </pre>
           )}
         </Card>
 
         {/* Signal Stats */}
-        <Card className="bg-slate-800 border-slate-700 p-5">
-          <h3 className="text-slate-100 font-semibold mb-3">{t("ctrl_stats_title")}</h3>
+        <Card className="bg-white border border-gray-100 rounded-2xl p-5">
+          <h3 className="text-gray-900 font-semibold mb-3">{t("ctrl_stats_title")}</h3>
           {statsLoading ? (
-            <p className="text-sm text-slate-400">{t("ctrl_loading")}</p>
+            <p className="text-sm text-gray-400">{t("ctrl_loading")}</p>
           ) : stats ? (
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">{t("ctrl_today")}</span>
-                <span className="text-2xl font-bold text-slate-100">
+                <span className="text-sm text-gray-500">{t("ctrl_today")}</span>
+                <span className="text-2xl font-bold text-gray-900">
                   {stats.todaySignals}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">{t("ctrl_total")}</span>
-                <span className="text-2xl font-bold text-slate-100">
+                <span className="text-sm text-gray-500">{t("ctrl_total")}</span>
+                <span className="text-2xl font-bold text-gray-900">
                   {stats.totalSignals}
                 </span>
               </div>
-              <Separator className="bg-slate-700" />
-              <h4 className="text-sm font-medium text-slate-300">{t("ctrl_by_source")}</h4>
+              <Separator className="bg-gray-100" />
+              <h4 className="text-sm font-medium text-gray-700">{t("ctrl_by_source")}</h4>
               <div className="grid grid-cols-2 gap-2">
                 {stats.signalsBySource &&
                   Object.entries(stats.signalsBySource).map(([source, count]) => (
                     <div
                       key={source}
-                      className="flex justify-between items-center bg-slate-900 rounded px-3 py-1.5"
+                      className="flex justify-between items-center bg-gray-50 rounded-lg px-3 py-1.5"
                     >
-                      <span className="text-xs text-slate-400">{source}</span>
-                      <span className="text-sm font-medium text-slate-200">
+                      <span className="text-xs text-gray-500">{source}</span>
+                      <span className="text-sm font-medium text-gray-700">
                         {count}
                       </span>
                     </div>
@@ -222,15 +222,15 @@ export default function ControlPage() {
               </div>
             </div>
           ) : (
-            <p className="text-sm text-slate-500">{t("ctrl_stats_error")}</p>
+            <p className="text-sm text-gray-400">{t("ctrl_stats_error")}</p>
           )}
         </Card>
 
         {/* Opportunity Status */}
-        <Card className="bg-slate-800 border-slate-700 p-5">
-          <h3 className="text-slate-100 font-semibold mb-3">{t("ctrl_opp_status")}</h3>
+        <Card className="bg-white border border-gray-100 rounded-2xl p-5">
+          <h3 className="text-gray-900 font-semibold mb-3">{t("ctrl_opp_status")}</h3>
           {statsLoading ? (
-            <p className="text-sm text-slate-400">{t("ctrl_loading")}</p>
+            <p className="text-sm text-gray-400">{t("ctrl_loading")}</p>
           ) : stats?.opportunityStatusCounts ? (
             <div className="space-y-2">
               {Object.entries(stats.opportunityStatusCounts).map(
@@ -240,20 +240,20 @@ export default function ControlPage() {
                     className="flex justify-between items-center"
                   >
                     <Badge
-                      className={`${STATUS_COLORS[status] || "bg-slate-600 text-slate-100"} text-xs`}
+                      className={`${STATUS_COLORS[status] || "bg-gray-100 text-gray-500"} text-xs`}
                     >
                       {STATUS_LABELS[status] || status}
                     </Badge>
-                    <span className="text-lg font-semibold text-slate-200">
+                    <span className="text-lg font-semibold text-gray-700">
                       {count}
                     </span>
                   </div>
                 )
               )}
-              <Separator className="bg-slate-700" />
+              <Separator className="bg-gray-100" />
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">{t("ctrl_subtotal")}</span>
-                <span className="text-lg font-bold text-slate-100">
+                <span className="text-sm text-gray-500">{t("ctrl_subtotal")}</span>
+                <span className="text-lg font-bold text-gray-900">
                   {Object.values(stats.opportunityStatusCounts).reduce(
                     (a, b) => a + b,
                     0
@@ -262,18 +262,18 @@ export default function ControlPage() {
               </div>
             </div>
           ) : (
-            <p className="text-sm text-slate-500">{t("ctrl_status_error")}</p>
+            <p className="text-sm text-gray-400">{t("ctrl_status_error")}</p>
           )}
         </Card>
       </div>
 
       {/* Language Setting — bottom */}
-      <Card className="bg-slate-800 border-slate-700 p-5 mt-4">
+      <Card className="bg-white border border-gray-100 rounded-2xl p-5 mt-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-slate-100 font-semibold">{t("ctrl_lang_title")}</h3>
-            <p className="text-xs text-slate-400 mt-0.5">
-              {t("ctrl_lang_current")}<span className="text-slate-300 font-medium">{lang === "zh" ? t("ctrl_lang_desc_zh") : t("ctrl_lang_desc_en")}</span>
+            <h3 className="text-gray-900 font-semibold">{t("ctrl_lang_title")}</h3>
+            <p className="text-xs text-gray-400 mt-0.5">
+              {t("ctrl_lang_current")}<span className="text-gray-700 font-medium">{lang === "zh" ? t("ctrl_lang_desc_zh") : t("ctrl_lang_desc_en")}</span>
             </p>
           </div>
           <div className="flex gap-2">
@@ -281,10 +281,10 @@ export default function ControlPage() {
               <button
                 key={l}
                 onClick={() => setLang(l)}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-all ${
+                className={`px-4 py-2 rounded-xl text-sm font-semibold border transition-all ${
                   lang === l
-                    ? "bg-blue-600 border-blue-500 text-white"
-                    : "bg-slate-700 border-slate-600 text-slate-400 hover:text-slate-200"
+                    ? "bg-black border-black text-white"
+                    : "bg-white border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-400"
                 }`}
               >
                 {l === "zh" ? "🇹🇼 繁體中文" : "🇺🇸 English"}

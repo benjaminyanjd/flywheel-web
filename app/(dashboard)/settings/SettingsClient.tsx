@@ -150,51 +150,51 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 p-4 md:p-8 pb-24 md:pb-8">
+    <div className="min-h-screen bg-white p-4 md:p-8 pb-24 md:pb-8">
       <div className="max-w-2xl mx-auto space-y-6">
-        <h1 className="text-2xl font-bold text-slate-100">
-          ⚙️ {tr("settings_title")}
+        <h1 className="text-2xl font-bold text-gray-900">
+          {tr("settings_title")}
         </h1>
 
         {!hasTelegram && (
-          <div className="bg-amber-900/30 border border-amber-700/50 rounded-lg px-4 py-3 flex items-center justify-between mb-2">
-            <span className="text-amber-300 text-sm">⚡ 尚未綁定 Telegram，無法收到機會推送</span>
-            <a href="#telegram" className="text-amber-400 hover:underline text-sm font-medium shrink-0 ml-4">立即綁定 →</a>
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 flex items-center justify-between mb-2">
+            <span className="text-amber-700 text-sm">尚未綁定 Telegram，無法收到機會推送</span>
+            <a href="#telegram" className="text-amber-600 hover:underline text-sm font-medium shrink-0 ml-4">立即綁定 →</a>
           </div>
         )}
 
         {/* Telegram Push */}
-        <Card id="telegram" className="bg-slate-800 border-slate-700">
+        <Card id="telegram" className="bg-white border border-gray-100 rounded-2xl">
           <CardHeader>
-            <CardTitle className="text-slate-100 text-lg">
-              ✈️ {tr("settings_tg_title")}
+            <CardTitle className="text-gray-900 text-lg">
+              {tr("settings_tg_title")}
             </CardTitle>
-            <p className="text-slate-400 text-sm">
+            <p className="text-gray-500 text-sm">
               {tr("settings_tg_desc")}
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="bg-slate-700/30 rounded-lg p-3 text-sm text-slate-400 space-y-1 mb-2">
-              <p className="text-slate-300 font-medium">
+            <div className="bg-gray-50 rounded-xl p-3 text-sm text-gray-500 space-y-1 mb-2">
+              <p className="text-gray-700 font-medium">
                 {tr("settings_tg_howto")}
               </p>
-              <p>1. {tr("settings_tg_step1")} <span className="font-mono text-amber-400">@userinfobot</span></p>
+              <p>1. {tr("settings_tg_step1")} <span className="font-mono text-gray-900">@userinfobot</span></p>
               <p>2. {tr("settings_tg_step2")}</p>
-              <p>3. {tr("settings_tg_step3_pre")} <span className="font-mono text-amber-400">Id:</span> {tr("settings_tg_step3_post")}</p>
+              <p>3. {tr("settings_tg_step3_pre")} <span className="font-mono text-gray-900">Id:</span> {tr("settings_tg_step3_post")}</p>
             </div>
 
             <Input
               value={chatId}
               onChange={(e) => setChatId(e.target.value.replace(/\D/g, ""))}
               placeholder={tr("settings_tg_placeholder")}
-              className="bg-slate-700 border-slate-600 text-slate-100 font-mono"
+              className="border border-gray-200 rounded-xl bg-white text-gray-900 placeholder-gray-400 font-mono"
             />
 
             <div className="flex gap-3">
               <Button
                 onClick={saveTelegram}
                 disabled={tgStatus === "saving" || !chatId}
-                className="bg-amber-500 hover:bg-amber-400 text-slate-950"
+                className="bg-black hover:bg-gray-800 text-white rounded-xl"
               >
                 {tgStatus === "saving"
                   ? tr("settings_tg_saving")
@@ -204,7 +204,7 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
                 onClick={testTelegram}
                 disabled={tgStatus === "testing" || !chatId}
                 variant="outline"
-                className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                className="border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-xl"
               >
                 {tgStatus === "testing"
                   ? tr("settings_tg_testing")
@@ -213,24 +213,24 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
             </div>
 
             {tgStatus === "saved" && (
-              <p className="text-green-400 text-sm">✅ {tr("settings_tg_saved")}</p>
+              <p className="text-green-600 text-sm">{tr("settings_tg_saved")}</p>
             )}
             {tgStatus === "sent" && (
-              <p className="text-green-400 text-sm">✅ {tr("settings_tg_sent")}</p>
+              <p className="text-green-600 text-sm">{tr("settings_tg_sent")}</p>
             )}
             {tgStatus === "error" && (
-              <p className="text-red-400 text-sm">❌ {tr("settings_tg_error")}</p>
+              <p className="text-red-500 text-sm">{tr("settings_tg_error")}</p>
             )}
           </CardContent>
         </Card>
 
         {/* Categories */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className="bg-white border border-gray-100 rounded-2xl">
           <CardHeader>
-            <CardTitle className="text-slate-100 text-lg">
-              📡 {tr("settings_cat_title")}
+            <CardTitle className="text-gray-900 text-lg">
+              {tr("settings_cat_title")}
             </CardTitle>
-            <p className="text-slate-400 text-sm">
+            <p className="text-gray-500 text-sm">
               {tr("settings_cat_desc")}
             </p>
           </CardHeader>
@@ -239,10 +239,10 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
               <button
                 key={cat.value}
                 onClick={() => toggleCategory(cat.value)}
-                className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
+                className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${
                   categories.includes(cat.value)
-                    ? "border-amber-500 bg-amber-500/20 text-amber-300"
-                    : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
+                    ? "border-2 border-black bg-black/5 text-black font-medium"
+                    : "border border-gray-200 text-gray-600 hover:border-gray-400"
                 }`}
               >
                 {lang === "zh" ? cat.zh : cat.en}
@@ -251,7 +251,7 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
             <Button
               onClick={saveCategories}
               disabled={catStatus === "saving" || categories.length === 0}
-              className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 mt-2"
+              className="w-full bg-black hover:bg-gray-800 text-white rounded-xl mt-2"
             >
               {catStatus === "saving"
                 ? tr("settings_cat_saving")
@@ -263,29 +263,29 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
         </Card>
 
         {/* Language */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className="bg-white border border-gray-100 rounded-2xl">
           <CardHeader>
-            <CardTitle className="text-slate-100 text-lg">
-              🌐 {tr("settings_lang_title")}
+            <CardTitle className="text-gray-900 text-lg">
+              {tr("settings_lang_title")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <button
               onClick={() => switchLang("zh")}
-              className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
+              className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${
                 lang === "zh"
-                  ? "border-amber-500 bg-amber-500/20 text-amber-300"
-                  : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
+                  ? "border-2 border-black bg-black/5 text-black font-medium"
+                  : "border border-gray-200 text-gray-600 hover:border-gray-400"
               }`}
             >
               {tr("settings_lang_zh")}
             </button>
             <button
               onClick={() => switchLang("en")}
-              className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
+              className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${
                 lang === "en"
-                  ? "border-amber-500 bg-amber-500/20 text-amber-300"
-                  : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
+                  ? "border-2 border-black bg-black/5 text-black font-medium"
+                  : "border border-gray-200 text-gray-600 hover:border-gray-400"
               }`}
             >
               {tr("settings_lang_en")}

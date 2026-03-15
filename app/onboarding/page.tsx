@@ -163,14 +163,14 @@ export default function OnboardingPage() {
   const step1Complete = profitSource.length > 0 && coreSkills.length > 0 && oppHorizon && riskLevel && timeBudget;
 
   const btnClass = (selected: boolean) =>
-    `w-full text-left px-4 py-3 rounded-lg border transition-colors ${
+    `w-full text-left px-4 py-3 rounded-xl border transition-colors ${
       selected
-        ? "border-amber-500 bg-amber-500/20 text-amber-300"
-        : "border-slate-600 bg-slate-700/50 text-slate-300 hover:border-slate-500"
+        ? "border-2 border-black bg-black/5 text-black font-medium"
+        : "border border-gray-200 text-gray-600 hover:border-gray-400"
     }`;
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Progress bar - 5 steps */}
         <div className="flex gap-2 mb-6">
@@ -178,17 +178,17 @@ export default function OnboardingPage() {
             <div
               key={i}
               className={`h-1 flex-1 rounded-full transition-colors ${
-                i <= step ? "bg-amber-500" : "bg-slate-700"
+                i <= step ? "bg-black" : "bg-gray-200"
               }`}
             />
           ))}
         </div>
 
         {step === 0 && (
-          <Card className="bg-slate-800 border-slate-700">
+          <Card className="bg-white border border-gray-100 rounded-2xl shadow-sm">
             <CardHeader>
-              <CardTitle className="text-slate-100 text-xl">{t("onboard_invite_title")}</CardTitle>
-              <p className="text-slate-400 text-sm">
+              <CardTitle className="text-gray-900 text-xl">{t("onboard_invite_title")}</CardTitle>
+              <p className="text-gray-500 text-sm">
                 {t("onboard_invite_desc")}
               </p>
             </CardHeader>
@@ -197,20 +197,20 @@ export default function OnboardingPage() {
                 value={inviteCode}
                 onChange={e => setInviteCode(e.target.value.toUpperCase())}
                 placeholder="FLYWHEEL-XXXXX-XXX"
-                className="bg-slate-700 border-slate-600 text-slate-100 font-mono uppercase tracking-widest"
+                className="border border-gray-200 rounded-xl bg-white text-gray-900 font-mono uppercase tracking-widest placeholder-gray-400"
                 onKeyDown={e => e.key === "Enter" && validateInvite()}
               />
-              {inviteError && <p className="text-red-400 text-sm">{inviteError}</p>}
+              {inviteError && <p className="text-red-500 text-sm">{inviteError}</p>}
               <Button
                 onClick={validateInvite}
                 disabled={!inviteCode || inviteLoading}
-                className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950"
+                className="w-full bg-black hover:bg-gray-800 text-white rounded-xl"
               >
                 {inviteLoading ? t("onboard_invite_loading") : t("onboard_invite_btn")}
               </Button>
-              <p className="text-center text-xs text-slate-500">
+              <p className="text-center text-xs text-gray-400">
                 {t("onboard_no_code")}
-                <a href="https://flywheelsea.club/#waitlist-form" className="text-amber-400 hover:underline ml-1">
+                <a href="https://flywheelsea.club/#waitlist-form" className="text-gray-600 hover:underline ml-1">
                   {t("onboard_apply")}
                 </a>
               </p>
@@ -219,15 +219,15 @@ export default function OnboardingPage() {
         )}
 
         {step === 1 && (
-          <Card className="bg-slate-800 border-slate-700">
+          <Card className="bg-white border border-gray-100 rounded-2xl shadow-sm">
             <CardHeader>
-              <CardTitle className="text-slate-100 text-xl">{t("onboard_identity_title")}</CardTitle>
-              <p className="text-slate-400 text-sm">{t("onboard_identity_sub")}</p>
+              <CardTitle className="text-gray-900 text-xl">{t("onboard_identity_title")}</CardTitle>
+              <p className="text-gray-500 text-sm">{t("onboard_identity_sub")}</p>
             </CardHeader>
             <CardContent className="space-y-5 max-h-[70vh] overflow-y-auto">
               {/* Q1: Profit Source - multi select */}
               <div>
-                <p className="text-slate-300 text-sm font-medium mb-2">{t("onboard_profit_label")}</p>
+                <p className="text-gray-700 text-sm font-medium mb-2">{t("onboard_profit_label")}</p>
                 <div className="space-y-2">
                   {PROFIT_SOURCES.map(r => (
                     <button key={r.value} type="button" onClick={() => toggleMulti(r.value, profitSource, setProfitSource)}
@@ -240,7 +240,7 @@ export default function OnboardingPage() {
 
               {/* Q2: Core Skills - multi select */}
               <div>
-                <p className="text-slate-300 text-sm font-medium mb-2">{t("onboard_skills_label")}</p>
+                <p className="text-gray-700 text-sm font-medium mb-2">{t("onboard_skills_label")}</p>
                 <div className="space-y-2">
                   {CORE_SKILLS.map(r => (
                     <button key={r.value} type="button" onClick={() => toggleMulti(r.value, coreSkills, setCoreSkills)}
@@ -253,7 +253,7 @@ export default function OnboardingPage() {
 
               {/* Q3: Opportunity Horizon - single select */}
               <div>
-                <p className="text-slate-300 text-sm font-medium mb-2">{t("onboard_horizon_label")}</p>
+                <p className="text-gray-700 text-sm font-medium mb-2">{t("onboard_horizon_label")}</p>
                 <div className="space-y-2">
                   {OPP_HORIZONS.map(r => (
                     <button key={r.value} type="button" onClick={() => setOppHorizon(r.value)}
@@ -266,7 +266,7 @@ export default function OnboardingPage() {
 
               {/* Q4: Risk Level - single select */}
               <div>
-                <p className="text-slate-300 text-sm font-medium mb-2">{t("onboard_risk_label")}</p>
+                <p className="text-gray-700 text-sm font-medium mb-2">{t("onboard_risk_label")}</p>
                 <div className="space-y-2">
                   {RISK_LEVELS.map(r => (
                     <button key={r.value} type="button" onClick={() => setRiskLevel(r.value)}
@@ -279,7 +279,7 @@ export default function OnboardingPage() {
 
               {/* Q5: Time Budget - single select */}
               <div>
-                <p className="text-slate-300 text-sm font-medium mb-2">{t("onboard_time_label")}</p>
+                <p className="text-gray-700 text-sm font-medium mb-2">{t("onboard_time_label")}</p>
                 <div className="space-y-2">
                   {TIME_BUDGETS.map(r => (
                     <button key={r.value} type="button" onClick={() => setTimeBudget(r.value)}
@@ -293,7 +293,7 @@ export default function OnboardingPage() {
               <Button
                 onClick={() => setStep(2)}
                 disabled={!step1Complete}
-                className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 mt-2"
+                className="w-full bg-black hover:bg-gray-800 text-white rounded-xl mt-2"
               >
                 {t("onboard_next")}
               </Button>
@@ -303,10 +303,10 @@ export default function OnboardingPage() {
         )}
 
         {step === 2 && (
-          <Card className="bg-slate-800 border-slate-700">
+          <Card className="bg-white border border-gray-100 rounded-2xl shadow-sm">
             <CardHeader>
-              <CardTitle className="text-slate-100 text-xl">{t("onboard_cat_title")}</CardTitle>
-              <p className="text-slate-400 text-sm">{t("onboard_cat_desc")}</p>
+              <CardTitle className="text-gray-900 text-xl">{t("onboard_cat_title")}</CardTitle>
+              <p className="text-gray-500 text-sm">{t("onboard_cat_desc")}</p>
             </CardHeader>
             <CardContent className="space-y-3">
               {CATEGORIES.map(cat => (
@@ -323,7 +323,7 @@ export default function OnboardingPage() {
               <Button
                 onClick={() => setStep(3)}
                 disabled={categories.length === 0}
-                className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 mt-2"
+                className="w-full bg-black hover:bg-gray-800 text-white rounded-xl mt-2"
               >
                 {t("onboard_next")}
               </Button>
@@ -332,10 +332,10 @@ export default function OnboardingPage() {
         )}
 
         {step === 3 && (
-          <Card className="bg-slate-800 border-slate-700">
+          <Card className="bg-white border border-gray-100 rounded-2xl shadow-sm">
             <CardHeader>
-              <CardTitle className="text-slate-100 text-xl">{t("onboard_scan_title")}</CardTitle>
-              <p className="text-slate-400 text-sm">{t("onboard_scan_desc")}</p>
+              <CardTitle className="text-gray-900 text-xl">{t("onboard_scan_title")}</CardTitle>
+              <p className="text-gray-500 text-sm">{t("onboard_scan_desc")}</p>
             </CardHeader>
             <CardContent className="space-y-3">
               {INTERVALS.map(opt => (
@@ -351,7 +351,7 @@ export default function OnboardingPage() {
               ))}
               <Button
                 onClick={() => setStep(4)}
-                className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 mt-2"
+                className="w-full bg-black hover:bg-gray-800 text-white rounded-xl mt-2"
               >
                 {t("onboard_next")}
               </Button>
@@ -360,30 +360,30 @@ export default function OnboardingPage() {
         )}
 
         {step === 4 && (
-          <Card className="bg-slate-800 border-slate-700">
+          <Card className="bg-white border border-gray-100 rounded-2xl shadow-sm">
             <CardHeader>
-              <CardTitle className="text-slate-100 text-xl">{t("onboard_tg_title")}</CardTitle>
-              <p className="text-slate-400 text-sm">{t("onboard_tg_desc")}</p>
+              <CardTitle className="text-gray-900 text-xl">{t("onboard_tg_title")}</CardTitle>
+              <p className="text-gray-500 text-sm">{t("onboard_tg_desc")}</p>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-slate-700/50 rounded-lg p-4 text-sm text-slate-300 space-y-2">
-                <p className="font-medium text-slate-200">{t("onboard_tg_howto")}</p>
-                <ol className="space-y-1 list-decimal list-inside text-slate-400">
-                  <li>{t("onboard_tg_step1_pre")} <span className="font-mono text-amber-400">@userinfobot</span></li>
+              <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-600 space-y-2">
+                <p className="font-medium text-gray-700">{t("onboard_tg_howto")}</p>
+                <ol className="space-y-1 list-decimal list-inside text-gray-500">
+                  <li>{t("onboard_tg_step1_pre")} <span className="font-mono text-gray-900">@userinfobot</span></li>
                   <li>{t("onboard_tg_step2")}</li>
-                  <li>{t("onboard_tg_step3_pre")} <span className="font-mono text-amber-400">Id:</span> {t("onboard_tg_step3_post")}</li>
+                  <li>{t("onboard_tg_step3_pre")} <span className="font-mono text-gray-900">Id:</span> {t("onboard_tg_step3_post")}</li>
                 </ol>
               </div>
               <Input
                 value={telegramId}
                 onChange={e => setTelegramId(e.target.value)}
                 placeholder={t("onboard_tg_example")}
-                className="bg-slate-700 border-slate-600 text-slate-100 font-mono"
+                className="border border-gray-200 rounded-xl bg-white text-gray-900 font-mono placeholder-gray-400"
               />
               <Button
                 onClick={finishWithTelegram}
                 disabled={saving || !telegramId}
-                className="w-full bg-amber-500 hover:bg-amber-400 text-slate-950"
+                className="w-full bg-black hover:bg-gray-800 text-white rounded-xl"
               >
                 {saving ? t("onboard_tg_saving") : t("onboard_tg_done")}
               </Button>

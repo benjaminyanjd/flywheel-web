@@ -34,12 +34,12 @@ export default function WaitlistForm() {
   if (status === "success") {
     return (
       <div className="text-center py-4 space-y-3">
-        <p className="text-emerald-400 text-lg font-medium">{t("waitlist_success")}</p>
-        <div className="bg-slate-800 border border-amber-500/30 rounded-xl p-4 text-left max-w-sm mx-auto">
-          <p className="text-amber-400 font-semibold text-sm mb-2">{t("waitlist_step_title")}</p>
-          <ol className="text-slate-300 text-sm space-y-1.5 list-decimal list-inside">
-            <li>{t("waitlist_step1_pre")}<span className="text-amber-300 font-mono">@flywheelsea_bot</span></li>
-            <li>{t("waitlist_step2_pre")}<span className="text-amber-300 font-mono">/start</span></li>
+        <p className="text-green-600 text-lg font-medium">{t("waitlist_success")}</p>
+        <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-left max-w-sm mx-auto">
+          <p className="text-gray-900 font-semibold text-sm mb-2">{t("waitlist_step_title")}</p>
+          <ol className="text-gray-600 text-sm space-y-1.5 list-decimal list-inside">
+            <li>{t("waitlist_step1_pre")}<span className="text-gray-900 font-mono">@flywheelsea_bot</span></li>
+            <li>{t("waitlist_step2_pre")}<span className="text-gray-900 font-mono">/start</span></li>
             <li>{t("waitlist_step3")}</li>
           </ol>
         </div>
@@ -56,7 +56,7 @@ export default function WaitlistForm() {
         placeholder={t("waitlist_tg_placeholder")}
         value={telegram}
         onChange={(e) => setTelegram(e.target.value)}
-        className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 text-sm"
+        className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-300 text-sm"
       />
       <input
         type="email"
@@ -64,19 +64,19 @@ export default function WaitlistForm() {
         placeholder={t("waitlist_email_placeholder")}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 text-sm"
+        className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-300 text-sm"
       />
       <button
         type="submit"
         disabled={status === "loading"}
-        className="w-full bg-amber-500 hover:bg-amber-400 disabled:bg-amber-500/50 text-slate-900 font-bold px-8 py-4 rounded-xl transition-colors text-base shadow-lg shadow-amber-500/20"
+        className="w-full bg-black hover:bg-gray-800 disabled:bg-gray-300 text-white font-bold px-8 py-4 rounded-xl transition-colors text-base"
       >
         {status === "loading" ? t("waitlist_btn_loading") : t("waitlist_btn")}
       </button>
       {status === "error" && (
-        <p className="text-red-400 text-sm text-center">{t("waitlist_error")}</p>
+        <p className="text-red-500 text-sm text-center">{t("waitlist_error")}</p>
       )}
-      <p className="text-xs text-slate-600 text-center">{t("waitlist_note")}</p>
+      <p className="text-xs text-gray-400 text-center">{t("waitlist_note")}</p>
     </form>
   )
 }

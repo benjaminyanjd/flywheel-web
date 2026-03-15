@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flywheel 风格选择</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #111; font-family: -apple-system, 'Inter', sans-serif; color: white; }
+
+.tabs { display: flex; gap: 8px; padding: 16px; position: sticky; top: 0; background: #111; z-index: 10; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.tab { flex: 1; padding: 10px 0; border-radius: 12px; font-size: 13px; font-weight: 600; text-align: center; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); }
+.tab.A.active { background: rgba(255,255,255,0.12); color: white; border-color: white; }
+.tab.B.active { background: rgba(245,158,11,0.15); color: #f59e0b; border-color: #f59e0b; }
+.tab.C.active { background: rgba(139,92,246,0.15); color: #a78bfa; border-color: #a78bfa; }
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+.label { padding: 12px 16px 0; text-align: center; }
+.label h2 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.label p { font-size: 12px; opacity: 0.4; }
+
+.pick-btn { display: block; margin: 14px 16px; padding: 14px; border-radius: 14px; font-size: 14px; font-weight: 700; text-align: center; cursor: pointer; }
+.pick-btn.A { background: #111; color: white; border: 2px solid white; }
+.pick-btn.B { background: #f59e0b; color: black; }
+.pick-btn.C { background: linear-gradient(135deg,#7c3aed,#2563eb); color: white; }
+
+/* ===== Style A ===== */
+.a-wrap { background: #fff; margin: 16px; border-radius: 20px; overflow: hidden; }
+.a-top { background: #fff; border-bottom: 1px solid #f0f0f0; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
+.a-logo { display: flex; align-items: center; gap: 8px; }
+.a-logo-icon { width: 28px; height: 28px; background: #111; border-radius: 8px; }
+.a-logo-name { font-size: 15px; font-weight: 700; color: #111; }
+.a-nav { display: flex; gap: 6px; }
+.a-nav-item { background: #f5f5f5; border-radius: 8px; padding: 5px 10px; font-size: 11px; color: #666; }
+.a-nav-item.active { background: #111; color: white; }
+.a-body { padding: 16px; }
+.a-title { font-size: 20px; font-weight: 700; color: #111; margin-bottom: 4px; }
+.a-sub { font-size: 11px; color: #999; margin-bottom: 14px; }
+.a-filters { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.a-filter { border-radius: 20px; padding: 5px 14px; font-size: 11px; font-weight: 500; }
+.a-filter.active { background: #111; color: white; }
+.a-filter:not(.active) { background: #f5f5f5; color: #666; }
+.a-card { border: 1px solid #e8e8e8; border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+.a-card.green { border-left: 3px solid #22c55e; }
+.a-card.yellow { border-left: 3px solid #f59e0b; }
+.a-card.gray { border-left: 3px solid #d1d5db; opacity: 0.55; background: #fafafa; }
+.a-card-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.a-badge { border-radius: 6px; padding: 3px 8px; font-size: 10px; font-weight: 700; }
+.a-badge.green { background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; }
+.a-badge.yellow { background: #fffbeb; border: 1px solid #fde68a; color: #d97706; }
+.a-badge.gray { background: #f5f5f5; color: #999; }
+.a-card-title { font-size: 13px; font-weight: 600; color: #111; flex: 1; }
+.a-time { font-size: 10px; border-radius: 20px; padding: 3px 8px; }
+.a-time.green { color: #22c55e; background: #f0fdf4; }
+.a-time.yellow { color: #f59e0b; background: #fffbeb; }
+.a-time.gray { color: #999; background: #f5f5f5; }
+.a-desc { font-size: 11px; color: #666; margin: 8px 0 10px; line-height: 1.5; }
+.a-actions { display: flex; gap: 8px; }
+.a-btn-primary { background: #111; color: white; border-radius: 8px; padding: 7px 14px; font-size: 11px; font-weight: 700; }
+.a-btn-secondary { border: 1px solid #e8e8e8; border-radius: 8px; padding: 7px 14px; font-size: 11px; color: #666; }
+
+/* ===== Style B ===== */
+.b-wrap { background: #080C14; margin: 16px; border-radius: 20px; overflow: hidden; }
+.b-top { background: #0a0f1a; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
+.b-logo { display: flex; align-items: center; gap: 8px; }
+.b-logo-icon { width: 28px; height: 28px; background: rgba(245,158,11,0.2); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; }
+.b-logo-name { font-size: 15px; font-weight: 700; color: white; }
+.b-filters { display: flex; gap: 4px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 3px; }
+.b-filter { border-radius: 7px; padding: 5px 12px; font-size: 11px; font-weight: 500; }
+.b-filter.active { background: rgba(255,255,255,0.1); color: white; }
+.b-filter:not(.active) { color: rgba(255,255,255,0.3); }
+.b-body { padding: 16px; }
+.b-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.b-title { font-size: 16px; font-weight: 600; color: white; }
+.b-sub { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+.b-count { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.25); }
+.b-card { background: #0d1421; border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 14px; margin-bottom: 8px; }
+.b-card.faded { opacity: 0.4; border-color: rgba(255,255,255,0.04); }
+.b-card-row { display: flex; align-items: center; gap: 10px; }
+.b-ring { position: relative; width: 40px; height: 40px; flex-shrink: 0; }
+.b-badge { border-radius: 6px; padding: 3px 8px; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+.b-badge.green { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.2); color: #10b981; }
+.b-badge.yellow { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.2); color: #f59e0b; }
+.b-badge.gray { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.25); }
+.b-card-title { font-size: 12px; font-weight: 600; color: white; flex: 1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.b-time { font-size: 10px; border-radius: 20px; padding: 3px 8px; flex-shrink: 0; }
+.b-time.green { color: #10b981; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); }
+.b-time.yellow { color: #f59e0b; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); }
+.b-time.gray { color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); }
+.b-card-actions { display: flex; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); }
+.b-btn-primary { background: #f59e0b; color: black; border-radius: 8px; padding: 6px 14px; font-size: 11px; font-weight: 700; box-shadow: 0 4px 14px rgba(245,158,11,0.3); }
+.b-btn-secondary { border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); border-radius: 8px; padding: 6px 14px; font-size: 11px; }
+
+/* ===== Style C ===== */
+.c-wrap { background: linear-gradient(135deg,#0f0b2b 0%,#0d1117 100%); margin: 16px; border-radius: 20px; overflow: hidden; }
+.c-top { background: rgba(0,0,0,0.4); border-bottom: 1px solid rgba(139,92,246,0.1); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
+.c-logo { display: flex; align-items: center; gap: 8px; }
+.c-logo-icon { width: 28px; height: 28px; background: linear-gradient(135deg,rgba(139,92,246,0.4),rgba(59,130,246,0.4)); border: 1px solid rgba(139,92,246,0.4); border-radius: 8px; }
+.c-logo-name { font-size: 15px; font-weight: 700; color: white; }
+.c-filters { display: flex; gap: 4px; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2); border-radius: 10px; padding: 3px; }
+.c-filter { border-radius: 7px; padding: 5px 12px; font-size: 11px; font-weight: 500; }
+.c-filter.active { background: rgba(139,92,246,0.3); color: #a78bfa; }
+.c-filter:not(.active) { color: rgba(255,255,255,0.3); }
+.c-body { padding: 16px; }
+.c-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.c-title { font-size: 16px; font-weight: 600; color: white; }
+.c-sub { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+.c-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(139,92,246,0.2); border-radius: 16px; padding: 14px; margin-bottom: 8px; position: relative; overflow: hidden; }
+.c-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg,transparent,rgba(139,92,246,0.5),transparent); }
+.c-card.plain { border-color: rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); }
+.c-card.plain::before { display: none; }
+.c-card.faded { opacity: 0.35; border-color: rgba(255,255,255,0.04); background: rgba(255,255,255,0.02); }
+.c-card.faded::before { display: none; }
+.c-card-row { display: flex; align-items: center; gap: 10px; }
+.c-badge { border-radius: 8px; padding: 5px 10px; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.c-badge.green { background: rgba(16,185,129,0.2); border: 1px solid rgba(16,185,129,0.3); color: #34d399; }
+.c-badge.yellow { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.25); color: #fbbf24; }
+.c-badge.gray { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.2); }
+.c-card-title { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85); flex: 1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.c-time { font-size: 10px; border-radius: 20px; padding: 3px 8px; flex-shrink: 0; }
+.c-time.green { color: #34d399; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); }
+.c-time.yellow { color: #fbbf24; background: rgba(245,158,11,0.1); }
+.c-time.gray { color: rgba(255,255,255,0.15); }
+.c-card-actions { display: flex; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); }
+.c-btn-primary { background: linear-gradient(135deg,#7c3aed,#2563eb); color: white; border-radius: 8px; padding: 6px 14px; font-size: 11px; font-weight: 700; box-shadow: 0 4px 14px rgba(124,58,237,0.4); }
+.c-btn-secondary { border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); border-radius: 8px; padding: 6px 14px; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<!-- Tab switcher -->
+<div class="tabs">
+  <div class="tab A active" onclick="show('A')">A 極簡白</div>
+  <div class="tab B" onclick="show('B')">B 黑金</div>
+  <div class="tab C" onclick="show('C')">C 科技感</div>
+</div>
+
+<!-- ===== PANEL A ===== -->
+<div id="panel-A" class="panel active">
+  <div class="label">
+    <h2 style="color:white;">A — 極簡白</h2>
+    <p>參考：Linear / Notion / Apple</p>
+  </div>
+  <div class="pick-btn A" onclick="picked('A')">✓ 選擇這個風格</div>
+  <div class="a-wrap">
+    <div class="a-top">
+      <div class="a-logo">
+        <div class="a-logo-icon"></div>
+        <div class="a-logo-name">Flywheel</div>
+      </div>
+      <div class="a-nav">
+        <div class="a-nav-item">機會</div>
+        <div class="a-nav-item">雷達</div>
+        <div class="a-nav-item active">設定</div>
+      </div>
+    </div>
+    <div class="a-body">
+      <div class="a-title">今日機會</div>
+      <div class="a-sub">4 個機會 · 最後更新 12 分鐘前</div>
+      <div class="a-filters">
+        <div class="a-filter active">全部</div>
+        <div class="a-filter">24h 新鮮</div>
+        <div class="a-filter">高置信</div>
+      </div>
+      <div class="a-card green">
+        <div class="a-card-row">
+          <div class="a-badge green">85% 高置信</div>
+          <div class="a-card-title">Venus 黑客事件：CAKE 价格错位套利</div>
+          <div class="a-time green">2h 內</div>
+        </div>
+        <div class="a-desc">Venus Protocol 遭攻擊後 CAKE 短線被砸，鏈上出現明顯價差套利視窗</div>
+        <div class="a-actions">
+          <div class="a-btn-primary">⚡ 立即行動</div>
+          <div class="a-btn-secondary">加入待辦</div>
+        </div>
+      </div>
+      <div class="a-card yellow">
+        <div class="a-card-row">
+          <div class="a-badge yellow">64% 中置信</div>
+          <div class="a-card-title">ETH 機構多重買入共振 → 做多機會</div>
+          <div class="a-time yellow">5h 內</div>
+        </div>
+      </div>
+      <div class="a-card gray">
+        <div class="a-card-row">
+          <div class="a-badge gray">46% 低置信</div>
+          <div class="a-card-title">Base 鏈 AI Meme 情緒輪動</div>
+          <div class="a-time gray">已過期</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PANEL B ===== -->
+<div id="panel-B" class="panel">
+  <div class="label">
+    <h2 style="color:#f59e0b;">B — 專業黑金</h2>
+    <p>參考：Perplexity / Dexscreener / Bloomberg</p>
+  </div>
+  <div class="pick-btn B" onclick="picked('B')">✓ 選擇這個風格</div>
+  <div class="b-wrap">
+    <div class="b-top">
+      <div class="b-logo">
+        <div class="b-logo-icon"></div>
+        <div class="b-logo-name">Flywheel</div>
+      </div>
+      <div class="b-filters">
+        <div class="b-filter active">全部</div>
+        <div class="b-filter">24h</div>
+        <div class="b-filter">高置信</div>
+      </div>
+    </div>
+    <div class="b-body">
+      <div class="b-header">
+        <div>
+          <div class="b-title">今日機會</div>
+          <div class="b-sub">最後更新 12 分鐘前</div>
+        </div>
+        <div class="b-count">4 個</div>
+      </div>
+
+      <!-- Card 1 -->
+      <div class="b-card">
+        <div class="b-card-row">
+          <div class="b-ring">
+            <svg style="position:absolute;top:0;left:0;transform:rotate(-90deg);" width="40" height="40" viewBox="0 0 40 40">
+              <circle cx="20" cy="20" r="16" stroke="#1e293b" stroke-width="3" fill="none"/>
+              <circle cx="20" cy="20" r="16" stroke="#10b981" stroke-width="3" fill="none" stroke-dasharray="85 100" stroke-linecap="round"/>
+            </svg>
+            <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#10b981;">85</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+              <div class="b-badge green">高置信</div>
+              <div class="b-time green">2h 內</div>
+            </div>
+            <div class="b-card-title">Venus 黑客事件：CAKE 价格错位短線套利機會</div>
+          </div>
+        </div>
+        <div class="b-card-actions">
+          <div class="b-btn-primary">⚡ 立即行動</div>
+          <div class="b-btn-secondary">加入待辦</div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="b-card">
+        <div class="b-card-row">
+          <div class="b-ring">
+            <svg style="position:absolute;top:0;left:0;transform:rotate(-90deg);" width="40" height="40" viewBox="0 0 40 40">
+              <circle cx="20" cy="20" r="16" stroke="#1e293b" stroke-width="3" fill="none"/>
+              <circle cx="20" cy="20" r="16" stroke="#f59e0b" stroke-width="3" fill="none" stroke-dasharray="64 100" stroke-linecap="round"/>
+            </svg>
+            <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#f59e0b;">64</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+              <div class="b-badge yellow">中置信</div>
+              <div class="b-time yellow">5h 內</div>
+            </div>
+            <div class="b-card-title">ETH 機構多重買入共振 → 輕倉做多雙線機會</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 faded -->
+      <div class="b-card faded">
+        <div class="b-card-row">
+          <div class="b-ring">
+            <svg style="position:absolute;top:0;left:0;transform:rotate(-90deg);" width="40" height="40" viewBox="0 0 40 40">
+              <circle cx="20" cy="20" r="16" stroke="#1e293b" stroke-width="3" fill="none"/>
+              <circle cx="20" cy="20" r="16" stroke="#475569" stroke-width="3" fill="none" stroke-dasharray="46 100" stroke-linecap="round"/>
+            </svg>
+            <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#475569;">46</span>
+          </div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+              <div class="b-badge gray">低置信</div>
+              <div class="b-time gray">已過期</div>
+            </div>
+            <div class="b-card-title" style="color:rgba(255,255,255,0.3);">Base 鏈 AI Meme 情緒輪動</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PANEL C ===== -->
+<div id="panel-C" class="panel">
+  <div class="label">
+    <h2 style="color:#a78bfa;">C — 漸變科技感</h2>
+    <p>參考：Vercel / Supabase / Raycast</p>
+  </div>
+  <div class="pick-btn C" onclick="picked('C')">✓ 選擇這個風格</div>
+  <div class="c-wrap">
+    <div class="c-top">
+      <div class="c-logo">
+        <div class="c-logo-icon"></div>
+        <div class="c-logo-name">Flywheel</div>
+      </div>
+      <div class="c-filters">
+        <div class="c-filter active">全部</div>
+        <div class="c-filter">24h</div>
+        <div class="c-filter">高置信</div>
+      </div>
+    </div>
+    <div class="c-body">
+      <div class="c-header">
+        <div>
+          <div class="c-title">今日機會</div>
+          <div class="c-sub">最後更新 12 分鐘前</div>
+        </div>
+      </div>
+
+      <div class="c-card">
+        <div class="c-card-row">
+          <div class="c-badge green">85%</div>
+          <div class="c-card-title">Venus 黑客事件：CAKE 价格错位短線套利機會</div>
+          <div class="c-time green">2h</div>
+        </div>
+        <div class="c-card-actions">
+          <div class="c-btn-primary">⚡ 立即行動</div>
+          <div class="c-btn-secondary">加入待辦</div>
+        </div>
+      </div>
+
+      <div class="c-card plain">
+        <div class="c-card-row">
+          <div class="c-badge yellow">64%</div>
+          <div class="c-card-title">ETH 機構多重買入共振 → 輕倉做多機會</div>
+          <div class="c-time yellow">5h</div>
+        </div>
+      </div>
+
+      <div class="c-card faded">
+        <div class="c-card-row">
+          <div class="c-badge gray">46%</div>
+          <div class="c-card-title" style="color:rgba(255,255,255,0.2);">Base 鏈 AI Meme 情緒輪動</div>
+          <div class="c-time gray">已過期</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:white;color:black;font-size:14px;font-weight:700;padding:14px 24px;border-radius:30px;box-shadow:0 8px 30px rgba(0,0,0,0.4);z-index:100;white-space:nowrap;"></div>
+
+<script>
+function show(style) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-'+style).classList.add('active');
+  document.querySelector('.tab.'+style).classList.add('active');
+}
+function picked(style) {
+  const names = { A: 'A — 極簡白', B: 'B — 專業黑金', C: 'C — 漸變科技感' };
+  const toast = document.getElementById('toast');
+  toast.textContent = '已選 ' + names[style] + ' · 告訴 Levi';
+  toast.style.display = 'block';
+  setTimeout(() => toast.style.display = 'none', 4000);
+}
+</script>
+</body>
+</html>

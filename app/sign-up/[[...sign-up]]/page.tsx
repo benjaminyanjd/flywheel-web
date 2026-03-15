@@ -1,6 +1,5 @@
 "use client";
 import { SignUp } from "@clerk/nextjs";
-import { dark } from "@clerk/themes";
 import { FlywheelLogo } from "@/components/flywheel-logo";
 import { useT } from "@/lib/i18n";
 
@@ -14,24 +13,24 @@ export default function SignUpPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6 gap-6">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6 gap-6">
       {/* Left: Product intro - no card, just text */}
       <div className="hidden md:flex flex-col justify-between w-[420px] min-h-[540px] p-6">
         <div>
           {/* Logo */}
           <div className="flex items-center gap-3 mb-10">
-            <FlywheelLogo size={32} className="text-amber-400 animate-[spin_8s_linear_infinite]" />
+            <FlywheelLogo size={32} className="text-black animate-[spin_8s_linear_infinite]" />
             <div>
-              <h1 className="text-2xl font-bold text-slate-100">Flywheel</h1>
-              <p className="text-slate-500 text-sm">{t("auth_subtitle")}</p>
+              <h1 className="text-2xl font-bold text-gray-900">Flywheel</h1>
+              <p className="text-gray-400 text-sm">{t("auth_subtitle")}</p>
             </div>
           </div>
 
           {/* Main headline */}
-          <h2 className="text-4xl font-bold text-slate-100 mb-4 leading-tight">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
             {t("auth_signup_h1")}<br/>{t("auth_signup_h2")}<br/>{t("auth_signup_h3")}
           </h2>
-          <p className="text-slate-400 text-base mb-10 leading-relaxed">
+          <p className="text-gray-500 text-base mb-10 leading-relaxed">
             {t("auth_signup_desc")}
           </p>
 
@@ -39,10 +38,10 @@ export default function SignUpPage() {
           <div className="space-y-5">
             {features.map(item => (
               <div key={item.title} className="flex gap-3 items-start">
-                <span className="w-2 h-2 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-black mt-1.5 flex-shrink-0" />
                 <div>
-                  <p className="text-slate-200 font-semibold text-base">{item.title}</p>
-                  <p className="text-slate-500 text-sm">{item.desc}</p>
+                  <p className="text-gray-700 font-semibold text-base">{item.title}</p>
+                  <p className="text-gray-400 text-sm">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -50,7 +49,7 @@ export default function SignUpPage() {
         </div>
 
         {/* Bottom tags */}
-        <div className="flex items-center gap-2 text-sm text-slate-600">
+        <div className="flex items-center gap-2 text-sm text-gray-400">
           <span>{t("auth_signup_tag1")}</span>
           <span>·</span>
           <span>{t("auth_signup_tag2")}</span>
@@ -60,28 +59,28 @@ export default function SignUpPage() {
       {/* Right: Clerk sign-up */}
       <SignUp
         appearance={{
-          baseTheme: dark,
           variables: {
-            colorPrimary: "#f59e0b",
-            colorBackground: "#334155",
-            colorText: "#f1f5f9",
-            colorTextSecondary: "#e2e8f0",
-            colorInputBackground: "#1e293b",
-            colorInputText: "#f1f5f9",
-            colorNeutral: "#f1f5f9",
+            colorPrimary: "#111111",
+            colorBackground: "#ffffff",
+            colorText: "#111111",
+            colorTextSecondary: "#666666",
+            colorInputBackground: "#ffffff",
+            colorInputText: "#111111",
+            colorNeutral: "#111111",
           },
           elements: {
-            headerTitle: { color: "#f1f5f9" },
-            headerSubtitle: { color: "#cbd5e1" },
-            formFieldLabel: { color: "#cbd5e1" },
-            socialButtonsBlockButton: { borderColor: "#64748b" },
-            dividerText: { color: "#94a3b8", opacity: "1" },
-            dividerLine: { backgroundColor: "#475569" },
-            footerActionText: { color: "#cbd5e1", opacity: "1" },
+            headerTitle: { color: "#111111" },
+            headerSubtitle: { color: "#666666" },
+            formFieldLabel: { color: "#666666" },
+            socialButtonsBlockButton: { borderColor: "#e8e8e8" },
+            dividerText: { color: "#999999", opacity: "1" },
+            dividerLine: { backgroundColor: "#e8e8e8" },
+            footerActionText: { color: "#666666", opacity: "1" },
             footerAction: { opacity: "1" },
             footer: { opacity: "1" },
-            footerActionLink: { color: "#f59e0b" },
-            badge: { opacity: "1", color: "#64748b" },
+            footerActionLink: { color: "#111111" },
+            badge: { opacity: "1", color: "#999999" },
+            card: { borderRadius: "16px", border: "1px solid #e8e8e8", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" },
           }
         }}
         fallbackRedirectUrl="/onboarding"
