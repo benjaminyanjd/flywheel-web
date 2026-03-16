@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useT } from "@/lib/i18n";
 import { deriveFocus } from "@/lib/preferences";
+import { FlywheelLogo } from "@/components/flywheel-logo";
 
 export default function OnboardingPage() {
   const { t } = useT();
@@ -73,6 +74,14 @@ export default function OnboardingPage() {
     { value: 30, label: t("onboard_interval_30") },
     { value: 60, label: t("onboard_interval_60") },
     { value: 180, label: t("onboard_interval_180") },
+  ];
+
+  const STEP_TITLES = [
+    t("onboard_invite_title"),
+    t("onboard_identity_title"),
+    t("onboard_cat_title"),
+    t("onboard_scan_title"),
+    t("onboard_tg_title"),
   ];
 
   async function validateInvite() {
@@ -163,33 +172,61 @@ export default function OnboardingPage() {
 
   const step1Complete = profitSource.length > 0 && coreSkills.length > 0 && oppHorizon && riskLevel && timeBudget;
 
-  const btnClass = (selected: boolean) =>
-    `w-full text-left px-4 py-3 rounded-xl border transition-colors ${
-      selected
-        ? "border-2 border-black bg-black/5 text-black font-medium"
-        : "border border-gray-200 text-gray-600 hover:border-gray-400"
+  // Multi-select button class (checkbox style)
+  const multiBtnClass = (selected: boolean) =>
+    `w-full text-left px-4 py-3 rounded-xl border transition-all duration-200 flex items-center gap-3 ${
+      selected ? "border-2 font-medium shadow-sm" : "hover:bg-[var(--bg-panel)]"
     }`;
 
+  // Single-select button class (radio style)
+  const singleBtnClass = (selected: boolean) =>
+    `w-full text-left px-4 py-3 rounded-xl border transition-all duration-200 flex items-center gap-3 ${
+      selected ? "border-2 font-medium shadow-sm" : "hover:bg-[var(--bg-panel)]"
+    }`;
+
+  const selectedStyle = {
+    borderColor: "var(--signal)",
+    backgroundColor: "color-mix(in srgb, var(--signal) 10%, transparent)",
+    color: "var(--signal)",
+  };
+
+  const unselectedStyle = {
+    borderColor: "var(--border)",
+    color: "var(--text-secondary)",
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: "var(--bg)" }}>
       <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <FlywheelLogo size={28} className="animate-[spin_8s_linear_infinite]" style={{ color: "var(--signal)" }} />
+          <span className="font-semibold text-lg" style={{ color: "var(--text-primary)" }}>嗅鐘</span>
+        </div>
+
+        {/* Step indicator */}
+        <div className="text-center mb-3">
+          <span className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
+            Step {step + 1} / 5
+          </span>
+        </div>
+
         {/* Progress bar - 5 steps */}
         <div className="flex gap-2 mb-6">
           {[0, 1, 2, 3, 4].map(i => (
             <div
               key={i}
-              className={`h-1 flex-1 rounded-full transition-colors ${
-                i <= step ? "bg-black" : "bg-gray-200"
-              }`}
+              className="h-1 flex-1 rounded-full transition-colors"
+              style={{ backgroundColor: i <= step ? "var(--signal)" : "var(--border)" }}
             />
           ))}
         </div>
 
         {step === 0 && (
-          <Card className="bg-white border border-gray-100 rounded-2xl shadow-sm">
+          <Card className="rounded-2xl shadow-sm animate-page-enter" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
             <CardHeader>
-              <CardTitle className="text-gray-900 text-xl">{t("onboard_invite_title")}</CardTitle>
-              <p className="text-gray-500 text-sm">
+              <CardTitle className="text-xl" style={{ color: "var(--text-primary)" }}>{t("onboard_invite_title")}</CardTitle>
+              <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
                 {t("onboard_invite_desc")}
               </p>
             </CardHeader>
@@ -198,20 +235,21 @@ export default function OnboardingPage() {
                 value={inviteCode}
                 onChange={e => setInviteCode(e.target.value.toUpperCase())}
                 placeholder="FLYWHEEL-XXXXX-XXX"
-                className="border border-gray-200 rounded-xl bg-white text-gray-900 font-mono uppercase tracking-widest placeholder-gray-400"
+                className="input-focus-ring rounded-xl font-mono uppercase tracking-widest"
                 onKeyDown={e => e.key === "Enter" && validateInvite()}
               />
               {inviteError && <p className="text-red-500 text-sm">{inviteError}</p>}
               <Button
                 onClick={validateInvite}
                 disabled={!inviteCode || inviteLoading}
-                className="w-full bg-black hover:bg-gray-800 text-white rounded-xl"
+                className="w-full rounded-xl"
+                style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
               >
                 {inviteLoading ? t("onboard_invite_loading") : t("onboard_invite_btn")}
               </Button>
-              <p className="text-center text-xs text-gray-400">
+              <p className="text-center text-xs" style={{ color: "var(--text-muted)" }}>
                 {t("onboard_no_code")}
-                <a href="https://flywheelsea.club/#waitlist-form" className="text-gray-600 hover:underline ml-1">
+                <a href="https://flywheelsea.club/#waitlist-form" className="hover:underline ml-1" style={{ color: "var(--text-secondary)" }}>
                   {t("onboard_apply")}
                 </a>
               </p>
@@ -220,139 +258,196 @@ export default function OnboardingPage() {
         )}
 
         {step === 1 && (
-          <Card className="bg-white border border-gray-100 rounded-2xl shadow-sm">
+          <Card className="rounded-2xl shadow-sm animate-page-enter" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
             <CardHeader>
-              <CardTitle className="text-gray-900 text-xl">{t("onboard_identity_title")}</CardTitle>
-              <p className="text-gray-500 text-sm">{t("onboard_identity_sub")}</p>
+              <CardTitle className="text-xl" style={{ color: "var(--text-primary)" }}>{t("onboard_identity_title")}</CardTitle>
+              <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("onboard_identity_sub")}</p>
             </CardHeader>
             <CardContent className="space-y-5 max-h-[70vh] overflow-y-auto">
               {/* Q1: Profit Source - multi select */}
               <div>
-                <p className="text-gray-700 text-sm font-medium mb-2">{t("onboard_profit_label")}</p>
+                <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>{t("onboard_profit_label")}</p>
                 <div className="space-y-2">
-                  {PROFIT_SOURCES.map(r => (
-                    <button key={r.value} type="button" onClick={() => toggleMulti(r.value, profitSource, setProfitSource)}
-                      aria-pressed={profitSource.includes(r.value)} className={btnClass(profitSource.includes(r.value))}>
-                      {r.label}
-                    </button>
-                  ))}
+                  {PROFIT_SOURCES.map(r => {
+                    const sel = profitSource.includes(r.value);
+                    return (
+                      <button key={r.value} type="button"
+                        onClick={() => toggleMulti(r.value, profitSource, setProfitSource)}
+                        aria-pressed={sel}
+                        className={multiBtnClass(sel)}
+                        style={sel ? selectedStyle : unselectedStyle}
+                      >
+                        <span className="text-base shrink-0">{sel ? "☑" : "☐"}</span>
+                        <span>{r.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Q2: Core Skills - multi select */}
               <div>
-                <p className="text-gray-700 text-sm font-medium mb-2">{t("onboard_skills_label")}</p>
+                <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>{t("onboard_skills_label")}</p>
                 <div className="space-y-2">
-                  {CORE_SKILLS.map(r => (
-                    <button key={r.value} type="button" onClick={() => toggleMulti(r.value, coreSkills, setCoreSkills)}
-                      aria-pressed={coreSkills.includes(r.value)} className={btnClass(coreSkills.includes(r.value))}>
-                      {r.label}
-                    </button>
-                  ))}
+                  {CORE_SKILLS.map(r => {
+                    const sel = coreSkills.includes(r.value);
+                    return (
+                      <button key={r.value} type="button"
+                        onClick={() => toggleMulti(r.value, coreSkills, setCoreSkills)}
+                        aria-pressed={sel}
+                        className={multiBtnClass(sel)}
+                        style={sel ? selectedStyle : unselectedStyle}
+                      >
+                        <span className="text-base shrink-0">{sel ? "☑" : "☐"}</span>
+                        <span>{r.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Q3: Opportunity Horizon - single select */}
               <div>
-                <p className="text-gray-700 text-sm font-medium mb-2">{t("onboard_horizon_label")}</p>
+                <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>{t("onboard_horizon_label")}</p>
                 <div className="space-y-2">
-                  {OPP_HORIZONS.map(r => (
-                    <button key={r.value} type="button" onClick={() => setOppHorizon(r.value)}
-                      aria-pressed={oppHorizon === r.value} className={btnClass(oppHorizon === r.value)}>
-                      {r.label}
-                    </button>
-                  ))}
+                  {OPP_HORIZONS.map(r => {
+                    const sel = oppHorizon === r.value;
+                    return (
+                      <button key={r.value} type="button"
+                        onClick={() => setOppHorizon(r.value)}
+                        aria-pressed={sel}
+                        className={singleBtnClass(sel)}
+                        style={sel ? selectedStyle : unselectedStyle}
+                      >
+                        <span className="text-base shrink-0">{sel ? "◉" : "○"}</span>
+                        <span>{r.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Q4: Risk Level - single select */}
               <div>
-                <p className="text-gray-700 text-sm font-medium mb-2">{t("onboard_risk_label")}</p>
+                <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>{t("onboard_risk_label")}</p>
                 <div className="space-y-2">
-                  {RISK_LEVELS.map(r => (
-                    <button key={r.value} type="button" onClick={() => setRiskLevel(r.value)}
-                      aria-pressed={riskLevel === r.value} className={btnClass(riskLevel === r.value)}>
-                      {r.label}
-                    </button>
-                  ))}
+                  {RISK_LEVELS.map(r => {
+                    const sel = riskLevel === r.value;
+                    return (
+                      <button key={r.value} type="button"
+                        onClick={() => setRiskLevel(r.value)}
+                        aria-pressed={sel}
+                        className={singleBtnClass(sel)}
+                        style={sel ? selectedStyle : unselectedStyle}
+                      >
+                        <span className="text-base shrink-0">{sel ? "◉" : "○"}</span>
+                        <span>{r.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Q5: Time Budget - single select */}
               <div>
-                <p className="text-gray-700 text-sm font-medium mb-2">{t("onboard_time_label")}</p>
+                <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>{t("onboard_time_label")}</p>
                 <div className="space-y-2">
-                  {TIME_BUDGETS.map(r => (
-                    <button key={r.value} type="button" onClick={() => setTimeBudget(r.value)}
-                      aria-pressed={timeBudget === r.value} className={btnClass(timeBudget === r.value)}>
-                      {r.label}
-                    </button>
-                  ))}
+                  {TIME_BUDGETS.map(r => {
+                    const sel = timeBudget === r.value;
+                    return (
+                      <button key={r.value} type="button"
+                        onClick={() => setTimeBudget(r.value)}
+                        aria-pressed={sel}
+                        className={singleBtnClass(sel)}
+                        style={sel ? selectedStyle : unselectedStyle}
+                      >
+                        <span className="text-base shrink-0">{sel ? "◉" : "○"}</span>
+                        <span>{r.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
-              <Button
-                onClick={() => setStep(2)}
-                disabled={!step1Complete}
-                className="w-full bg-black hover:bg-gray-800 text-white rounded-xl mt-2"
-              >
-                {t("onboard_next")}
-              </Button>
+              <div title={!step1Complete ? "請完成所有選項" : undefined}>
+                <Button
+                  onClick={() => setStep(2)}
+                  disabled={!step1Complete}
+                  className="w-full rounded-xl mt-2"
+                  style={step1Complete ? { backgroundColor: "var(--signal)", color: "var(--bg)" } : {}}
+                >
+                  {t("onboard_next")}
+                </Button>
+              </div>
 
             </CardContent>
           </Card>
         )}
 
         {step === 2 && (
-          <Card className="bg-white border border-gray-100 rounded-2xl shadow-sm">
+          <Card className="rounded-2xl shadow-sm animate-page-enter" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
             <CardHeader>
-              <CardTitle className="text-gray-900 text-xl">{t("onboard_cat_title")}</CardTitle>
-              <p className="text-gray-500 text-sm">{t("onboard_cat_desc")}</p>
+              <CardTitle className="text-xl" style={{ color: "var(--text-primary)" }}>{t("onboard_cat_title")}</CardTitle>
+              <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("onboard_cat_desc")}</p>
             </CardHeader>
             <CardContent className="space-y-3">
-              {CATEGORIES.map(cat => (
-                <button
-                  key={cat.value}
-                  type="button"
-                  onClick={() => toggleCategory(cat.value)}
-                  aria-pressed={categories.includes(cat.value)}
-                  className={btnClass(categories.includes(cat.value))}
+              {CATEGORIES.map(cat => {
+                const sel = categories.includes(cat.value);
+                return (
+                  <button
+                    key={cat.value}
+                    type="button"
+                    onClick={() => toggleCategory(cat.value)}
+                    aria-pressed={sel}
+                    className={multiBtnClass(sel)}
+                    style={sel ? selectedStyle : unselectedStyle}
+                  >
+                    <span className="text-base shrink-0">{sel ? "☑" : "☐"}</span>
+                    <span>{cat.label}</span>
+                  </button>
+                );
+              })}
+              <div title={categories.length === 0 ? "請完成所有選項" : undefined}>
+                <Button
+                  onClick={() => setStep(3)}
+                  disabled={categories.length === 0}
+                  className="w-full rounded-xl mt-2"
+                  style={categories.length > 0 ? { backgroundColor: "var(--signal)", color: "var(--bg)" } : {}}
                 >
-                  {cat.label}
-                </button>
-              ))}
-              <Button
-                onClick={() => setStep(3)}
-                disabled={categories.length === 0}
-                className="w-full bg-black hover:bg-gray-800 text-white rounded-xl mt-2"
-              >
-                {t("onboard_next")}
-              </Button>
+                  {t("onboard_next")}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}
 
         {step === 3 && (
-          <Card className="bg-white border border-gray-100 rounded-2xl shadow-sm">
+          <Card className="rounded-2xl shadow-sm animate-page-enter" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
             <CardHeader>
-              <CardTitle className="text-gray-900 text-xl">{t("onboard_scan_title")}</CardTitle>
-              <p className="text-gray-500 text-sm">{t("onboard_scan_desc")}</p>
+              <CardTitle className="text-xl" style={{ color: "var(--text-primary)" }}>{t("onboard_scan_title")}</CardTitle>
+              <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("onboard_scan_desc")}</p>
             </CardHeader>
             <CardContent className="space-y-3">
-              {INTERVALS.map(opt => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setScanInterval(opt.value)}
-                  aria-pressed={scanInterval === opt.value}
-                  className={btnClass(scanInterval === opt.value)}
-                >
-                  {opt.label}
-                </button>
-              ))}
+              {INTERVALS.map(opt => {
+                const sel = scanInterval === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setScanInterval(opt.value)}
+                    aria-pressed={sel}
+                    className={singleBtnClass(sel)}
+                    style={sel ? selectedStyle : unselectedStyle}
+                  >
+                    <span className="text-base shrink-0">{sel ? "◉" : "○"}</span>
+                    <span>{opt.label}</span>
+                  </button>
+                );
+              })}
               <Button
                 onClick={() => setStep(4)}
-                className="w-full bg-black hover:bg-gray-800 text-white rounded-xl mt-2"
+                className="w-full rounded-xl mt-2"
+                style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
               >
                 {t("onboard_next")}
               </Button>
@@ -361,30 +456,31 @@ export default function OnboardingPage() {
         )}
 
         {step === 4 && (
-          <Card className="bg-white border border-gray-100 rounded-2xl shadow-sm">
+          <Card className="rounded-2xl shadow-sm animate-page-enter" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
             <CardHeader>
-              <CardTitle className="text-gray-900 text-xl">{t("onboard_tg_title")}</CardTitle>
-              <p className="text-gray-500 text-sm">{t("onboard_tg_desc")}</p>
+              <CardTitle className="text-xl" style={{ color: "var(--text-primary)" }}>{t("onboard_tg_title")}</CardTitle>
+              <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("onboard_tg_desc")}</p>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-600 space-y-2">
-                <p className="font-medium text-gray-700">{t("onboard_tg_howto")}</p>
-                <ol className="space-y-1 list-decimal list-inside text-gray-500">
-                  <li>{t("onboard_tg_step1_pre")} <span className="font-mono text-gray-900">@userinfobot</span></li>
+              <div className="rounded-xl p-4 text-sm space-y-2" style={{ backgroundColor: "var(--bg-panel)" }}>
+                <p className="font-medium" style={{ color: "var(--text-secondary)" }}>{t("onboard_tg_howto")}</p>
+                <ol className="space-y-1 list-decimal list-inside" style={{ color: "var(--text-secondary)" }}>
+                  <li>{t("onboard_tg_step1_pre")} <span className="font-mono" style={{ color: "var(--text-primary)" }}>@userinfobot</span></li>
                   <li>{t("onboard_tg_step2")}</li>
-                  <li>{t("onboard_tg_step3_pre")} <span className="font-mono text-gray-900">Id:</span> {t("onboard_tg_step3_post")}</li>
+                  <li>{t("onboard_tg_step3_pre")} <span className="font-mono" style={{ color: "var(--text-primary)" }}>Id:</span> {t("onboard_tg_step3_post")}</li>
                 </ol>
               </div>
               <Input
                 value={telegramId}
                 onChange={e => setTelegramId(e.target.value)}
                 placeholder={t("onboard_tg_example")}
-                className="border border-gray-200 rounded-xl bg-white text-gray-900 font-mono placeholder-gray-400"
+                className="input-focus-ring rounded-xl font-mono"
               />
               <Button
                 onClick={finishWithTelegram}
                 disabled={saving || !telegramId}
-                className="w-full bg-black hover:bg-gray-800 text-white rounded-xl"
+                className="w-full rounded-xl"
+                style={!saving && telegramId ? { backgroundColor: "var(--signal)", color: "var(--bg)" } : {}}
               >
                 {saving ? t("onboard_tg_saving") : t("onboard_tg_done")}
               </Button>

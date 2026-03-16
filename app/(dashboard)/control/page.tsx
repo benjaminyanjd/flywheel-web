@@ -30,6 +30,9 @@ export default function ControlPage() {
   const [oppResult, setOppResult] = useState<string | null>(null);
   const [oppCooldown, setOppCooldown] = useState(0);
   const oppTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // IX23: new signals delta animation
+  const [newSignalsDelta, setNewSignalsDelta] = useState<number | null>(null);
+  const deltaTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     loadStats();
@@ -78,6 +81,12 @@ export default function ControlPage() {
         const newSignals = data.newSignals ?? 0;
         toast(`${t("ctrl_scan_done")} ${newSignals} ${t("ctrl_scan_done_unit")}`);
         setScanResult(t("ctrl_scan_started"));
+        // IX23: show +N animation on signal count
+        if (newSignals > 0) {
+          if (deltaTimerRef.current) clearTimeout(deltaTimerRef.current);
+          setNewSignalsDelta(newSignals);
+          deltaTimerRef.current = setTimeout(() => setNewSignalsDelta(null), 2000);
+        }
         let elapsed = 0;
         const statsRefreshId = setInterval(() => {
           elapsed += 10;
@@ -160,7 +169,7 @@ export default function ControlPage() {
   };
 
   return (
-    <div className="flex flex-col h-full p-6" style={{ backgroundColor: "var(--bg)" }}>
+    <div className="flex flex-col h-full p-6 animate-page-enter" style={{ backgroundColor: "var(--bg)" }}>
       <h1 className="text-2xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>{t("ctrl_title")}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -177,6 +186,19 @@ export default function ControlPage() {
           >
             {scanLoading ? t("ctrl_scan_running") : scanCooldown > 0 ? `${t("ctrl_scan_cooldown")} ${formatCooldown(scanCooldown)}` : t("ctrl_scan_btn")}
           </Button>
+          {/* IX22: indeterminate progress bar when scanning */}
+          {scanLoading && (
+            <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ backgroundColor: "var(--border-subtle)" }}>
+              <div
+                className="h-full rounded-full"
+                style={{
+                  width: "40%",
+                  background: "var(--signal)",
+                  animation: "ix-scan-progress 1.4s ease-in-out infinite",
+                }}
+              />
+            </div>
+          )}
           {scanResult && (
             <pre className="mt-3 text-xs rounded-xl p-3 overflow-auto max-h-40" style={{ color: "var(--text-secondary)", backgroundColor: "var(--bg-panel)" }}>
               {scanResult}
@@ -213,9 +235,19 @@ export default function ControlPage() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("ctrl_today")}</span>
-                <span className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
-                  {stats.todaySignals}
-                </span>
+                <div className="flex items-center gap-2">
+                  {newSignalsDelta !== null && (
+                    <span
+                      className="text-sm font-semibold text-green-500"
+                      style={{ animation: "ix-delta-fade 2s ease-out forwards" }}
+                    >
+                      +{newSignalsDelta}
+                    </span>
+                  )}
+                  <span className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
+                    {stats.todaySignals}
+                  </span>
+                </div>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("ctrl_total")}</span>

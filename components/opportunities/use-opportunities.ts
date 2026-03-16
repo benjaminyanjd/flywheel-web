@@ -13,6 +13,7 @@ export function useOpportunities() {
 
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [actionLoading, setActionLoading] = useState<Record<string, boolean>>({});
   const [actionSuccess, setActionSuccess] = useState<Record<string, boolean>>({});
   const [confFilter, setConfFilter] = useState<"all" | "high" | "mid" | "low">("all");
@@ -25,6 +26,7 @@ export function useOpportunities() {
   const [showWelcome, setShowWelcome] = useState(() => isWelcome);
   const [undoState, setUndoState] = useState<{ id: number; action: string; title: string; removedOpp?: Opportunity } | null>(null);
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingApiRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const abortRefs = useRef<Record<number, AbortController>>({});
   const finalTextRefs = useRef<Record<number, string>>({});
   const [shareModal, setShareModal] = useState<{
@@ -73,24 +75,34 @@ export function useOpportunities() {
   }, [showWelcome]);
 
   // Fetch opportunities
-  useEffect(() => {
-    fetch("/api/opportunities")
-      .then((r) => r.json())
-      .then((d) => {
-        const list: Opportunity[] = Array.isArray(d) ? d : (d.opportunities ?? []);
-        const hidden = new Set(["bias", "todo", "action", "done", "cancel"]);
-        setOpportunities(list.filter((o: Opportunity) => !hidden.has(o.action ?? "")));
-        const initMap: Record<number, AdvisorState> = {};
-        for (const opp of list) {
-          if (opp.advisor_notes) {
-            initMap[opp.id] = { text: opp.advisor_notes, loading: false, open: false };
-            finalTextRefs.current[opp.id] = opp.advisor_notes;
-          }
+  const fetchOpportunities = useCallback(async (isRefresh = false) => {
+    if (isRefresh) setRefreshing(true);
+    else setLoading(true);
+    try {
+      const r = await fetch("/api/opportunities");
+      const d = await r.json();
+      const list: Opportunity[] = Array.isArray(d) ? d : (d.opportunities ?? []);
+      const hidden = new Set(["bias", "todo", "action", "done", "cancel"]);
+      setOpportunities(list.filter((o: Opportunity) => !hidden.has(o.action ?? "")));
+      const initMap: Record<number, AdvisorState> = {};
+      for (const opp of list) {
+        if (opp.advisor_notes) {
+          initMap[opp.id] = { text: opp.advisor_notes, loading: false, open: false };
+          finalTextRefs.current[opp.id] = opp.advisor_notes;
         }
-        setAdvisorMap(initMap);
-      })
-      .catch((err) => console.error("opportunities/fetch:", err))
-      .finally(() => setLoading(false));
+      }
+      setAdvisorMap(initMap);
+    } catch (err) {
+      console.error("opportunities/fetch:", err);
+    } finally {
+      if (isRefresh) setRefreshing(false);
+      else setLoading(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    fetchOpportunities(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -103,31 +115,47 @@ export function useOpportunities() {
     setOpportunities((prev) => prev.map((o) => (o.id === id ? { ...o, action } : o)));
   }, []);
 
-  const handleBtn = useCallback(async (id: number, action: string) => {
-    const key = `${id}-${action}`;
-    setActionLoading((p) => ({ ...p, [key]: true }));
-    try {
-      const opp = opportunities.find(o => o.id === id);
-      await markAction(id, action);
-      if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
-      setUndoState({ id, action, title: opp?.opp_title ?? "", removedOpp: opp });
-      undoTimerRef.current = setTimeout(() => setUndoState(null), 3000);
-      if (action === "bias" || action === "todo") {
-        setOpportunities((prev) => prev.filter((o) => o.id !== id));
-      }
-      setActionSuccess((p) => ({ ...p, [key]: true }));
-      setTimeout(() => setActionSuccess((p) => ({ ...p, [key]: false })), 1500);
-    } catch (err) {
-      console.error("opportunities/markAction:", err);
-    } finally {
-      setActionLoading((p) => ({ ...p, [key]: false }));
+  const handleBtn = useCallback((id: number, action: string) => {
+    const opp = opportunities.find(o => o.id === id);
+    // Cancel any existing pending API call for this item
+    const prevTimer = pendingApiRef.current[`${id}`];
+    if (prevTimer) {
+      clearTimeout(prevTimer);
+      delete pendingApiRef.current[`${id}`];
     }
+    // Optimistically remove from list if bias/todo
+    if (action === "bias" || action === "todo") {
+      setOpportunities((prev) => prev.filter((o) => o.id !== id));
+    } else {
+      setOpportunities((prev) => prev.map((o) => (o.id === id ? { ...o, action } : o)));
+    }
+    // Show undo toast
+    if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+    setUndoState({ id, action, title: opp?.opp_title ?? "", removedOpp: opp });
+    // Schedule actual API call after 3 seconds
+    const timer = setTimeout(async () => {
+      delete pendingApiRef.current[`${id}`];
+      setUndoState(null);
+      try {
+        await markAction(id, action);
+      } catch (err) {
+        console.error("opportunities/markAction:", err);
+      }
+    }, 3000);
+    pendingApiRef.current[`${id}`] = timer;
+    undoTimerRef.current = setTimeout(() => setUndoState(null), 3000);
   }, [opportunities, markAction]);
 
   const handleUndo = useCallback(() => {
     if (!undoState) return;
     if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
     const { id, removedOpp } = undoState;
+    // Cancel pending API call
+    const pendingTimer = pendingApiRef.current[`${id}`];
+    if (pendingTimer) {
+      clearTimeout(pendingTimer);
+      delete pendingApiRef.current[`${id}`];
+    }
     setUndoState(null);
     if (removedOpp) {
       setOpportunities((prev) => {
@@ -214,6 +242,7 @@ export function useOpportunities() {
   return {
     opportunities,
     loading,
+    refreshing,
     actionLoading,
     actionSuccess,
     confFilter,
@@ -240,6 +269,7 @@ export function useOpportunities() {
     lang,
     handleBtn,
     handleUndo,
+    handleRefresh: () => fetchOpportunities(true),
     handleAdvisor,
     toggleSignalExpand,
     handleAddTodo,

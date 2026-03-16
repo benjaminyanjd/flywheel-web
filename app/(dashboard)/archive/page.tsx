@@ -341,11 +341,12 @@ export default function ArchivePage() {
                             return next;
                           });
                         }}
-                        className="flex items-center gap-2 flex-1 text-left"
+                        className="flex items-center gap-2 flex-1 text-left group"
                       >
                         <p className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full border" style={{ color: "var(--text-secondary)", backgroundColor: "var(--bg-panel)", borderColor: "var(--border)" }}>{t("opp_plan_title")}</p>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform duration-200 ${expandedNotes.has(item.id) ? "rotate-180" : ""}`}><polyline points="6 9 12 15 18 9"></polyline></svg>
-                        <span className="text-xs" style={{ color: "var(--text-muted)" }}>{expandedNotes.has(item.id) ? t("common_collapse") : t("common_expand")}</span>
+                        <span className="text-xs font-medium transition-colors group-hover:text-[var(--text-primary)]" style={{ color: "var(--text-muted)" }}>
+                          {expandedNotes.has(item.id) ? "收合 ↑" : "查看落地方案 ↓"}
+                        </span>
                       </button>
                       <button
                         className="text-xs transition-colors px-2 py-1 rounded border btn-press hover:text-[var(--text-primary)]" style={{ color: "var(--text-muted)", borderColor: "var(--border)" }}

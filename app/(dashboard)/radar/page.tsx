@@ -253,6 +253,7 @@ function RadarContent() {
   const eventSourceRef = useRef<EventSource | null>(null);
   const [bookmarks, setBookmarks] = useState<Set<number>>(new Set());
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [listOpacity, setListOpacity] = useState(1);
   const scrollKey = "scroll_radar";
   // Defer keyword filtering to avoid blocking keystrokes
   const deferredKeyword = useDeferredValue(keyword);
@@ -412,6 +413,17 @@ function RadarContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lang, signals]);
 
+  // IX10: fade animation on filter change
+  const prevFilterRef = useRef({ activeCategory, heatFilter, deferredKeyword });
+  useEffect(() => {
+    const prev = prevFilterRef.current;
+    if (prev.activeCategory !== activeCategory || prev.heatFilter !== heatFilter || prev.deferredKeyword !== deferredKeyword) {
+      prevFilterRef.current = { activeCategory, heatFilter, deferredKeyword };
+      setListOpacity(0);
+      setTimeout(() => setListOpacity(1), 10);
+    }
+  }, [activeCategory, heatFilter, deferredKeyword]);
+
   // useMemo avoids re-filtering on unrelated state changes (e.g. copiedId, bookmarks UI)
   const filtered = useMemo(() => {
     const base = signals.filter((s) => {
@@ -500,14 +512,26 @@ function RadarContent() {
       {/* Filter row: search + heat pills */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
         {/* Keyword search */}
-        <input
-          type="text"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          placeholder={t("radar_search")}
-          aria-label={t("radar_search")}
-          className="rounded-xl px-3 py-1.5 text-sm w-48 input-focus-ring focus:outline-none border" style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" }}
-        />
+        <div className="relative">
+          <input
+            type="text"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            placeholder={t("radar_search")}
+            aria-label={t("radar_search")}
+            className="rounded-xl px-3 py-1.5 text-sm w-48 input-focus-ring focus:outline-none border" style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)", paddingRight: keyword ? "2rem" : undefined }}
+          />
+          {keyword && (
+            <button
+              type="button"
+              onClick={() => setKeyword("")}
+              aria-label="清除搜尋"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors text-sm leading-none"
+            >
+              ✕
+            </button>
+          )}
+        </div>
         {/* Heat score filter pills */}
         {([
           { key: "all",  label: t("common_all"), ariaLabel: t("common_all") },
@@ -550,15 +574,9 @@ function RadarContent() {
           <div className="flex items-center gap-3 mb-3 text-sm" style={{ color: "var(--text-muted)" }}>
             {todayCount > 0 && <span>{t("radar_today_new")} <span className="font-medium" style={{ color: "var(--text-primary)" }}>{todayCount}</span> {t("radar_today_unit")}</span>}
             {hotCount > 0 && (
-              <button
-                onClick={() => {
-                  setHeatFilter("mid");
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-                className="text-orange-500 hover:text-orange-600 transition-colors"
-              >
+              <div className="text-orange-500 flex items-center gap-1">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style={{color:"var(--signal-amber)"}}><path d="M12 2c0 0-6 6.67-6 12a6 6 0 0012 0c0-5.33-6-12-6-12zm0 16a4 4 0 01-4-4c0-2.67 2-5.67 4-8 2 2.33 4 5.33 4 8a4 4 0 01-4 4z"/></svg> <span className="font-medium">{hotCount}</span> {t("radar_worth")}
-              </button>
+              </div>
             )}
           </div>
         );
@@ -566,7 +584,7 @@ function RadarContent() {
 
       <ScrollArea className="flex-1">
         {/* divide-y for semantic row separation */}
-        <div className="divide-y divide-gray-100 pr-4">
+        <div className="divide-y divide-gray-100 pr-4" style={{ opacity: listOpacity, transition: "opacity 150ms ease" }}>
           {filtered.map((signal) => {
             const isBookmarked = bookmarks.has(signal.id);
             const highlightCls = heatHighlightClass(signal.heat_score, isBookmarked);
@@ -637,7 +655,8 @@ function RadarContent() {
                           const text = `${signal.title}\n${signal.url}`;
                           await navigator.clipboard.writeText(text);
                           setCopiedId(signal.id);
-                          setTimeout(() => setCopiedId((prev) => prev === signal.id ? null : prev), 1500);
+                          toast("已複製到剪貼板");
+                          setTimeout(() => setCopiedId((prev) => prev === signal.id ? null : prev), 2000);
                         }}
                         className={`text-sm transition-all hover:scale-110 active:scale-95 ${
                           copiedId === signal.id
@@ -712,8 +731,16 @@ function RadarContent() {
               <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: "var(--bg-panel)" }}>
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--text-secondary)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </div>
-              <p className="text-lg font-medium" style={{ color: "var(--text-secondary)" }}>{t("radar_empty_cat")}</p>
-              <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>{t("radar_empty_cat_desc")}</p>
+              <p className="text-lg font-medium" style={{ color: "var(--text-secondary)" }}>此分類暫無符合條件的信號</p>
+              <p className="text-sm mt-1 mb-4" style={{ color: "var(--text-muted)" }}>{t("radar_empty_cat_desc")}</p>
+              <button
+                type="button"
+                onClick={() => setHeatFilter("all")}
+                className="text-sm px-4 py-2 rounded-xl font-medium transition-colors"
+                style={{ backgroundColor: "var(--bg-panel)", color: "var(--text-secondary)", border: "1px solid var(--border)" }}
+              >
+                查看全部信號
+              </button>
             </div>
           )}
           {filtered.length === 0 && signals.length === 0 && (

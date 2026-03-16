@@ -21,7 +21,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     const id = Date.now()
     setToasts(prev => [...prev, { id, message, type }])
 
-    // Start exit animation after 2.2s, then remove after animation completes
+    // Start exit animation after 2.8s (total ~3s), then remove after animation completes
     const exitTimer = setTimeout(() => {
       setToasts(prev => prev.map(t => t.id === id ? { ...t, exiting: true } : t))
       const removeTimer = setTimeout(() => {
@@ -29,14 +29,14 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         timersRef.current.delete(id)
       }, 200)
       timersRef.current.set(id + 1, removeTimer)
-    }, 2200)
+    }, 2800)
     timersRef.current.set(id, exitTimer)
   }, [])
 
   return (
     <ToastContext.Provider value={show}>
       {children}
-      <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
         {toasts.map(t => (
           <div
             key={t.id}

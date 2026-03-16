@@ -7,11 +7,30 @@ export default function WaitlistForm() {
   const { t } = useT()
   const [telegram, setTelegram] = useState("")
   const [email, setEmail] = useState("")
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle")
+  const [submitted, setSubmitted] = useState(false)
+  const [errors, setErrors] = useState<{ telegram?: string; email?: string }>({})
+
+  function validate(): boolean {
+    const newErrors: { telegram?: string; email?: string } = {}
+    if (!telegram.trim()) {
+      newErrors.telegram = "請填寫 Telegram 用戶名"
+    }
+    if (!email.trim()) {
+      newErrors.email = "請填寫電子郵件"
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(email.trim())) {
+        newErrors.email = "請輸入有效的電子郵件地址"
+      }
+    }
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    if (!telegram.trim()) return
+    if (!validate()) return
     setStatus("loading")
     try {
       // Get current language from localStorage for tracking
@@ -22,7 +41,7 @@ export default function WaitlistForm() {
         body: JSON.stringify({ telegram: telegram.trim(), email: email.trim() || undefined, lang }),
       })
       if (res.ok) {
-        setStatus("success")
+        setSubmitted(true)
       } else {
         setStatus("error")
       }
@@ -31,45 +50,65 @@ export default function WaitlistForm() {
     }
   }
 
-  if (status === "success") {
+  if (submitted) {
     return (
-      <div className="text-center py-4 space-y-3">
-        <p className="text-green-600 text-lg font-medium">{t("waitlist_success")}</p>
-        <div className="rounded-xl p-4 text-left max-w-sm mx-auto border" style={{ backgroundColor: "color-mix(in srgb, var(--signal) 5%, transparent)", borderColor: "color-mix(in srgb, var(--signal) 20%, transparent)" }}>
-          <p className="font-semibold text-sm mb-2" style={{ color: "var(--text-primary)" }}>{t("waitlist_step_title")}</p>
-          <ol className="text-sm space-y-1.5 list-decimal list-inside" style={{ color: "var(--text-secondary)" }}>
-            <li>{t("waitlist_step1_pre")}<span className="font-mono" style={{ color: "var(--signal)" }}>@flywheelsea_bot</span></li>
-            <li>{t("waitlist_step2_pre")}<span className="font-mono" style={{ color: "var(--signal)" }}>/start</span></li>
-            <li>{t("waitlist_step3")}</li>
-          </ol>
-        </div>
+      <div className="text-center py-6">
+        <p className="text-lg font-medium" style={{ color: "var(--signal)" }}>
+          ✅ 申請已收到！我們會通過 Telegram 聯繫你
+        </p>
       </div>
     )
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-md mx-auto">
-      <input
-        type="text"
-        required
-        aria-label={t("waitlist_tg_label")}
-        placeholder={t("waitlist_tg_placeholder")}
-        value={telegram}
-        onChange={(e) => setTelegram(e.target.value)}
-        className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none border input-focus-ring" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)", color: "var(--text-primary)" }}
-      />
-      <input
-        type="email"
-        aria-label={t("waitlist_email_label")}
-        placeholder={t("waitlist_email_placeholder")}
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none border input-focus-ring" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)", color: "var(--text-primary)" }}
-      />
+    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3 max-w-md mx-auto">
+      <div className="flex flex-col gap-1">
+        <input
+          type="text"
+          aria-label={t("waitlist_tg_label")}
+          placeholder={t("waitlist_tg_placeholder")}
+          value={telegram}
+          onChange={(e) => {
+            setTelegram(e.target.value)
+            if (errors.telegram) setErrors(prev => ({ ...prev, telegram: undefined }))
+          }}
+          className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none border input-focus-ring"
+          style={{
+            backgroundColor: "var(--bg-card)",
+            borderColor: errors.telegram ? "#ef4444" : "var(--border)",
+            color: "var(--text-primary)",
+          }}
+        />
+        {errors.telegram && (
+          <p className="text-red-500 text-xs px-1">{errors.telegram}</p>
+        )}
+      </div>
+      <div className="flex flex-col gap-1">
+        <input
+          type="email"
+          aria-label={t("waitlist_email_label")}
+          placeholder={t("waitlist_email_placeholder")}
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value)
+            if (errors.email) setErrors(prev => ({ ...prev, email: undefined }))
+          }}
+          className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none border input-focus-ring"
+          style={{
+            backgroundColor: "var(--bg-card)",
+            borderColor: errors.email ? "#ef4444" : "var(--border)",
+            color: "var(--text-primary)",
+          }}
+        />
+        {errors.email && (
+          <p className="text-red-500 text-xs px-1">{errors.email}</p>
+        )}
+      </div>
       <button
         type="submit"
         disabled={status === "loading"}
-        className="w-full disabled:opacity-50 font-bold px-8 py-4 rounded-xl transition-colors text-base font-mono" style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
+        className="w-full disabled:opacity-50 font-bold px-8 py-4 rounded-xl transition-colors text-base font-mono"
+        style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
       >
         {status === "loading" ? t("waitlist_btn_loading") : t("waitlist_btn")}
       </button>
