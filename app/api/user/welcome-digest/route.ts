@@ -64,7 +64,7 @@ export async function POST() {
 
   // Format message (plain text, no parse_mode to avoid escaping issues)
   const lines = [
-    "👋 歡迎加入 Flywheel！",
+    "👋 歡迎加入嗅鐘！",
     "",
     "這是根據今日信號為你篩選的入門機會：",
     "",

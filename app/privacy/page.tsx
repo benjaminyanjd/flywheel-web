@@ -3,8 +3,8 @@ import { FlywheelLogo } from "@/components/flywheel-logo";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "隱私政策 | Flywheel",
-  description: "Flywheel 隱私政策 — 我們如何收集、使用和保護您的資料",
+  title: "隱私政策 | 嗅鐘 Sniffing Clock",
+  description: "嗅鐘 Sniffing Clock 隱私政策 — 我們如何收集、使用和保護您的資料",
   robots: { index: false, follow: false },
 };
 
@@ -15,7 +15,7 @@ export default function PrivacyPage() {
         <div className="max-w-5xl mx-auto flex items-center gap-2.5">
           <Link href="/" className="flex items-center gap-2.5">
             <FlywheelLogo size={20} className="text-black" />
-            <span className="font-bold text-gray-900">Flywheel</span>
+            <span className="font-bold text-gray-900">嗅鐘 Sniffing Clock</span>
           </Link>
         </div>
       </header>

@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import OpenAI from "openai";
 import { getDb } from "@/lib/db";
 import { logger } from "@/lib/logger";
+import { rateLimit, getRateLimitKey } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -27,17 +28,40 @@ export async function GET() {
   }
 }
 
-const SYSTEM_PROMPT = `You are the Flywheel Advisor — a strategic AI assistant for a solo entrepreneur running an automated signal-to-opportunity pipeline. Your role is to help analyze trends, prioritize opportunities, suggest monetization strategies, and provide actionable business advice.
+const SYSTEM_PROMPT = `You are the 嗅鐘 Advisor — a strategic AI assistant for a solo entrepreneur running an automated signal-to-opportunity pipeline. Your role is to help analyze trends, prioritize opportunities, suggest monetization strategies, and provide actionable business advice.
 
 You have access to recent hot signals from various sources (Reddit, Hacker News, Twitter, newsletters, etc.) and can see the user's opportunity pipeline. Use this context to give informed, specific advice rather than generic suggestions.
 
-Be concise, direct, and action-oriented. Focus on practical next steps the user can take today.`;
+Be concise, direct, and action-oriented. Focus on practical next steps the user can take today.
+
+請務必使用繁體中文回覆，不要使用簡體中文。`;
+
+export async function DELETE() {
+  try {
+    const { userId } = await auth();
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const db = getDb();
+    db.prepare("DELETE FROM conversations WHERE type = 'advisor' AND user_id = ?").run(userId);
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "Failed to clear history" }, { status: 500 });
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const rlKey = getRateLimitKey(req, userId);
+    const rl = rateLimit(rlKey, { limit: 5, windowSec: 60, prefix: "advisor" });
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: "請求過於頻繁，請稍後再試" },
+        { status: 429, headers: { "Retry-After": String(Math.ceil((rl.resetAt - Date.now()) / 1000)) } }
+      );
     }
 
     const { message } = await req.json();

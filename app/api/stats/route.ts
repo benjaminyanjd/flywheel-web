@@ -78,6 +78,7 @@ export async function GET() {
 
     return NextResponse.json({
       todaySignals: todayCount,
+      todayCount,
       categoryCounts,
       totalSignals,
       totalOpportunities,

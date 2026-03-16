@@ -50,7 +50,7 @@ export async function GET() {
             ⚙️
           </div>
           <span style={{ fontSize: "28px", fontWeight: "700", color: "#f1f5f9" }}>
-            Flywheel
+            嗅鐘
           </span>
         </div>
 
@@ -88,7 +88,7 @@ export async function GET() {
 
         {/* Tags */}
         <div style={{ display: "flex", gap: "12px" }}>
-          {["🔴 高置信信號", "⚡ 即時掃描", "📱 Telegram 推送"].map((tag) => (
+          {["● 高置信信號", "◈ 即時掃描", "▶ Telegram 推送"].map((tag) => (
             <div
               key={tag}
               style={{

@@ -1,5 +1,5 @@
 {
-  "name": "flywheel-web",
+  "name": "sniffing-clock",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -21,6 +21,7 @@
     "jose": "^6.2.1",
     "lucide-react": "^0.577.0",
     "next": "16.1.6",
+    "next-themes": "^0.4.6",
     "openai": "^6.29.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",

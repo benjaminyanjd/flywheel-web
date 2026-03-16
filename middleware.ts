@@ -10,6 +10,8 @@ const isPublicRoute = createRouteMatcher([
   "/og-image",
   "/api/webhooks/(.*)",
   "/api/waitlist",
+  "/api/payment/webhook",
+  "/payment/success",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

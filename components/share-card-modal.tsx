@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useTheme } from "next-themes";
 import { ShareCard } from "./share-card";
 import { useT } from "@/lib/i18n";
 
@@ -30,6 +31,7 @@ export function ShareCardModal({
   const cardRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
   const { t, lang } = useT();
+  const { resolvedTheme } = useTheme();
 
   if (!isOpen) return null;
 
@@ -79,6 +81,7 @@ export function ShareCardModal({
             actions={actions}
             userInviteCode={userInviteCode}
             lang={lang}
+            theme={resolvedTheme === "light" ? "light" : "dark"}
           />
         </div>
 

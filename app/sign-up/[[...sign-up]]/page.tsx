@@ -13,24 +13,29 @@ export default function SignUpPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6 gap-6">
-      {/* Left: Product intro - no card, just text */}
-      <div className="hidden md:flex flex-col justify-between w-[420px] min-h-[540px] p-6">
+    <div className="min-h-screen flex items-center justify-center p-6 gap-6" style={{ backgroundColor: "var(--bg)" }}>
+      {/* Scanline overlay */}
+      <div className="pointer-events-none fixed inset-0 z-0" style={{
+        background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px)"
+      }} />
+
+      {/* Left: Product intro */}
+      <div className="hidden md:flex flex-col justify-between w-[420px] min-h-[540px] p-6 relative z-10">
         <div>
           {/* Logo */}
           <div className="flex items-center gap-3 mb-10">
-            <FlywheelLogo size={32} className="text-black animate-[spin_8s_linear_infinite]" />
+            <FlywheelLogo size={32} className="animate-[spin_8s_linear_infinite]" style={{ color: "var(--signal)" }} />
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Flywheel</h1>
-              <p className="text-gray-400 text-sm">{t("auth_subtitle")}</p>
+              <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>嗅鐘</h1>
+              <p className="text-sm" style={{ color: "var(--text-muted)" }}>{t("auth_subtitle")}</p>
             </div>
           </div>
 
           {/* Main headline */}
-          <h2 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
+          <h2 className="text-4xl font-bold mb-4 leading-tight" style={{ color: "var(--text-primary)" }}>
             {t("auth_signup_h1")}<br/>{t("auth_signup_h2")}<br/>{t("auth_signup_h3")}
           </h2>
-          <p className="text-gray-500 text-base mb-10 leading-relaxed">
+          <p className="text-base mb-10 leading-relaxed" style={{ color: "var(--text-secondary)" }}>
             {t("auth_signup_desc")}
           </p>
 
@@ -38,10 +43,10 @@ export default function SignUpPage() {
           <div className="space-y-5">
             {features.map(item => (
               <div key={item.title} className="flex gap-3 items-start">
-                <span className="w-2 h-2 rounded-full bg-black mt-1.5 flex-shrink-0" />
+                <span className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ backgroundColor: "var(--signal)" }} />
                 <div>
-                  <p className="text-gray-700 font-semibold text-base">{item.title}</p>
-                  <p className="text-gray-400 text-sm">{item.desc}</p>
+                  <p className="font-semibold text-base" style={{ color: "var(--text-primary)" }}>{item.title}</p>
+                  <p className="text-sm" style={{ color: "var(--text-muted)" }}>{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -49,7 +54,7 @@ export default function SignUpPage() {
         </div>
 
         {/* Bottom tags */}
-        <div className="flex items-center gap-2 text-sm text-gray-400">
+        <div className="flex items-center gap-2 text-sm" style={{ color: "var(--text-muted)" }}>
           <span>{t("auth_signup_tag1")}</span>
           <span>·</span>
           <span>{t("auth_signup_tag2")}</span>
@@ -57,34 +62,37 @@ export default function SignUpPage() {
       </div>
 
       {/* Right: Clerk sign-up */}
-      <SignUp
-        appearance={{
-          variables: {
-            colorPrimary: "#111111",
-            colorBackground: "#ffffff",
-            colorText: "#111111",
-            colorTextSecondary: "#666666",
-            colorInputBackground: "#ffffff",
-            colorInputText: "#111111",
-            colorNeutral: "#111111",
-          },
-          elements: {
-            headerTitle: { color: "#111111" },
-            headerSubtitle: { color: "#666666" },
-            formFieldLabel: { color: "#666666" },
-            socialButtonsBlockButton: { borderColor: "#e8e8e8" },
-            dividerText: { color: "#999999", opacity: "1" },
-            dividerLine: { backgroundColor: "#e8e8e8" },
-            footerActionText: { color: "#666666", opacity: "1" },
-            footerAction: { opacity: "1" },
-            footer: { opacity: "1" },
-            footerActionLink: { color: "#111111" },
-            badge: { opacity: "1", color: "#999999" },
-            card: { borderRadius: "16px", border: "1px solid #e8e8e8", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" },
-          }
-        }}
-        fallbackRedirectUrl="/onboarding"
-      />
+      <div className="relative z-10">
+        <SignUp
+          appearance={{
+            variables: {
+              colorPrimary: "#3CB371",
+              colorBackground: "#141A12",
+              colorText: "#E8EDE6",
+              colorTextSecondary: "#8A9A80",
+              colorInputBackground: "#111610",
+              colorInputText: "#E8EDE6",
+              colorNeutral: "#E8EDE6",
+            },
+            elements: {
+              headerTitle: { color: "#E8EDE6" },
+              headerSubtitle: { color: "#8A9A80" },
+              formFieldLabel: { color: "#8A9A80" },
+              socialButtonsBlockButton: { borderColor: "#1E2A1A", backgroundColor: "#111610", color: "#E8EDE6" },
+              dividerText: { color: "#556650", opacity: "1" },
+              dividerLine: { backgroundColor: "#1E2A1A" },
+              footerActionText: { color: "#8A9A80", opacity: "1" },
+              footerAction: { opacity: "1" },
+              footer: { opacity: "1" },
+              footerActionLink: { color: "#3CB371" },
+              badge: { opacity: "1", color: "#556650" },
+              card: { borderRadius: "16px", border: "1px solid #1E2A1A", boxShadow: "0 0 30px rgba(60,179,113,0.05)", backgroundColor: "#141A12" },
+              formButtonPrimary: { backgroundColor: "#3CB371", color: "#0A0E08" },
+            }
+          }}
+          fallbackRedirectUrl="/onboarding"
+        />
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useT } from "@/lib/i18n";
@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { parseEmbed, type EmbedData } from "@/lib/parse-embed";
+import { ArchiveIcon } from "@/components/icons";
 
 interface ArchiveItem {
   id: number;
@@ -23,19 +24,59 @@ interface ArchiveItem {
 type StatusFilter = "all" | "todo" | "bias" | "action" | "missed" | "done" | "cancel";
 
 const STATUS_STYLES: Record<string, { pill: string; accent: string }> = {
-  todo:   { pill: "bg-blue-50 text-blue-600 border border-blue-200",   accent: "bg-blue-500" },
-  bias:   { pill: "bg-orange-50 text-orange-600 border border-orange-200", accent: "bg-orange-500" },
-  action: { pill: "bg-green-50 text-green-600 border border-green-200",  accent: "bg-green-500" },
-  missed: { pill: "bg-gray-100 text-gray-400 border border-gray-200",  accent: "bg-gray-400" },
-  done:   { pill: "bg-emerald-50 text-emerald-600 border border-emerald-200", accent: "bg-emerald-500" },
-  cancel: { pill: "bg-red-50 text-red-500 border border-red-200",       accent: "bg-red-500" },
+  todo:   { pill: "bg-blue-500/10 text-blue-500 border border-blue-500/30",   accent: "bg-blue-500" },
+  bias:   { pill: "bg-orange-500/10 text-orange-500 border border-orange-500/30", accent: "bg-orange-500" },
+  action: { pill: "bg-green-500/10 text-green-500 border border-green-500/30",  accent: "bg-green-500" },
+  missed: { pill: "border text-[var(--text-muted)] bg-[var(--bg-panel)]",  accent: "bg-[var(--text-muted)]" },
+  done:   { pill: "bg-emerald-500/10 text-emerald-500 border border-emerald-500/30", accent: "bg-emerald-500" },
+  cancel: { pill: "bg-red-500/10 text-red-500 border border-red-500/30",       accent: "bg-red-500" },
 };
 
-const WINDOW_ICON: Record<string, string> = {
-  morning: "🌅",
-  afternoon: "☀️",
-  evening: "🌆",
-  night: "🌙",
+function IconMorning() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="5"/>
+      <line x1="12" y1="1" x2="12" y2="3"/>
+      <line x1="12" y1="21" x2="12" y2="23"/>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+      <line x1="1" y1="12" x2="3" y2="12"/>
+      <line x1="21" y1="12" x2="23" y2="12"/>
+    </svg>
+  );
+}
+
+function IconAfternoon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9"/>
+      <polyline points="12 6 12 12 16 14"/>
+    </svg>
+  );
+}
+
+function IconEvening() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+    </svg>
+  );
+}
+
+function IconNight() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+      <circle cx="15" cy="10" r="1.2" fill="currentColor" stroke="none"/>
+    </svg>
+  );
+}
+
+const WINDOW_ICON: Record<string, React.ReactNode> = {
+  morning: <IconMorning />,
+  afternoon: <IconAfternoon />,
+  evening: <IconEvening />,
+  night: <IconNight />,
 };
 
 function formatDate(dateStr: string): string {
@@ -43,7 +84,7 @@ function formatDate(dateStr: string): string {
 }
 
 export default function ArchivePage() {
-  const { t } = useT();
+  const { t, lang } = useT();
   const STATUS_CONFIG = {
     todo:   { label: t("archive_status_todo"),   ...STATUS_STYLES.todo },
     bias:   { label: t("archive_status_bias"),   ...STATUS_STYLES.bias },
@@ -98,45 +139,71 @@ export default function ArchivePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full bg-white">
-        <span className="text-gray-400">{t("common_loading")}</span>
+      <div className="flex flex-col h-full p-6 animate-page-enter" style={{ backgroundColor: "var(--bg)" }}>
+        <div className="h-7 skeleton-shimmer rounded w-32 mb-4" />
+        <div className="space-y-2">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="rounded-2xl p-4 border" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
+              <div className="flex items-center gap-3">
+                <div className="h-3 skeleton-shimmer rounded w-3/4" />
+                <div className="h-5 w-16 skeleton-shimmer rounded-full ml-auto" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-white p-6">
+    <div className="flex flex-col h-full p-6 animate-page-enter" style={{ backgroundColor: "var(--bg)" }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-2xl font-bold text-gray-900">{t("archive_title")}</h1>
+        <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>{t("archive_title")}</h1>
         <div className="flex items-center gap-3">
           <input
             type="text"
             placeholder={t("archive_search")}
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="border border-gray-200 bg-white rounded-xl px-3 py-1.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-gray-400 w-36 md:w-48"
+            className="rounded-xl px-3 py-1.5 text-sm input-focus-ring focus:outline-none w-36 md:w-48 border" style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" }}
           />
-          <span className="text-sm text-gray-400">{t("archive_total")} {items.length} {t("archive_records")}</span>
+          <span className="text-sm" style={{ color: "var(--text-muted)" }}>{t("archive_total")} {items.length} {t("archive_records")}</span>
         </div>
       </div>
 
       {/* Stats row */}
       <div className="flex flex-wrap gap-2 mb-5">
+        <button
+          onClick={() => setActiveTab("all")}
+          className={`px-3 py-1 rounded-full text-xs font-semibold transition-all duration-200 btn-press border ${activeTab === "all" ? "ring-2 ring-black/10 shadow-sm" : "opacity-70 hover:opacity-100"}`}
+          style={{ color: "var(--text-secondary)", borderColor: "var(--border)", backgroundColor: activeTab === "all" ? "var(--bg-panel)" : "transparent" }}
+        >
+          {t("archive_tab_all")} · {items.length}
+        </button>
         {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
           <button
             key={key}
             onClick={() => setActiveTab(key as StatusFilter)}
-            className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${cfg.pill} ${activeTab === key ? "ring-2 ring-black/10" : "opacity-70 hover:opacity-100"}`}
+            className={`px-3 py-1 rounded-full text-xs font-semibold transition-all duration-200 btn-press ${cfg.pill} ${activeTab === key ? "ring-2 ring-black/10 shadow-sm" : "opacity-70 hover:opacity-100"}`}
           >
             {cfg.label} · {statusCounts[key] || 0}
           </button>
         ))}
+        {activeTab !== "all" && (
+          <button
+            onClick={() => setActiveTab("all")}
+            className="px-3 py-1 rounded-full text-xs font-semibold transition-all duration-200 btn-press border hover:bg-[var(--bg-panel)]"
+            style={{ color: "var(--text-muted)", borderColor: "var(--border)" }}
+          >
+            × {lang === "zh" ? "清除篩選" : "Clear filter"}
+          </button>
+        )}
       </div>
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as StatusFilter)} className="mb-4">
-        <TabsList className="bg-gray-50 border border-gray-100">
+        <TabsList style={{ backgroundColor: "var(--bg-panel)", border: "1px solid var(--border-subtle)" }}>
           {TABS.map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value}>{tab.label}</TabsTrigger>
           ))}
@@ -146,65 +213,83 @@ export default function ArchivePage() {
       <ScrollArea className="flex-1">
         <div className="space-y-2 pr-4">
           {filtered.map((item, idx) => {
-            const cfg = STATUS_CONFIG[item.action] ?? { label: item.action, pill: "bg-gray-100 text-gray-400 border border-gray-200", accent: "bg-gray-400" };
+            const cfg = STATUS_CONFIG[item.action] ?? { label: item.action, pill: "border text-[var(--text-muted)] bg-[var(--bg-panel)]", accent: "bg-[var(--text-muted)]" };
             const isOpen = expanded.has(item.id);
             const embed = isOpen ? parseEmbed(item.opp_embed) : null;
             const confidence = embed?.confidence ?? 0;
             const confidencePct = confidence <= 1 ? Math.round(confidence * 100) : Math.round(confidence * 10);
-            const winIcon = WINDOW_ICON[item.opp_window] ?? "⏱";
+            const winIcon = WINDOW_ICON[item.opp_window] ?? <span>⏱</span>;
+
+            // Date group header
+            const itemDate = new Date(item.created_at + (item.created_at.endsWith("Z") ? "" : "Z"));
+            const today = new Date();
+            const isToday = itemDate.toLocaleDateString("zh-TW") === today.toLocaleDateString("zh-TW");
+            const dateLabel = isToday
+              ? (lang === "zh" ? "今天" : "Today")
+              : `${itemDate.getMonth() + 1}月${itemDate.getDate()}日`;
+            const prevItem = filtered[idx - 1];
+            const prevDate = prevItem ? new Date(prevItem.created_at + (prevItem.created_at.endsWith("Z") ? "" : "Z")) : null;
+            const showDateHeader = idx === 0 || (prevDate && prevDate.toLocaleDateString("zh-TW") !== itemDate.toLocaleDateString("zh-TW"));
 
             return (
-              <div key={item.id} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+              <React.Fragment key={item.id}>
+              {showDateHeader && (
+                <div className="flex items-center gap-3 pt-2 pb-1">
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: "var(--bg-panel)", color: "var(--text-secondary)", border: "1px solid var(--border)" }}>{dateLabel}</span>
+                  <div className="flex-1 h-px" style={{ backgroundColor: "var(--border-subtle)" }} />
+                </div>
+              )}
+              <div className="rounded-2xl overflow-hidden transition-all duration-200" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-subtle)" }}>
                 {/* Row */}
                 <button
                   onClick={() => toggleExpand(item.id)}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors group"
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[var(--bg-panel)] transition-all duration-200 group"
                 >
                   {/* Accent dot */}
                   <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${cfg.accent}`} />
 
                   {/* Rank */}
-                  <span className="text-gray-300 font-mono text-xs w-4 shrink-0">{idx + 1}</span>
+                  <span className="font-mono text-xs w-4 shrink-0" style={{ color: "var(--border)" }}>{idx + 1}</span>
 
                   {/* Title */}
-                  <span className="flex-1 text-gray-700 text-sm font-medium truncate group-hover:text-gray-900 transition-colors">
+                  <span className="flex-1 text-sm font-medium truncate group-hover:text-[var(--text-primary)] transition-colors" style={{ color: "var(--text-secondary)" }}>
                     {item.opp_title}
                   </span>
 
                   {/* Meta */}
                   <div className="flex items-center gap-3 shrink-0">
-                    <span className="text-gray-400 text-xs">{winIcon} {item.opp_window}</span>
-                    <span className="text-gray-400 text-xs">{formatDate(item.created_at)}</span>
+                    <span className="text-xs" style={{ color: "var(--text-muted)" }}>{winIcon} {item.opp_window}</span>
+                    <span className="text-xs" style={{ color: "var(--text-muted)" }}>{formatDate(item.created_at)}</span>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${cfg.pill}`}>{cfg.label}</span>
-                    <span className={`text-gray-400 text-xs transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}>▾</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}><polyline points="6 9 12 15 18 9"></polyline></svg>
                   </div>
                 </button>
 
                 {/* Expanded detail */}
                 {isOpen && embed && (
-                  <div className="border-t border-gray-100">
+                  <div className="border-t expand-content" style={{ borderColor: "var(--border-subtle)" }}>
                     <div className={`h-0.5 w-full ${cfg.accent} opacity-60`} />
                     <div className="flex gap-0 p-5 text-sm">
                       {/* Left */}
                       <div className="flex-1 space-y-4 pr-5 min-w-0">
                         {embed.why_now && (
                           <div>
-                            <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1.5">{t("opp_section_whynow")}</p>
-                            <p className="text-gray-500 leading-relaxed">{embed.why_now}</p>
+                            <p className="text-xs font-bold uppercase tracking-widest mb-1.5" style={{ color: "var(--text-primary)" }}>{t("opp_section_whynow")}</p>
+                            <p className="leading-relaxed" style={{ color: "var(--text-secondary)" }}>{embed.why_now}</p>
                           </div>
                         )}
                         {embed.profit_logic && (
                           <>
-                            <Separator className="bg-gray-100" />
+                            <Separator style={{ backgroundColor: "var(--border-subtle)" }} />
                             <div>
                               <p className="text-xs font-bold text-green-600 uppercase tracking-widest mb-1.5">{t("opp_section_profit")}</p>
-                              <p className="text-gray-500 leading-relaxed">{embed.profit_logic}</p>
+                              <p className="leading-relaxed" style={{ color: "var(--text-secondary)" }}>{embed.profit_logic}</p>
                             </div>
                           </>
                         )}
                         {(embed.risks?.length ?? 0) > 0 && (
                           <>
-                            <Separator className="bg-gray-100" />
+                            <Separator style={{ backgroundColor: "var(--border-subtle)" }} />
                             <div>
                               <p className="text-xs font-bold text-red-500 uppercase tracking-widest mb-1.5">{t("opp_section_risks")}</p>
                               <ul className="space-y-1">
@@ -217,7 +302,7 @@ export default function ArchivePage() {
                             </div>
                           </>
                         )}
-                        <div className="flex items-center gap-2 pt-1 border-t border-gray-100 text-xs text-gray-400">
+                        <div className="flex items-center gap-2 pt-1 border-t text-xs" style={{ borderColor: "var(--border-subtle)", color: "var(--text-muted)" }}>
                           <span>{t("opp_confidence")}</span>
                           <span className={confidencePct >= 70 ? "text-green-600 font-semibold" : confidencePct >= 50 ? "text-yellow-600 font-semibold" : "text-red-500 font-semibold"}>
                             {confidencePct}%
@@ -227,12 +312,12 @@ export default function ArchivePage() {
 
                       {/* Right: actions */}
                       {(embed.actions?.length ?? 0) > 0 && (
-                        <div className="w-96 shrink-0 bg-gray-50 rounded-xl border border-gray-100 p-5 ml-2">
-                          <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">{t("opp_section_actions")}</p>
+                        <div className="w-96 shrink-0 rounded-xl border p-5 ml-2" style={{ backgroundColor: "var(--bg-panel)", borderColor: "var(--border-subtle)" }}>
+                          <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text-primary)" }}>{t("opp_section_actions")}</p>
                           <ol className="space-y-3">
                             {embed.actions!.map((a, i) => (
-                              <li key={i} className="flex gap-3 text-gray-600">
-                                <span className="shrink-0 w-6 h-6 rounded-full bg-gray-200 text-gray-500 text-xs flex items-center justify-center font-bold mt-0.5">{i + 1}</span>
+                              <li key={i} className="flex gap-3" style={{ color: "var(--text-secondary)" }}>
+                                <span className="shrink-0 w-6 h-6 rounded-full text-xs flex items-center justify-center font-bold mt-0.5" style={{ backgroundColor: "var(--border)", color: "var(--text-muted)" }}>{i + 1}</span>
                                 <span className="leading-relaxed">{a}</span>
                               </li>
                             ))}
@@ -245,7 +330,7 @@ export default function ArchivePage() {
 
                 {/* Advisor notes section */}
                 {item.advisor_notes && (
-                  <div className="border-t border-gray-100 px-5 py-3">
+                  <div className="border-t px-5 py-3" style={{ borderColor: "var(--border-subtle)" }}>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={(e) => {
@@ -258,12 +343,12 @@ export default function ArchivePage() {
                         }}
                         className="flex items-center gap-2 flex-1 text-left"
                       >
-                        <p className="inline-flex items-center gap-1 text-xs font-semibold text-gray-700 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded-full">{t("opp_plan_title")}</p>
-                        <span className={`text-gray-400 text-xs transition-transform duration-200 ${expandedNotes.has(item.id) ? "rotate-180" : ""}`}>▾</span>
-                        <span className="text-xs text-gray-400">{expandedNotes.has(item.id) ? t("common_collapse") : t("common_expand")}</span>
+                        <p className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full border" style={{ color: "var(--text-secondary)", backgroundColor: "var(--bg-panel)", borderColor: "var(--border)" }}>{t("opp_plan_title")}</p>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform duration-200 ${expandedNotes.has(item.id) ? "rotate-180" : ""}`}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        <span className="text-xs" style={{ color: "var(--text-muted)" }}>{expandedNotes.has(item.id) ? t("common_collapse") : t("common_expand")}</span>
                       </button>
                       <button
-                        className="text-xs text-gray-400 hover:text-gray-600 transition-colors px-2 py-1 rounded border border-gray-200 hover:border-gray-400"
+                        className="text-xs transition-colors px-2 py-1 rounded border btn-press hover:text-[var(--text-primary)]" style={{ color: "var(--text-muted)", borderColor: "var(--border)" }}
                         onClick={(e) => {
                           e.stopPropagation();
                           const blob = new Blob([item.advisor_notes!], { type: "text/markdown" });
@@ -274,19 +359,19 @@ export default function ArchivePage() {
                           a.click();
                           URL.revokeObjectURL(url);
                         }}
-                      >⬇ .md</button>
+                      >↓ .md</button>
                     </div>
                     {expandedNotes.has(item.id) && (
-                      <div className="mt-3 prose max-w-none text-sm leading-relaxed
-                        [&_h1]:text-xl [&_h1]:font-bold [&_h1]:text-gray-900 [&_h1]:mt-4 [&_h1]:mb-2
-                        [&_h2]:text-base [&_h2]:font-bold [&_h2]:text-gray-900 [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:border-b [&_h2]:border-gray-200 [&_h2]:pb-1
-                        [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-gray-700 [&_h3]:mt-3 [&_h3]:mb-1
-                        [&_p]:text-gray-600 [&_p]:leading-7 [&_p]:mb-2
-                        [&_ul]:text-gray-600 [&_ul]:space-y-1 [&_ul]:pl-5 [&_ul]:mb-2
-                        [&_ol]:text-gray-600 [&_ol]:space-y-1 [&_ol]:pl-5 [&_ol]:mb-2
+                      <div className="mt-3 prose max-w-none text-sm leading-relaxed expand-content
+                        [&_h1]:text-xl [&_h1]:font-bold [&_h1]:text-[var(--text-primary)] [&_h1]:mt-4 [&_h1]:mb-2
+                        [&_h2]:text-base [&_h2]:font-bold [&_h2]:text-[var(--text-primary)] [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:border-b [&_h2]:border-[var(--border)] [&_h2]:pb-1
+                        [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-[var(--text-primary)] [&_h3]:mt-3 [&_h3]:mb-1
+                        [&_p]:text-[var(--text-secondary)] [&_p]:leading-7 [&_p]:mb-2
+                        [&_ul]:text-[var(--text-secondary)] [&_ul]:space-y-1 [&_ul]:pl-5 [&_ul]:mb-2
+                        [&_ol]:text-[var(--text-secondary)] [&_ol]:space-y-1 [&_ol]:pl-5 [&_ol]:mb-2
                         [&_li]:leading-6
-                        [&_strong]:text-gray-900 [&_strong]:font-bold
-                        [&_code]:bg-gray-100 [&_code]:text-gray-700 [&_code]:px-1 [&_code]:rounded [&_code]:text-xs
+                        [&_strong]:text-[var(--text-primary)] [&_strong]:font-bold
+                        [&_code]:bg-[var(--bg-panel)] [&_code]:text-[var(--text-secondary)] [&_code]:px-1 [&_code]:rounded [&_code]:text-xs
                         [&_hr]:border-gray-200 [&_hr]:my-3">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>{item.advisor_notes}</ReactMarkdown>
                       </div>
@@ -294,11 +379,20 @@ export default function ArchivePage() {
                   </div>
                 )}
               </div>
+              </React.Fragment>
             );
           })}
 
           {filtered.length === 0 && (
-            <div className="text-center text-gray-400 py-16">{t("archive_empty")}</div>
+            <div className="flex flex-col items-center justify-center py-20 text-gray-400 animate-page-enter">
+              <div className="w-20 h-20 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center mb-4 shadow-inner">
+                <ArchiveIcon size={40} style={{ color: "var(--text-secondary)" }} />
+              </div>
+              <p className="text-lg font-semibold text-gray-600 mb-1">{t("archive_empty")}</p>
+              <p className="text-sm text-gray-400 text-center max-w-xs">
+                {activeTab !== "all" ? "此分類暫無記錄" : "標記機會後，記錄將在此保存"}
+              </p>
+            </div>
           )}
         </div>
       </ScrollArea>

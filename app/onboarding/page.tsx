@@ -22,7 +22,7 @@ export default function OnboardingPage() {
   const [riskLevel, setRiskLevel] = useState("");
   const [timeBudget, setTimeBudget] = useState("");
 
-  const [categories, setCategories] = useState(["ai_tech", "crypto_policy", "new_tools"]);
+  const [categories, setCategories] = useState(["kol", "crypto_news", "ai_tech"]);
   const [scanInterval, setScanInterval] = useState(60);
   const [saving, setSaving] = useState(false);
   const [telegramId, setTelegramId] = useState("");
@@ -61,11 +61,12 @@ export default function OnboardingPage() {
   ];
 
   const CATEGORIES = [
+    { value: "kol", label: t("onboard_cat_kol") },
+    { value: "crypto_news", label: t("onboard_cat_crypto") },
+    { value: "onchain", label: t("onboard_cat_onchain") },
     { value: "ai_tech", label: t("onboard_cat_ai") },
-    { value: "crypto_policy", label: t("onboard_cat_crypto") },
-    { value: "new_tools", label: t("onboard_cat_tools") },
-    { value: "overseas_trends", label: t("onboard_cat_overseas") },
-    { value: "x_kol", label: t("onboard_cat_kol") },
+    { value: "community", label: t("onboard_cat_community") },
+    { value: "alpha", label: t("onboard_cat_alpha") },
   ];
 
   const INTERVALS = [

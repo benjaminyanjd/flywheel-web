@@ -12,9 +12,18 @@ module.exports = {
       // 記憶體超過 1G 自動重啟
       max_memory_restart: '1G',
       // 環境變數
+      // ⚠️ SECURITY: Keys below were exposed in code history on 2026-03-16.
+      // Benjamin 需要登入 https://openapi.infini.money 後台：
+      //   1. 刪除所有「非」G27R6CJZBUD44SGUCL3D 的舊 API key
+      //   2. 如果 G27R6CJZBUD44SGUCL3D 也已洩漏，輪換此 key 並更新下方值
+      //   3. 完成後將這些值移至 .env.local（不進 git）
       env: {
         NODE_ENV: 'production',
         PORT: 3000,
+        INFINI_KEY_ID: 'G27R6CJZBUD44SGUCL3D',
+        INFINI_SECRET_KEY: '***REDACTED_INFINI_SECRET_KEY***',
+        INFINI_BASE_URL: 'https://openapi.infini.money',
+        INFINI_WEBHOOK_PUBLIC_KEY: '***REDACTED_INFINI_WEBHOOK_KEY***',
       },
     },
   ],
