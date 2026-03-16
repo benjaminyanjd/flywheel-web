@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
-import { sendTelegramMessage } from "@/app/api/notify/telegram/route";
 import { logger } from "@/lib/logger";
 
 // Simple in-memory IP rate limiter: max 3 submissions per IP per hour
@@ -72,19 +71,19 @@ export async function POST(req: NextRequest) {
       lang || "zh"
     );
 
-    // Send Telegram notification to admin
-    const adminChatId = process.env.ADMIN_TELEGRAM_CHAT_ID;
-    if (adminChatId) {
-      const now = new Date().toLocaleString("zh-TW", { timeZone: "Asia/Taipei" });
-      const msg = [
-        "🔔 新申請邀請碼",
-        "",
-        `Telegram: @${telegram.replace(/^@/, "")}`,
-        `Email: ${email || "未填寫"}`,
-        `時間: ${now}`,
-      ].join("\n");
-      await sendTelegramMessage(adminChatId, msg);
-    }
+    // Send Telegram notification to admin via admin bot
+    const ADMIN_BOT_TOKEN = process.env.TELEGRAM_ADMIN_BOT_TOKEN || '8541469133:AAHe55vM9aFNQQQ0rta420-Lk8Uvm0684vU';
+    const ADMIN_CHAT_ID = process.env.ADMIN_TELEGRAM_CHAT_ID || '5825881638';
+    const tgHandle = telegram.replace(/^@/, "");
+    fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: ADMIN_CHAT_ID,
+        text: `📋 新 Waitlist 申請\n用戶：@${tgHandle}\n郵箱：${email || '未填寫'}\n\n用戶在 Telegram 發送 /start 給 bot 即可自動獲取邀請碼`,
+        parse_mode: 'Markdown'
+      })
+    }).catch(() => {});
 
     return NextResponse.json({ success: true });
   } catch (e) {

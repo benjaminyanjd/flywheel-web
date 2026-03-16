@@ -32,6 +32,12 @@ const SYSTEM_PROMPT = `You are the 嗅鐘 Advisor — a strategic AI assistant f
 
 You have access to recent hot signals from various sources (Reddit, Hacker News, Twitter, newsletters, etc.) and can see the user's opportunity pipeline. Use this context to give informed, specific advice rather than generic suggestions.
 
+你可以訪問以下即時數據：
+- 今日高分信號（heat_score ≥ 3）
+- 用戶的機會歷史和偏好
+
+當用戶問「今天有什麼值得做的」「推薦機會」「分析信號」時，主動參考以下即時數據回答。
+
 Be concise, direct, and action-oriented. Focus on practical next steps the user can take today.
 
 請務必使用繁體中文回覆，不要使用簡體中文。`;
@@ -113,6 +119,17 @@ export async function POST(req: NextRequest) {
       )
       .all();
 
+    // #11 Inject top 5 high-score signals into system prompt
+    const todaySignals = db.prepare(`
+      SELECT title, heat_score, source, category
+      FROM signals
+      WHERE heat_score >= 3 AND created_at > datetime('now', '-24 hours')
+      ORDER BY heat_score DESC LIMIT 5
+    `).all() as { title: string; heat_score: number; source: string; category: string }[];
+    const signalContextInject = todaySignals.length > 0
+      ? `\n\n📡 今日高分信號：\n${todaySignals.map((s, i) => `${i + 1}. [${s.heat_score}分] ${s.title} (${s.source})`).join('\n')}`
+      : '\n\n📡 今日暫無高分信號。';
+
     // Get recent advisor conversations for history (filtered by user)
     const recentConversations = db
       .prepare(
@@ -167,7 +184,7 @@ export async function POST(req: NextRequest) {
 
     // Prepend system prompt as a system message
     const allMessages: OpenAI.ChatCompletionMessageParam[] = [
-      { role: "system", content: systemPrompt + contextStr },
+      { role: "system", content: systemPrompt + contextStr + signalContextInject },
       ...messages.map(m => ({ role: m.role as "user" | "assistant", content: m.content as string })),
     ];
 

@@ -121,6 +121,9 @@ export const OpportunityCard = React.memo(function OpportunityCard({
                 {new Date(opp.created_at + " UTC").toLocaleDateString("zh-TW", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}
               </span>
               <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${confBadge}`} title="置信度基於信號密度、時效性、可執行性綜合評分">{pct}%</span>
+              {(opp.action_count ?? 0) > 0 && (
+                <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-500 border border-green-500/30 hidden md:inline">👥 {opp.action_count}</span>
+              )}
               {badge && opp.action !== "action" && (
                 <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${badge.cls}`}>{badge.label}</span>
               )}
@@ -183,6 +186,32 @@ export const OpportunityCard = React.memo(function OpportunityCard({
                     </div>
                   </>
                 )}
+                {/* #7 Deadline / window period */}
+                {(() => {
+                  const deadline = embed.deadline;
+                  const estimatedTime = embed.estimated_time;
+                  if (!deadline && !estimatedTime) return null;
+                  let deadlineEl: React.ReactNode = null;
+                  if (deadline) {
+                    if (deadline === "ongoing") {
+                      deadlineEl = <span className="text-xs px-2 py-0.5 rounded-full border" style={{ color: "var(--text-muted)", borderColor: "var(--border)" }}>🔄 持續有效</span>;
+                    } else {
+                      const daysLeft = Math.ceil((new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+                      if (daysLeft < 0) {
+                        deadlineEl = <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/10 text-red-500 border border-red-500/30">⚠️ 已過期</span>;
+                      } else {
+                        deadlineEl = <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-500/10 text-yellow-500 border border-yellow-500/30">⏰ 窗口期：還剩 {daysLeft} 天</span>;
+                      }
+                    }
+                  }
+                  return (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {deadlineEl}
+                      {estimatedTime && <span className="text-xs px-2 py-0.5 rounded-full border" style={{ color: "var(--text-muted)", borderColor: "var(--border)" }}>⏱ 預估 {estimatedTime}</span>}
+                      {(opp.action_count ?? 0) > 0 && <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-500 border border-green-500/30">👥 {opp.action_count} 人已行動</span>}
+                    </div>
+                  );
+                })()}
                 {(() => {
                   const { barColor, confLabel } = pct >= 70
                     ? { barColor: "bg-green-500", confLabel: t("opp_conf_high") }
@@ -210,15 +239,33 @@ export const OpportunityCard = React.memo(function OpportunityCard({
                   <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--text-primary)" }}>{t("opp_actions")}</p>
                 </div>
                 <ol className="space-y-3.5">
-                  {embed.actions.map((a, i) => (
-                    <li key={i} className="flex gap-3" style={{ color: "var(--text-secondary)" }}>
-                      <span className="shrink-0 w-6 h-6 rounded-full text-xs flex items-center justify-center font-bold mt-0.5"
-                        style={{ backgroundColor: "var(--border)", color: "var(--text-muted)" }}>
-                        {i + 1}
-                      </span>
-                      <span className="leading-relaxed">{a}</span>
-                    </li>
-                  ))}
+                  {embed.actions.map((a, i) => {
+                    // #3 One-click: detect URLs in action text
+                    const urlMatch = a.match(/https?:\/\/[^\s)]+/);
+                    return (
+                      <li key={i} className="flex gap-3" style={{ color: "var(--text-secondary)" }}>
+                        <span className="shrink-0 w-6 h-6 rounded-full text-xs flex items-center justify-center font-bold mt-0.5"
+                          style={{ backgroundColor: "var(--border)", color: "var(--text-muted)" }}>
+                          {i + 1}
+                        </span>
+                        <span className="leading-relaxed flex-1">
+                          {a}
+                          {urlMatch && (
+                            <a
+                              href={urlMatch[0]}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="ml-1.5 inline-flex items-center gap-0.5 text-xs px-1.5 py-0.5 rounded border transition-colors hover:bg-[var(--border-subtle)]"
+                              style={{ color: "var(--signal)", borderColor: "var(--border)" }}
+                              onClick={e => e.stopPropagation()}
+                            >
+                              ↗
+                            </a>
+                          )}
+                        </span>
+                      </li>
+                    );
+                  })}
                 </ol>
               </div>
             </div>

@@ -5,6 +5,7 @@ import { Header } from "@/components/header";
 import { ToastProvider } from "@/components/toast";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { TrialBanner } from "@/components/trial-banner";
+import { ActivityTracker } from "@/components/activity-tracker";
 
 export async function generateMetadata() {
   const db = getDb();
@@ -46,6 +47,8 @@ export default async function DashboardLayout({
 
   return (
     <ToastProvider>
+      {/* #9 Track user activity */}
+      <ActivityTracker />
       {/* Fixed top header */}
       <Header />
       {/* Main content area — offset by header height (56px), mobile also offset from bottom tab bar (56px) */}

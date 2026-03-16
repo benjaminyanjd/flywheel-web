@@ -4,6 +4,8 @@ export interface EmbedData {
   actions: string[];
   risks: string[];
   confidence: number;
+  deadline?: string;
+  estimated_time?: string;
 }
 
 export function parseEmbed(raw: string): EmbedData | null {
@@ -15,6 +17,8 @@ export function parseEmbed(raw: string): EmbedData | null {
       actions: Array.isArray(d.actions) ? d.actions : [],
       risks: Array.isArray(d.risks) ? d.risks : [],
       confidence: typeof d.confidence === "number" ? d.confidence : 0,
+      deadline: typeof d.deadline === "string" ? d.deadline : undefined,
+      estimated_time: typeof d.estimated_time === "string" ? d.estimated_time : undefined,
     };
   } catch {
     return null;

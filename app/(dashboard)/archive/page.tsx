@@ -19,6 +19,9 @@ interface ArchiveItem {
   action: string;
   created_at: string;
   advisor_notes?: string | null;
+  outcome_amount?: number | null;
+  outcome_note?: string | null;
+  outcome_at?: string | null;
 }
 
 type StatusFilter = "all" | "todo" | "bias" | "action" | "missed" | "done" | "cancel";
@@ -108,6 +111,11 @@ export default function ArchivePage() {
   const [search, setSearch] = useState("");
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
+  const [outcomeOpen, setOutcomeOpen] = useState<Set<number>>(new Set());
+  const [outcomeAmount, setOutcomeAmount] = useState<Record<number, string>>({});
+  const [outcomeNote, setOutcomeNote] = useState<Record<number, string>>({});
+  const [outcomeSubmitting, setOutcomeSubmitting] = useState<Record<number, boolean>>({});
+  const [outcomeSuccess, setOutcomeSuccess] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     fetch("/api/archive")
@@ -135,6 +143,36 @@ export default function ArchivePage() {
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
+  }
+
+  function toggleOutcome(id: number) {
+    setOutcomeOpen((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
+  async function submitOutcome(id: number) {
+    setOutcomeSubmitting(prev => ({ ...prev, [id]: true }));
+    try {
+      const res = await fetch("/api/opportunity/outcome", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, outcome_amount: outcomeAmount[id] ? Number(outcomeAmount[id]) : null, outcome_note: outcomeNote[id] || null }),
+      });
+      if (res.ok) {
+        setOutcomeSuccess(prev => ({ ...prev, [id]: true }));
+        setItems(prev => prev.map(item =>
+          item.id === id
+            ? { ...item, outcome_amount: outcomeAmount[id] ? Number(outcomeAmount[id]) : null, outcome_note: outcomeNote[id] || null, outcome_at: new Date().toISOString() }
+            : item
+        ));
+        setTimeout(() => setOutcomeOpen(prev => { const next = new Set(prev); next.delete(id); return next; }), 1500);
+      }
+    } finally {
+      setOutcomeSubmitting(prev => ({ ...prev, [id]: false }));
+    }
   }
 
   if (loading) {
@@ -325,6 +363,68 @@ export default function ArchivePage() {
                         </div>
                       )}
                     </div>
+                  </div>
+                )}
+
+                {/* #10 Outcome reporting for 'action' status items */}
+                {item.action === "action" && (
+                  <div className="border-t px-5 py-3" style={{ borderColor: "var(--border-subtle)" }}>
+                    {item.outcome_at ? (
+                      <div className="flex items-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
+                        <span className="text-green-500 font-semibold">✓ 已回報</span>
+                        {item.outcome_amount != null && <span>金額：{item.outcome_amount}</span>}
+                        {item.outcome_note && <span>· {item.outcome_note}</span>}
+                        <button
+                          onClick={e => { e.stopPropagation(); toggleOutcome(item.id); }}
+                          className="ml-auto text-xs underline hover:no-underline"
+                        >修改</button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={e => { e.stopPropagation(); toggleOutcome(item.id); }}
+                        className="text-xs font-semibold px-3 py-1.5 rounded-xl border transition-all hover:bg-[var(--bg-panel)]"
+                        style={{ color: "var(--signal)", borderColor: "var(--signal)" }}
+                      >
+                        📊 回報結果
+                      </button>
+                    )}
+                    {outcomeOpen.has(item.id) && (
+                      <div className="mt-3 flex flex-col gap-2" onClick={e => e.stopPropagation()}>
+                        <div className="flex gap-2">
+                          <input
+                            type="number"
+                            placeholder="金額（選填）"
+                            value={outcomeAmount[item.id] || ""}
+                            onChange={e => setOutcomeAmount(prev => ({ ...prev, [item.id]: e.target.value }))}
+                            className="w-32 rounded-xl px-3 py-1.5 text-sm border focus:outline-none"
+                            style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" }}
+                          />
+                          <input
+                            type="text"
+                            placeholder="備註（選填）"
+                            value={outcomeNote[item.id] || ""}
+                            onChange={e => setOutcomeNote(prev => ({ ...prev, [item.id]: e.target.value }))}
+                            className="flex-1 rounded-xl px-3 py-1.5 text-sm border focus:outline-none"
+                            style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" }}
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => submitOutcome(item.id)}
+                            disabled={outcomeSubmitting[item.id]}
+                            className="text-xs font-semibold px-3 py-1.5 rounded-xl transition-all"
+                            style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
+                          >
+                            {outcomeSuccess[item.id] ? "✓ 已儲存" : outcomeSubmitting[item.id] ? "儲存中..." : "提交"}
+                          </button>
+                          <button
+                            onClick={() => toggleOutcome(item.id)}
+                            className="text-xs px-3 py-1.5 rounded-xl border hover:bg-[var(--bg-panel)]"
+                            style={{ borderColor: "var(--border)", color: "var(--text-muted)" }}
+                          >取消</button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
