@@ -21,6 +21,7 @@ export interface Opportunity {
   cancel_reason: string | null;
   created_at: string;
   acted_at: string | null;
+  action_count?: number;
 }
 
 export interface AdvisorState {

@@ -14,11 +14,16 @@ export async function GET() {
 
     const opportunities = db
       .prepare(
-        `SELECT * FROM opportunity_actions
-         WHERE (user_id = 'system' OR user_id = ?)
-           AND action NOT IN ('bias','todo','done','cancel')
-           AND created_at >= datetime('now', '-7 days')
-         ORDER BY created_at DESC`
+        `SELECT oa.*,
+           (SELECT COUNT(*) FROM opportunity_actions oa2
+            WHERE oa2.opp_title = oa.opp_title
+              AND oa2.action IN ('action', 'todo', 'done')
+           ) as action_count
+         FROM opportunity_actions oa
+         WHERE (oa.user_id = 'system' OR oa.user_id = ?)
+           AND oa.action NOT IN ('bias','todo','done','cancel')
+           AND oa.created_at >= datetime('now', '-7 days')
+         ORDER BY oa.created_at DESC`
       )
       .all(userId);
 
