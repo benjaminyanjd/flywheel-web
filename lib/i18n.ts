@@ -390,6 +390,22 @@ export const translations = {
     ctrl_scan_fail: "掃描失敗",
     ctrl_opp_fail: "生成失敗",
 
+    // Subscription
+    settings_plan_pro: "專業版訂閱",
+    settings_plan_trial: "試用期",
+    settings_plan_expired: "訂閱已過期",
+    settings_plan_pro_desc: "享有無限次顧問諮詢及所有功能",
+    settings_plan_days_left_pre: "還剩",
+    settings_plan_days_left_post: "天試用期",
+    settings_plan_expired_desc: "試用期已結束，請升級以繼續使用",
+    settings_upgrade: "升級訂閱",
+
+    // Source labels
+    source_kol_tweet: "KOL 推文",
+    source_hl_whale: "HL 鯨魚",
+    source_rss: "RSS 訂閱",
+    source_aicoin: "AiCoin 快訊",
+
     // Settings
     settings_title: "設置",
     settings_tg_title: "Telegram 推送",
@@ -853,6 +869,22 @@ export const translations = {
     ctrl_opp_started: "Analysis started, stats refresh in ~30s...",
     ctrl_scan_fail: "Scan failed",
     ctrl_opp_fail: "Generation failed",
+
+    // Subscription
+    settings_plan_pro: "Professional Plan",
+    settings_plan_trial: "Trial Period",
+    settings_plan_expired: "Subscription Expired",
+    settings_plan_pro_desc: "Unlimited advisor consultations and all features",
+    settings_plan_days_left_pre: "",
+    settings_plan_days_left_post: "days remaining in trial",
+    settings_plan_expired_desc: "Trial period ended, please upgrade to continue",
+    settings_upgrade: "Upgrade",
+
+    // Source labels
+    source_kol_tweet: "KOL Tweets",
+    source_hl_whale: "HL Whales",
+    source_rss: "RSS Feeds",
+    source_aicoin: "AiCoin Flash",
 
     // Settings
     settings_title: "Settings",

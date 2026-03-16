@@ -222,14 +222,14 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
                 <div className="flex items-center gap-3">
                   <div className="flex flex-col">
                     <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-                      {trialInfo.plan === "pro" ? "✅ 專業版訂閱" : trialInfo.plan === "trial" ? "🔔 試用期" : "⚠️ 訂閱已過期"}
+                      {trialInfo.plan === "pro" ? `✅ ${tr("settings_plan_pro")}` : trialInfo.plan === "trial" ? `🔔 ${tr("settings_plan_trial")}` : `⚠️ ${tr("settings_plan_expired")}`}
                     </span>
                     <span className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
                       {trialInfo.plan === "pro"
-                        ? "享有無限次顧問諮詢及所有功能"
+                        ? tr("settings_plan_pro_desc")
                         : trialInfo.daysLeft !== null && trialInfo.daysLeft > 0
-                          ? `還剩 ${trialInfo.daysLeft} 天試用期`
-                          : "試用期已結束，請升級以繼續使用"}
+                          ? `${tr("settings_plan_days_left_pre")} ${trialInfo.daysLeft} ${tr("settings_plan_days_left_post")}`
+                          : tr("settings_plan_expired_desc")}
                     </span>
                   </div>
                 </div>
@@ -239,7 +239,7 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
                     className="text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
                     style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
                   >
-                    升級訂閱
+                    {tr("settings_upgrade")}
                   </a>
                 )}
               </div>
