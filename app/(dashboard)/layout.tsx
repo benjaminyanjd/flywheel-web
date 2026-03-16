@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
-import { Sidebar } from "@/components/sidebar";
+import { Header } from "@/components/header";
 import { ToastProvider } from "@/components/toast";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { TrialBanner } from "@/components/trial-banner";
@@ -12,7 +12,7 @@ export async function generateMetadata() {
     `SELECT COUNT(*) as c FROM opportunity_actions WHERE action = 'missed' AND created_at > datetime('now', '-24 hours')`
   ).get() as { c: number } | undefined)?.c ?? 0;
   return {
-    title: newOpps > 0 ? `(${newOpps}) Flywheel` : "Flywheel",
+    title: newOpps > 0 ? `(${newOpps}) 嗅鐘` : "嗅鐘",
   };
 }
 
@@ -46,15 +46,15 @@ export default async function DashboardLayout({
 
   return (
     <ToastProvider>
-      <div className="flex h-screen overflow-hidden">
-        <Sidebar />
-        <main className="flex-1 overflow-auto pb-16 md:pb-0">
-          {daysLeft !== null && daysLeft <= 7 && (
-            <TrialBanner daysLeft={daysLeft} />
-          )}
-          <ErrorBoundary>{children}</ErrorBoundary>
-        </main>
-      </div>
+      {/* Fixed top header */}
+      <Header />
+      {/* Main content area — offset by header height (56px), mobile also offset from bottom tab bar (56px) */}
+      <main className="flex-1 overflow-auto pt-14 pb-16 md:pb-0" style={{ backgroundColor: "var(--bg)" }}>
+        {daysLeft !== null && daysLeft <= 7 && (
+          <TrialBanner daysLeft={daysLeft} />
+        )}
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </main>
     </ToastProvider>
   );
 }

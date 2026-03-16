@@ -1,4 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { ExpiredContent } from "@/components/expired-content";
 
@@ -14,6 +15,11 @@ export default async function ExpiredPage() {
 
   if (userId) {
     const sub = db.prepare("SELECT created_at, plan, trial_end FROM user_subscriptions WHERE user_id = ?").get(userId) as { created_at: string; plan: string; trial_end: string | null } | undefined;
+
+    // Already active — redirect to app
+    if (sub?.plan === "active") {
+      redirect("/opportunities");
+    }
     // 只統計該用戶自己的機會（不含系統全局）
     totalOpps = (db.prepare("SELECT COUNT(*) as c FROM opportunity_actions WHERE user_id = ?").get(userId) as { c: number } | undefined)?.c ?? 0;
     actionedOpps = (db.prepare("SELECT COUNT(*) as c FROM opportunity_actions WHERE action IN ('action','done') AND user_id = ?").get(userId) as { c: number } | undefined)?.c ?? 0;

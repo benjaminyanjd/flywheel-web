@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/toast";
+import { TodoListIcon } from "@/components/icons";
 import {
   Dialog,
   DialogContent,
@@ -75,6 +76,7 @@ export default function TodolistPage() {
         body: JSON.stringify({ action: "done" }),
       });
       setTodos((prev) => prev.filter((t) => t.id !== id));
+      toast(t("todo_done") || "已完成", "success");
     } catch {
       // action failed silently; item remains in list
     } finally {
@@ -140,16 +142,16 @@ export default function TodolistPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col h-full bg-white p-6">
-        <div className="h-7 bg-gray-100 rounded w-32 mb-4 animate-pulse" />
+      <div className="flex flex-col h-full p-6 animate-page-enter" style={{ backgroundColor: "var(--bg)" }}>
+        <div className="h-7 skeleton-shimmer rounded w-32 mb-4" />
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white border border-gray-100 rounded-2xl p-5 animate-pulse">
-              <div className="h-4 bg-gray-100 rounded w-3/4 mb-3" />
-              <div className="h-3 bg-gray-100 rounded w-1/2 mb-3" />
+            <div key={i} className="rounded-2xl p-5 border" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
+              <div className="h-4 skeleton-shimmer rounded w-3/4 mb-3" />
+              <div className="h-3 skeleton-shimmer rounded w-1/2 mb-3" />
               <div className="flex gap-2 mt-4">
-                <div className="h-8 bg-gray-100 rounded w-20" />
-                <div className="h-8 bg-gray-100 rounded w-20" />
+                <div className="h-8 skeleton-shimmer rounded w-20" />
+                <div className="h-8 skeleton-shimmer rounded w-20" />
               </div>
             </div>
           ))}
@@ -159,14 +161,21 @@ export default function TodolistPage() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-white p-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">{t("todo_title")}</h1>
+    <div className="flex flex-col h-full p-6 animate-page-enter" style={{ backgroundColor: "var(--bg)" }}>
+      <h1 className="text-2xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>{t("todo_title")}</h1>
 
       {todos.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-          <FlywheelLogo size={48} className="text-gray-300 animate-[spin_8s_linear_infinite] mb-4" />
-          <p className="text-lg font-medium text-gray-500">{t("opp_empty_title")}</p>
-          <p className="text-sm mt-1">{t("opp_empty_desc")}</p>
+        <div className="flex flex-col items-center justify-center py-20 animate-page-enter">
+          <div className="relative w-24 h-24 mb-6">
+            <div className="w-24 h-24 rounded-full flex items-center justify-center shadow-inner" style={{ backgroundColor: "var(--bg-panel)", border: "1px solid var(--border-subtle)" }}>
+              <TodoListIcon size={40} style={{ color: "var(--signal)" }} />
+            </div>
+          </div>
+          <p className="text-lg font-semibold mb-1" style={{ color: "var(--text-secondary)" }}>{t("todo_title")}清單是空的</p>
+          <p className="text-sm text-center max-w-xs" style={{ color: "var(--text-muted)" }}>在機會頁面標記「待辦」，它就會出現在這裡</p>
+          <a href="/opportunities" className="mt-4 text-xs px-4 py-2 rounded-full transition-colors" style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}>
+            去看機會 →
+          </a>
         </div>
       ) : (
         <ScrollArea className="flex-1">
@@ -175,26 +184,26 @@ export default function TodolistPage() {
               const embed = parseEmbed(todo.opp_embed);
               const confidence = embed?.confidence ?? 0;
               const confidencePct = confidence <= 1 ? Math.round(confidence * 100) : Math.round(confidence * 10);
-              const borderColor = confidencePct >= 70 ? "border-l-4 border-l-green-500" : confidencePct >= 50 ? "border-l-4 border-l-yellow-400" : "border-l-4 border-l-gray-200";
+              const borderColor = confidencePct >= 70 ? "border-l-4 border-l-green-500" : confidencePct >= 50 ? "border-l-4 border-l-yellow-400" : "border-l-4 border-l-[var(--border)]";
               const confBadge = confidencePct >= 70
-                ? "bg-green-50 text-green-700 border border-green-200"
+                ? "bg-green-500/10 text-green-500 border border-green-500/30"
                 : confidencePct >= 50
-                ? "bg-yellow-50 text-yellow-700 border border-yellow-200"
-                : "bg-gray-100 text-gray-500 border border-gray-200";
+                ? "bg-yellow-500/10 text-yellow-500 border border-yellow-500/30"
+                : "border text-[var(--text-muted)] bg-[var(--bg-panel)]";
 
               return (
-                <Card key={todo.id} className={`bg-white border border-gray-100 rounded-2xl overflow-hidden ${borderColor}`}>
+                <Card key={todo.id} className={`rounded-2xl overflow-hidden card-hover ${borderColor}`} style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-subtle)" }}>
                   <div className="p-5">
                       {/* Header */}
                       <div className="flex items-start justify-between mb-4">
-                        <h3 className="text-gray-900 font-semibold text-base leading-snug pr-4">
+                        <h3 className="font-semibold text-base leading-snug pr-4" style={{ color: "var(--text-primary)" }}>
                           {todo.opp_title}
                         </h3>
                         <div className="flex items-center gap-2 shrink-0">
                           <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${confBadge}`}>
                             {confidencePct}%
                           </span>
-                          <span className="text-xs text-gray-400">{formatDate(todo.created_at)}</span>
+                          <span className="text-xs" style={{ color: "var(--text-muted)" }}>{formatDate(todo.created_at)}</span>
                         </div>
                       </div>
 
@@ -203,20 +212,20 @@ export default function TodolistPage() {
                           {/* Left: main content */}
                           <div className="flex-1 space-y-4 md:pr-5 min-w-0">
                             <div>
-                              <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-1.5">{t("opp_section_whynow")}</p>
-                              <p className="text-gray-500 leading-relaxed">{embed.why_now}</p>
+                              <p className="text-xs font-bold uppercase tracking-widest mb-1.5" style={{ color: "var(--text-primary)" }}>{t("opp_section_whynow")}</p>
+                              <p className="leading-relaxed" style={{ color: "var(--text-secondary)" }}>{embed.why_now}</p>
                             </div>
 
-                            <Separator className="bg-gray-100" />
+                            <Separator style={{ backgroundColor: "var(--border-subtle)" }} />
 
                             <div>
-                              <p className="text-xs font-bold text-green-600 uppercase tracking-widest mb-1.5">{t("opp_section_profit")}</p>
-                              <p className="text-gray-500 leading-relaxed">{embed.profit_logic}</p>
+                              <p className="text-xs font-bold text-green-500 uppercase tracking-widest mb-1.5">{t("opp_section_profit")}</p>
+                              <p className="leading-relaxed" style={{ color: "var(--text-secondary)" }}>{embed.profit_logic}</p>
                             </div>
 
                             {(embed.risks?.length ?? 0) > 0 && (
                               <>
-                                <Separator className="bg-gray-100" />
+                                <Separator style={{ backgroundColor: "var(--border-subtle)" }} />
                                 <div>
                                   <p className="text-xs font-bold text-red-500 uppercase tracking-widest mb-1.5">{t("opp_section_risks")}</p>
                                   <ul className="space-y-1">
@@ -232,9 +241,9 @@ export default function TodolistPage() {
                             )}
 
                             {/* Footer */}
-                            <div className="flex items-center gap-3 pt-1 border-t border-gray-100">
+                            <div className="flex items-center gap-3 pt-1 border-t" style={{ borderColor: "var(--border-subtle)" }}>
                               <Progress value={confidencePct} className="flex-1 h-1.5" />
-                              <span className="text-xs font-semibold text-gray-400 shrink-0">
+                              <span className="text-xs font-semibold shrink-0" style={{ color: "var(--text-muted)" }}>
                                 {t("opp_confidence")}{" "}
                                 <span className={confidencePct >= 70 ? "text-green-600" : confidencePct >= 50 ? "text-yellow-600" : "text-red-500"}>
                                   {confidencePct}%
@@ -244,12 +253,12 @@ export default function TodolistPage() {
                           </div>
 
                           {/* Right: action list */}
-                          <div className="w-full md:w-96 md:shrink-0 bg-gray-50 rounded-xl border border-gray-100 p-5 md:ml-2 mt-4 md:mt-0">
-                            <p className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-3">{t("opp_section_actions")}</p>
+                          <div className="w-full md:w-96 md:shrink-0 rounded-xl border p-5 md:ml-2 mt-4 md:mt-0" style={{ backgroundColor: "var(--bg-panel)", borderColor: "var(--border-subtle)" }}>
+                            <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "var(--text-primary)" }}>{t("opp_section_actions")}</p>
                             <ol className="space-y-3.5">
                               {embed.actions?.map((a, i) => (
-                                <li key={i} className="flex gap-3 text-gray-600">
-                                  <span className="shrink-0 w-6 h-6 rounded-full bg-gray-200 text-gray-500 text-xs flex items-center justify-center font-bold mt-0.5">
+                                <li key={i} className="flex gap-3" style={{ color: "var(--text-secondary)" }}>
+                                  <span className="shrink-0 w-6 h-6 rounded-full text-xs flex items-center justify-center font-bold mt-0.5" style={{ backgroundColor: "var(--border)", color: "var(--text-muted)" }}>
                                     {i + 1}
                                   </span>
                                   <span className="leading-relaxed">{a}</span>
@@ -261,7 +270,7 @@ export default function TodolistPage() {
                       )}
 
                       {/* Advisor plan section */}
-                      <div className="mt-4 pt-4 border-t border-gray-100">
+                      <div className="mt-4 pt-4 border-t" style={{ borderColor: "var(--border-subtle)" }}>
                         <div className="flex items-center gap-2 mb-3">
                           {(todo.advisor_notes || advisorMap[todo.id]?.text) ? (
                             <button
@@ -272,17 +281,17 @@ export default function TodolistPage() {
                               })}
                               className="flex items-center gap-2 flex-1 text-left group"
                             >
-                              <p className="text-xs font-bold text-gray-700 uppercase tracking-widest">{t("opp_plan_title")}</p>
-                              <span className={`text-gray-400 text-xs transition-transform duration-200 ml-1 ${expandedNotes.has(todo.id) ? "rotate-180" : ""}`}>▾</span>
-                              <span className="text-xs text-gray-400 ml-2">{expandedNotes.has(todo.id) ? t("common_collapse") : t("common_expand")}</span>
+                              <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--text-primary)" }}>{t("opp_plan_title")}</p>
+                              <span className={`text-xs transition-transform duration-200 ml-1 ${expandedNotes.has(todo.id) ? "rotate-180" : ""}`}>▾</span>
+                              <span className="text-xs ml-2" style={{ color: "var(--text-muted)" }}>{expandedNotes.has(todo.id) ? t("common_collapse") : t("common_expand")}</span>
                             </button>
                           ) : (
-                            <p className="text-xs font-bold text-gray-700 uppercase tracking-widest flex-1">{t("opp_plan_title")}</p>
+                            <p className="text-xs font-bold uppercase tracking-widest flex-1" style={{ color: "var(--text-primary)" }}>{t("opp_plan_title")}</p>
                           )}
 
                           {(todo.advisor_notes || advisorMap[todo.id]?.text) ? (
                             <button
-                              className="text-xs text-gray-400 hover:text-gray-600 transition-colors px-2 py-1 rounded border border-gray-200 hover:border-gray-400"
+                              className="text-xs transition-colors px-2 py-1 rounded border btn-press hover:text-[var(--text-primary)]" style={{ color: "var(--text-muted)", borderColor: "var(--border)" }}
                               onClick={() => {
                                 const blob = new Blob([todo.advisor_notes || advisorMap[todo.id]?.text || ""], { type: "text/markdown" });
                                 const url = URL.createObjectURL(blob);
@@ -292,15 +301,15 @@ export default function TodolistPage() {
                                 a.click();
                                 URL.revokeObjectURL(url);
                               }}
-                            >⬇ .md</button>
+                            >↓ .md</button>
                           ) : advisorMap[todo.id]?.loading ? (
-                            <span className="text-xs text-gray-400 flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-pulse" />{t("opp_generating")}
+                            <span className="text-xs flex items-center gap-1.5" style={{ color: "var(--text-muted)" }}>
+                              <span className="w-3 h-3 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />{t("opp_generating")}
                             </span>
                           ) : (
                             <Button
                               size="sm"
-                              className="bg-black hover:bg-gray-800 text-white text-xs h-7 px-3 rounded-xl"
+                              className="text-xs h-7 px-3 rounded-xl btn-press" style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
                               onClick={() => generateAdvisor(todo)}
                             >
                               {t("todo_generate")}
@@ -309,7 +318,7 @@ export default function TodolistPage() {
                         </div>
 
                         {(todo.advisor_notes || advisorMap[todo.id]?.text) && expandedNotes.has(todo.id) && (
-                          <div className={PROSE_CLASS}>
+                          <div className={`${PROSE_CLASS} expand-content`}>
                             <ReactMarkdown remarkPlugins={[remarkGfm]}>
                               {todo.advisor_notes || advisorMap[todo.id]?.text || ""}
                             </ReactMarkdown>
@@ -327,19 +336,23 @@ export default function TodolistPage() {
                       </div>
 
                       {/* Action buttons */}
-                      <div className="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-gray-100">
+                      <div className="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t" style={{ borderColor: "var(--border-subtle)" }}>
                         <Button
                           size="sm"
-                          className="bg-black hover:bg-gray-800 text-white text-xs rounded-xl"
+                          className="text-xs rounded-xl btn-press" style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
                           disabled={actionLoading[todo.id]}
                           onClick={() => handleDone(todo.id)}
                         >
-                          {actionLoading[todo.id] ? "..." : t("todo_done")}
+                          {actionLoading[todo.id] ? (
+                            <span className="flex items-center gap-1.5">
+                              <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            </span>
+                          ) : t("todo_done")}
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
-                          className="border-red-200 text-red-500 hover:bg-red-50 text-xs rounded-xl"
+                          className="border-red-500/30 text-red-500 hover:bg-red-500/10 text-xs rounded-xl btn-press"
                           disabled={actionLoading[todo.id]}
                           onClick={() => openCancelDialog(todo.id)}
                         >
@@ -347,21 +360,21 @@ export default function TodolistPage() {
                         </Button>
                         <button
                           onClick={() => setOutcomeForm(outcomeForm?.id === todo.id ? null : { id: todo.id, amount: "", note: "" })}
-                          className="text-xs px-3 py-1.5 rounded-xl border border-gray-200 text-gray-400 hover:text-green-600 hover:border-green-300 transition-colors"
+                          className="text-xs px-3 py-1.5 rounded-xl border transition-all btn-press hover:text-green-500 hover:border-green-500/30" style={{ borderColor: "var(--border)", color: "var(--text-muted)" }}
                         >
                           {t("todo_record")}
                         </button>
                       </div>
 
                       {outcomeForm?.id === todo.id && (
-                        <div className="mt-3 p-3 bg-gray-50 rounded-xl border border-gray-100 flex flex-col gap-2">
+                        <div className="mt-3 p-3 rounded-xl border flex flex-col gap-2 expand-content" style={{ backgroundColor: "var(--bg-panel)", borderColor: "var(--border-subtle)" }}>
                           <div className="flex gap-2">
                             <input
                               type="number"
                               placeholder={t("todo_amount")}
                               value={outcomeForm.amount}
                               onChange={e => setOutcomeForm(f => f ? {...f, amount: e.target.value} : null)}
-                              className="flex-1 text-xs bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-gray-900 placeholder:text-gray-400"
+                              className="flex-1 text-xs border rounded-lg px-2 py-1.5 input-focus-ring focus:outline-none" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)", color: "var(--text-primary)" }}
                             />
                           </div>
                           <input
@@ -369,12 +382,12 @@ export default function TodolistPage() {
                             placeholder={t("todo_note")}
                             value={outcomeForm.note}
                             onChange={e => setOutcomeForm(f => f ? {...f, note: e.target.value} : null)}
-                            className="text-xs bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-gray-900 placeholder:text-gray-400"
+                            className="text-xs border rounded-lg px-2 py-1.5 input-focus-ring focus:outline-none" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)", color: "var(--text-primary)" }}
                           />
                           <div className="flex gap-2 justify-end">
                             <button
                               onClick={() => setOutcomeForm(null)}
-                              className="text-xs text-gray-400 px-3 py-1 rounded hover:text-gray-600"
+                              className="text-xs px-3 py-1 rounded hover:text-[var(--text-primary)] transition-colors" style={{ color: "var(--text-muted)" }}
                             >{t("todo_cancel_btn")}</button>
                             <button
                               onClick={async () => {
@@ -389,7 +402,7 @@ export default function TodolistPage() {
                                 toast(t("todo_outcome_saved"));
                                 setOutcomeForm(null);
                               }}
-                              className="text-xs bg-black hover:bg-gray-800 text-white px-3 py-1 rounded-lg"
+                              className="text-xs px-3 py-1 rounded-lg btn-press transition-colors" style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
                             >{t("todo_save")}</button>
                           </div>
                         </div>
@@ -403,12 +416,12 @@ export default function TodolistPage() {
       )}
 
       <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
-        <DialogContent className="bg-white border border-gray-200 rounded-2xl">
+        <DialogContent style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
           <DialogHeader>
-            <DialogTitle className="text-gray-900">{t("todo_cancel_title")}</DialogTitle>
+            <DialogTitle style={{ color: "var(--text-primary)" }}>{t("todo_cancel_title")}</DialogTitle>
           </DialogHeader>
           <Textarea
-            className="border border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 rounded-xl"
+            className="border rounded-xl input-focus-ring focus:outline-none" style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" }}
             placeholder={t("todo_cancel_placeholder")}
             value={cancelReason}
             onChange={(e) => setCancelReason(e.target.value)}
@@ -417,17 +430,21 @@ export default function TodolistPage() {
           <DialogFooter>
             <Button
               variant="outline"
-              className="border-gray-200 text-gray-600 rounded-xl"
+              className="border-gray-200 text-gray-600 rounded-xl btn-press"
               onClick={() => setCancelDialogOpen(false)}
             >
               {t("todo_cancel_back")}
             </Button>
             <Button
-              className="bg-red-500 hover:bg-red-600 text-white rounded-xl"
+              className="bg-red-500 hover:bg-red-600 text-white rounded-xl btn-press"
               onClick={handleCancel}
               disabled={actionLoading[cancelTarget ?? -1]}
             >
-              {t("todo_cancel_confirm")}
+              {actionLoading[cancelTarget ?? -1] ? (
+                <span className="flex items-center gap-1.5">
+                  <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                </span>
+              ) : t("todo_cancel_confirm")}
             </Button>
           </DialogFooter>
         </DialogContent>

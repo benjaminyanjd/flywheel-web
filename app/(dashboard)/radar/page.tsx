@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, Suspense, useCallback, useDeferredValue, useMemo } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { useEffect, useRef, useState, Suspense, useCallback, useDeferredValue, useMemo } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useT } from "@/lib/i18n";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -44,10 +44,23 @@ function relativeTime(dateStr: string, lang: string): string {
   }
 }
 
-function heatEmoji(score: number): string {
-  if (score >= 5) return "🔥";
-  if (score >= 3) return "⚡";
-  return "💤";
+function HeatIcon({ score }: { score: number }) {
+  if (score >= 5) return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="inline-block text-orange-500">
+      <path d="M12 2c0 0-6 6.67-6 12a6 6 0 0012 0c0-5.33-6-12-6-12zm0 16a4 4 0 01-4-4c0-2.67 2-5.67 4-8 2 2.33 4 5.33 4 8a4 4 0 01-4 4z"/>
+    </svg>
+  );
+  if (score >= 3) return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="inline-block text-yellow-500">
+      <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+    </svg>
+  );
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="inline-block text-gray-400">
+      <path d="M4 12h2M6 8h2M10 6h4M14 8h2M18 12h2"/>
+      <path d="M6 16c2-2 4-2 6-2s4 0 6 2"/>
+    </svg>
+  );
 }
 
 function heatLabel(score: number, lang: string): string {
@@ -63,46 +76,173 @@ function heatLabel(score: number, lang: string): string {
 
 function sourceBadgeStyle(source: string): { cls: string; label: string } {
   const map: Record<string, { cls: string; label: string }> = {
-    reddit:          { cls: "bg-orange-50 text-orange-600 border border-orange-200", label: "R Reddit" },
-    hacker_news:     { cls: "bg-red-50 text-red-600 border border-red-200",          label: "Y HN" },
-    rss:             { cls: "bg-blue-50 text-blue-600 border border-blue-200",        label: "◉ RSS" },
-    x_kol:           { cls: "bg-gray-100 text-gray-600 border border-gray-200",       label: "✕ KOL" },
-    alpha_rising:    { cls: "bg-rose-50 text-rose-600 border border-rose-200",        label: "🚀 Rising" },
-    github_trending: { cls: "bg-purple-50 text-purple-600 border border-purple-200", label: "⬡ GitHub" },
+    reddit:          { cls: "bg-orange-500/10 text-orange-500 border border-orange-500/30", label: "R Reddit" },
+    hacker_news:     { cls: "bg-red-500/10 text-red-500 border border-red-500/30",          label: "Y HN" },
+    rss:             { cls: "bg-blue-500/10 text-blue-500 border border-blue-500/30",        label: "◉ RSS" },
+    kol_tweet:       { cls: "border text-[var(--text-secondary)] bg-[var(--bg-panel)]",      label: "✕ KOL" },
+    x_kol:           { cls: "border text-[var(--text-secondary)] bg-[var(--bg-panel)]",      label: "✕ KOL" },
+    alpha_rising:    { cls: "bg-rose-500/10 text-rose-500 border border-rose-500/30",        label: "Alpha" },
+    hl_whale:        { cls: "bg-emerald-500/10 text-emerald-500 border border-emerald-500/30", label: "🐋 Whale" },
+    coingecko_trending: { cls: "bg-green-500/10 text-green-500 border border-green-500/30",  label: "🦎 CG" },
+    github_trending: { cls: "bg-purple-500/10 text-purple-500 border border-purple-500/30", label: "⬡ GitHub" },
   }
-  return map[source] || { cls: "bg-gray-100 text-gray-500 border border-gray-200", label: source }
+  return map[source] || { cls: "border text-[var(--text-muted)] bg-[var(--bg-panel)]", label: source }
+}
+
+// Signal card action icons — 14x14
+function IconCopy({ copied }: { copied: boolean }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      {copied ? (
+        <polyline points="20 6 9 17 4 12"/>
+      ) : (
+        <>
+          <rect x="9" y="9" width="13" height="13" rx="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </>
+      )}
+    </svg>
+  );
+}
+
+function IconBookmark({ bookmarked }: { bookmarked: boolean }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill={bookmarked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+    </svg>
+  );
+}
+
+function IconExternalLink() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h6"/>
+      <polyline points="15 3 21 3 21 9"/>
+      <line x1="10" y1="14" x2="21" y2="3"/>
+    </svg>
+  );
 }
 
 function heatScoreBg(score: number): string {
-  if (score >= 5) return "bg-orange-50 text-orange-600 border border-orange-200";
-  if (score >= 3) return "bg-yellow-50 text-yellow-600 border border-yellow-200";
-  return "bg-gray-100 text-gray-400 border border-gray-200";
+  if (score >= 5) return "bg-orange-500/10 text-orange-500 border border-orange-500/30";
+  if (score >= 3) return "bg-yellow-500/10 text-yellow-500 border border-yellow-500/30";
+  return "border text-[var(--text-muted)] bg-[var(--bg-panel)]";
+}
+
+/** Left border + bg highlight classes based on heat_score */
+function heatHighlightClass(score: number, isBookmarked: boolean): string {
+  if (isBookmarked) return "border-l-2 border-l-[var(--signal)]";
+  if (score >= 8) return "border-l-[3px] border-l-orange-400";
+  if (score >= 5) return "border-l-2 border-l-yellow-300";
+  return "";
 }
 
 const CATEGORY_LABELS: Record<string, { zh: string; en: string }> = {
-  ai_tech:         { zh: "AI 科技",  en: "AI Tech" },
-  crypto_policy:   { zh: "加密政策", en: "Crypto" },
-  new_tools:       { zh: "新工具",   en: "New Tools" },
-  overseas_trends: { zh: "海外趨勢", en: "Overseas" },
-  x_kol:           { zh: "KOL",      en: "KOL" },
-  alpha_rising:    { zh: "Alpha",    en: "Alpha" },
+  kol:          { zh: "KOL 動態",  en: "KOL" },
+  crypto_news:  { zh: "加密新聞",  en: "Crypto News" },
+  onchain:      { zh: "鏈上資金",  en: "On-chain" },
+  ai_tech:      { zh: "AI 科技",   en: "AI & Tech" },
+  community:    { zh: "社區情報",  en: "Community" },
+  alpha:        { zh: "Alpha",     en: "Alpha" },
 };
 
 // Map user_focus values to signal categories
 const FOCUS_TO_CATEGORY: Record<string, string[]> = {
   ai: ["ai_tech"],
-  crypto: ["crypto_policy"],
-  saas: ["new_tools"],
-  overseas: ["overseas_trends"],
+  crypto: ["crypto_news", "onchain"],
+  saas: ["ai_tech"],
+  overseas: ["community"],
 };
+
+// Category tab icons — 16x16, stroke style, currentColor
+function IconAll() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="1"/>
+      <rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/>
+      <rect x="14" y="14" width="7" height="7" rx="1"/>
+    </svg>
+  );
+}
+
+function IconAITech() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M12 3v3M12 18v3M3 12h3M18 12h3"/>
+      <path d="M5.64 5.64l2.12 2.12M16.24 16.24l2.12 2.12M16.24 7.76l2.12-2.12M5.64 18.36l2.12-2.12"/>
+    </svg>
+  );
+}
+
+function IconCrypto() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+      <path d="M2 17l10 5 10-5"/>
+      <path d="M2 12l10 5 10-5"/>
+    </svg>
+  );
+}
+
+function IconOnchain() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="5" width="6" height="6" rx="1"/>
+      <rect x="9" y="13" width="6" height="6" rx="1"/>
+      <rect x="17" y="5" width="6" height="6" rx="1"/>
+      <path d="M7 8h10M15 8l-6 8"/>
+    </svg>
+  );
+}
+
+function IconCommunity() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+      <path d="M8 9h8M8 13h4"/>
+    </svg>
+  );
+}
+
+function IconKOL() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+    </svg>
+  );
+}
+
+function IconAlpha() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+      <polyline points="16 7 22 7 22 13"/>
+    </svg>
+  );
+}
+
+const RADAR_CATEGORIES_LIST: { value: string; zh: string; en: string; icon: React.ReactNode }[] = [
+  { value: "all",          zh: "全部",      en: "All",          icon: <IconAll /> },
+  { value: "kol",          zh: "KOL 動態",  en: "KOL",          icon: <IconKOL /> },
+  { value: "crypto_news",  zh: "加密新聞",  en: "Crypto News",  icon: <IconCrypto /> },
+  { value: "onchain",      zh: "鏈上資金",  en: "On-chain",     icon: <IconOnchain /> },
+  { value: "ai_tech",      zh: "AI 科技",   en: "AI & Tech",    icon: <IconAITech /> },
+  { value: "community",    zh: "社區情報",  en: "Community",    icon: <IconCommunity /> },
+  { value: "alpha",        zh: "Alpha",     en: "Alpha",        icon: <IconAlpha /> },
+];
 
 function RadarContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const activeCategory = searchParams.get("category") ?? "all";
   const [signals, setSignals] = useState<Signal[]>([]);
   const [loading, setLoading] = useState(true);
   const [newIds, setNewIds] = useState<Set<number>>(new Set());
-  const [heatFilter, setHeatFilter] = useState<"all" | "high" | "mid" | "low">("all");
+  const [heatFilter, setHeatFilter] = useState<"all" | "high" | "mid" | "low">("mid");
   const [keyword, setKeyword] = useState("");
   const [preferredCategories, setPreferredCategories] = useState<Set<string>>(new Set());
   const { t, lang } = useT();
@@ -306,15 +446,15 @@ function RadarContent() {
 
   if (loading) {
     return (
-      <div className="flex flex-col h-full bg-white p-6">
+      <div className="flex flex-col h-full p-6 animate-page-enter" style={{ backgroundColor: "var(--bg)" }}>
         <div className="flex items-center gap-3 mb-4">
-          <h1 className="text-2xl font-bold text-gray-900">{t("radar_title")}</h1>
+          <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>{t("radar_title")}</h1>
         </div>
         <div className="space-y-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-white border border-gray-100 rounded-2xl p-5 animate-pulse">
-              <div className="h-4 bg-gray-100 rounded w-2/3 mb-3" />
-              <div className="h-3 bg-gray-100 rounded w-full" />
+            <div key={i} className="rounded-2xl p-5 border" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
+              <div className="h-4 skeleton-shimmer rounded w-2/3 mb-3" />
+              <div className="h-3 skeleton-shimmer rounded w-full" />
             </div>
           ))}
         </div>
@@ -323,41 +463,42 @@ function RadarContent() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-white p-6">
-      <div className="flex flex-wrap items-center gap-3 mb-4">
-        <h1 className="text-2xl font-bold text-gray-900">{t("radar_title")}</h1>
-        <span className="bg-gray-100 text-gray-600 border border-gray-200 text-xs font-bold px-2 py-0.5 rounded-full">
-          {filtered.length}
-        </span>
-        {activeCategory !== "all" && CATEGORY_LABELS[activeCategory] && (
-          <span className={`text-xs border px-2 py-0.5 rounded ${preferredCategories.has(activeCategory) ? "text-black border-black" : "text-gray-400 border-gray-200"}`}>
-            {preferredCategories.has(activeCategory) ? "★ " : ""}{lang === "zh" ? CATEGORY_LABELS[activeCategory].zh : CATEGORY_LABELS[activeCategory].en}
-          </span>
-        )}
-        {/* Heat score filter tabs */}
-        <div className="flex items-center gap-1 ml-2 bg-gray-50 rounded-2xl p-1 overflow-x-auto">
-          {([
-            { key: "all", label: t("common_all"), ariaLabel: t("common_all") },
-            { key: "high", label: "🔥 ≥5", ariaLabel: "高熱度 (≥5)" },
-            { key: "mid",  label: "⚡ ≥3", ariaLabel: "值得關注 (≥3)" },
-            { key: "low",  label: "💤 <3", ariaLabel: "低熱度 (<3)" },
-          ] as const).map((tab) => (
+    <div className="flex flex-col h-full p-6 animate-page-enter" style={{ backgroundColor: "var(--bg)" }}>
+      {/* Category horizontal tabs */}
+      <div className="flex items-center gap-1 mb-4 overflow-x-auto pb-1" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
+        {RADAR_CATEGORIES_LIST.map((cat) => {
+          const isActive = activeCategory === cat.value;
+          return (
             <button
-              key={tab.key}
+              key={cat.value}
               type="button"
-              onClick={() => setHeatFilter(tab.key)}
-              aria-label={tab.ariaLabel}
-              aria-pressed={heatFilter === tab.key}
-              className={`text-xs px-3 py-1 rounded-full transition-colors ${
-                heatFilter === tab.key
-                  ? "bg-black text-white font-semibold"
-                  : "text-gray-500 hover:text-gray-700"
+              onClick={() => router.push(cat.value === "all" ? "/radar" : `/radar?category=${cat.value}`)}
+              className={`relative flex items-center gap-1.5 px-3 py-1.5 text-sm whitespace-nowrap transition-all duration-200 ${
+                isActive
+                  ? "font-semibold text-[var(--text-primary)]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
               }`}
             >
-              {tab.label}
+              <span className="leading-none" style={{ color: isActive ? "var(--signal)" : "var(--text-muted)" }}>{cat.icon}</span>
+              <span>{lang === "zh" ? cat.zh : cat.en}</span>
+              {isActive && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full" style={{ backgroundColor: "var(--signal)" }} />
+              )}
             </button>
-          ))}
-        </div>
+          );
+        })}
+      </div>
+
+      {/* Header row: title + count */}
+      <div className="flex items-center gap-3 mb-3">
+        <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>{t("radar_title")}</h1>
+        <span className="text-xs font-bold px-2 py-0.5 rounded-full border" style={{ backgroundColor: "var(--bg-panel)", color: "var(--text-secondary)", borderColor: "var(--border)" }}>
+          {filtered.length}
+        </span>
+      </div>
+
+      {/* Filter row: search + heat pills */}
+      <div className="flex flex-wrap items-center gap-2 mb-4">
         {/* Keyword search */}
         <input
           type="text"
@@ -365,8 +506,34 @@ function RadarContent() {
           onChange={(e) => setKeyword(e.target.value)}
           placeholder={t("radar_search")}
           aria-label={t("radar_search")}
-          className="border border-gray-200 bg-white rounded-xl px-3 py-1.5 text-sm text-gray-900 placeholder-gray-400 w-48 focus:outline-none focus:border-gray-400"
+          className="rounded-xl px-3 py-1.5 text-sm w-48 input-focus-ring focus:outline-none border" style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" }}
         />
+        {/* Heat score filter pills */}
+        {([
+          { key: "all",  label: t("common_all"), ariaLabel: t("common_all") },
+          { key: "high", label: "≥5",             ariaLabel: "高熱度 (≥5)" },
+          { key: "mid",  label: "≥3",             ariaLabel: "值得關注 (≥3)" },
+          { key: "low",  label: "<3",             ariaLabel: "低熱度 (<3)" },
+        ] as const).map((pill) => (
+          <button
+            key={pill.key}
+            type="button"
+            onClick={() => setHeatFilter(pill.key)}
+            aria-label={pill.ariaLabel}
+            aria-pressed={heatFilter === pill.key}
+            className={`rounded-full border px-2.5 py-1 text-xs whitespace-nowrap transition-all duration-200 ${
+              heatFilter === pill.key
+                ? "font-medium"
+                : "hover:text-[var(--text-primary)]"
+            }`}
+            style={heatFilter === pill.key
+              ? { backgroundColor: "var(--signal)", color: "var(--bg)", borderColor: "var(--signal)" }
+              : { borderColor: "var(--border)", color: "var(--text-secondary)", backgroundColor: "transparent" }
+            }
+          >
+            {pill.label}
+          </button>
+        ))}
       </div>
 
       {/* Today's summary */}
@@ -377,11 +544,11 @@ function RadarContent() {
           const d = s.created_at.endsWith("Z") || s.created_at.includes("+") ? s.created_at : s.created_at + "Z";
           return new Date(d).toLocaleDateString("zh-TW") === today;
         }).length;
-        const hotCount = filtered.length;
+        const hotCount = signals.filter(s => s.heat_score >= 3).length;
         if (todayCount === 0 && hotCount === 0) return null;
         return (
-          <div className="flex items-center gap-3 mb-3 text-sm text-gray-400">
-            {todayCount > 0 && <span>{t("radar_today_new")} <span className="text-gray-700 font-medium">{todayCount}</span> {t("radar_today_unit")}</span>}
+          <div className="flex items-center gap-3 mb-3 text-sm" style={{ color: "var(--text-muted)" }}>
+            {todayCount > 0 && <span>{t("radar_today_new")} <span className="font-medium" style={{ color: "var(--text-primary)" }}>{todayCount}</span> {t("radar_today_unit")}</span>}
             {hotCount > 0 && (
               <button
                 onClick={() => {
@@ -390,7 +557,7 @@ function RadarContent() {
                 }}
                 className="text-orange-500 hover:text-orange-600 transition-colors"
               >
-                🔥 <span className="font-medium">{hotCount}</span> {t("radar_worth")}
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style={{color:"var(--signal-amber)"}}><path d="M12 2c0 0-6 6.67-6 12a6 6 0 0012 0c0-5.33-6-12-6-12zm0 16a4 4 0 01-4-4c0-2.67 2-5.67 4-8 2 2.33 4 5.33 4 8a4 4 0 01-4 4z"/></svg> <span className="font-medium">{hotCount}</span> {t("radar_worth")}
               </button>
             )}
           </div>
@@ -398,138 +565,166 @@ function RadarContent() {
       })()}
 
       <ScrollArea className="flex-1">
-        <div className="space-y-0 pr-4">
-          {filtered.map((signal) => (
-            <div
-              key={signal.id}
-              className={`border-b border-gray-100 p-4 transition-all duration-500 hover:bg-gray-50 ${
-                newIds.has(signal.id)
-                  ? "ring-2 ring-blue-200 animate-in fade-in slide-in-from-top-2 bg-blue-50/30"
-                  : ""
-              } ${bookmarks.has(signal.id) ? "border-l-2 border-l-black" : ""}`}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <span className="text-lg">{heatEmoji(signal.heat_score)}</span>
-                    {(() => {
-                      const { cls, label } = sourceBadgeStyle(signal.source)
-                      return (
-                        <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium shrink-0 ${cls}`}>
-                          {label}
-                        </span>
-                      )
-                    })()}
-                    <a
-                      href={signal.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-900 font-medium hover:text-blue-500 truncate"
-                    >
-                      {lang === "zh" && translations[signal.id]
-                        ? translations[signal.id].title
-                        : signal.title}
-                    </a>
-                  </div>
-                  {/* Hide description for KOL sources to avoid duplication */}
-                  {signal.source !== "x_kol" && signal.source !== "alpha_rising" && (
-                    <p className="text-gray-500 text-sm line-clamp-2 mt-1.5">
-                      {lang === "zh" && translations[signal.id]
-                        ? translations[signal.id].description
-                        : signal.description}
-                    </p>
-                  )}
-                </div>
-                <div className="flex flex-col items-end gap-1.5 shrink-0">
-                  <div className="flex items-center gap-1">
-                    <Badge className={`${heatScoreBg(signal.heat_score)} text-xs`}>
-                      <span
-                        title={lang === "zh" ? `熱度 ${signal.heat_score.toFixed(1)} / 5.0（基於傳播速度 + 關鍵詞密度，≥3 值得關注）` : `Heat ${signal.heat_score.toFixed(1)} / 5.0 (based on spread velocity + keyword density, ≥3 worth watching)`}
-                        className="cursor-help"
-                      >
-                        {heatLabel(signal.heat_score, lang)}
-                      </span>
-                    </Badge>
-                    {signal.url && (
+        {/* divide-y for semantic row separation */}
+        <div className="divide-y divide-gray-100 pr-4">
+          {filtered.map((signal) => {
+            const isBookmarked = bookmarks.has(signal.id);
+            const highlightCls = heatHighlightClass(signal.heat_score, isBookmarked);
+            const lowOpacity = signal.heat_score < 3 ? "opacity-70" : "";
+
+            return (
+              <div
+                key={signal.id}
+                className={`group py-3 px-4 transition-all duration-200 hover:bg-[var(--bg-panel)] cursor-default rounded-sm mx-1 ${highlightCls} ${lowOpacity} ${
+                  newIds.has(signal.id)
+                    ? "ring-2 ring-blue-200 animate-in fade-in slide-in-from-top-2 bg-blue-50/30"
+                    : ""
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  {/* Left: source badge + title + description */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      {/* Source badge: text-xs, slightly larger */}
+                      {(() => {
+                        const { cls, label } = sourceBadgeStyle(signal.source);
+                        return (
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium shrink-0 ${cls}`}>
+                            {label}
+                          </span>
+                        );
+                      })()}
                       <a
                         href={signal.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        onClick={e => e.stopPropagation()}
-                        className="text-gray-300 hover:text-gray-600 text-xs ml-1 shrink-0"
-                        title={t("radar_view_original")}
-                      >↗</a>
+                        className="font-medium hover:text-blue-500 truncate transition-colors text-sm" style={{ color: "var(--text-primary)" }}
+                      >
+                        {lang === "zh" && translations[signal.id]
+                          ? translations[signal.id].title
+                          : signal.title}
+                      </a>
+                    </div>
+                    {/* Description: hide for KOL/alpha_rising; truncate to 100 chars for others */}
+                    {signal.source !== "kol_tweet" && signal.source !== "x_kol" && signal.source !== "alpha_rising" && (
+                      <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
+                        {(() => {
+                          const desc = (lang === "zh" && translations[signal.id]
+                            ? translations[signal.id].description
+                            : signal.description) || "";
+                          return desc.length > 100 ? desc.slice(0, 100) + "..." : desc;
+                        })()}
+                      </p>
                     )}
-                    {/* Copy button */}
-                    <button
-                      type="button"
-                      onClick={async (e) => {
-                        e.stopPropagation();
-                        const text = `${signal.title}\n${signal.url}`;
-                        await navigator.clipboard.writeText(text);
-                        setCopiedId(signal.id);
-                        setTimeout(() => setCopiedId((prev) => prev === signal.id ? null : prev), 1500);
-                      }}
-                      className="text-gray-300 hover:text-gray-600 text-xs ml-1 shrink-0"
-                      title={t("radar_copy")}
-                      aria-label={t("radar_copy")}
-                    >
-                      {copiedId === signal.id ? "✓" : "📋"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={async (e) => {
-                        e.stopPropagation()
-                        const isBookmarked = bookmarks.has(signal.id)
-                        // Optimistically update UI
-                        if (isBookmarked) {
-                          setBookmarks(prev => { const s = new Set(prev); s.delete(signal.id); return s })
-                        } else {
-                          setBookmarks(prev => new Set(prev).add(signal.id))
-                        }
-                        try {
-                          const method = isBookmarked ? "DELETE" : "POST"
-                          const res = await fetch(`/api/signals/${signal.id}/bookmark`, { method })
-                          if (!res.ok) throw new Error("bookmark failed")
-                        } catch (err) {
-                          console.error("radar/toggleBookmark:", err);
-                          if (isBookmarked) {
-                            setBookmarks(prev => new Set(prev).add(signal.id))
-                          } else {
-                            setBookmarks(prev => { const s = new Set(prev); s.delete(signal.id); return s })
-                          }
-                        }
-                      }}
-                      className={`text-base transition-colors ml-1 shrink-0 ${bookmarks.has(signal.id) ? "text-black" : "text-gray-300 hover:text-gray-500"}`}
-                      title={bookmarks.has(signal.id) ? t("radar_unbookmark") : t("radar_bookmark")}
-                      aria-label={bookmarks.has(signal.id) ? t("radar_unbookmark") : t("radar_bookmark")}
-                      aria-pressed={bookmarks.has(signal.id)}
-                    >
-                      🔖
-                    </button>
                   </div>
-                  <span className="text-xs text-gray-400">
-                    {relativeTime(signal.created_at, lang)}
-                  </span>
+
+                  {/* Right: actions (hover) + timestamp */}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {/* Action buttons: visible on hover (or always for bookmarked) */}
+                    <div className="flex items-center gap-1">
+                      {/* Heat score badge */}
+                      <span
+                        className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity ${heatScoreBg(signal.heat_score)}`}
+                        title={lang === "zh" ? `熱度 ${signal.heat_score.toFixed(1)}（≥5 熱門 / ≥3 值得關注）` : `Heat ${signal.heat_score.toFixed(1)} (≥5 hot / ≥3 notable)`}
+                      >
+                        <HeatIcon score={signal.heat_score} /> {signal.heat_score.toFixed(1)}
+                      </span>
+                      {/* Copy button */}
+                      <button
+                        type="button"
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          const text = `${signal.title}\n${signal.url}`;
+                          await navigator.clipboard.writeText(text);
+                          setCopiedId(signal.id);
+                          setTimeout(() => setCopiedId((prev) => prev === signal.id ? null : prev), 1500);
+                        }}
+                        className={`text-sm transition-all hover:scale-110 active:scale-95 ${
+                          copiedId === signal.id
+                            ? "opacity-100 text-green-500"
+                            : "text-[var(--border)] hover:text-[var(--text-secondary)] opacity-0 group-hover:opacity-100"
+                        }`}
+                        title={t("radar_copy")}
+                        aria-label={t("radar_copy")}
+                      >
+                        <IconCopy copied={copiedId === signal.id} />
+                      </button>
+                      {/* Bookmark button: always visible if bookmarked */}
+                      <button
+                        type="button"
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          const wasBookmarked = bookmarks.has(signal.id);
+                          // Optimistically update UI
+                          if (wasBookmarked) {
+                            setBookmarks(prev => { const s = new Set(prev); s.delete(signal.id); return s; });
+                          } else {
+                            setBookmarks(prev => new Set(prev).add(signal.id));
+                          }
+                          try {
+                            const method = wasBookmarked ? "DELETE" : "POST";
+                            const res = await fetch(`/api/signals/${signal.id}/bookmark`, { method });
+                            if (!res.ok) throw new Error("bookmark failed");
+                          } catch (err) {
+                            console.error("radar/toggleBookmark:", err);
+                            // Revert on error
+                            if (wasBookmarked) {
+                              setBookmarks(prev => new Set(prev).add(signal.id));
+                            } else {
+                              setBookmarks(prev => { const s = new Set(prev); s.delete(signal.id); return s; });
+                            }
+                          }
+                        }}
+                        className={`text-sm transition-all hover:scale-110 active:scale-95 ${
+                          isBookmarked
+                            ? "opacity-100 text-amber-500"
+                            : "text-[var(--border)] hover:text-[var(--text-secondary)] opacity-0 group-hover:opacity-100"
+                        }`}
+                        title={isBookmarked ? t("radar_unbookmark") : t("radar_bookmark")}
+                        aria-label={isBookmarked ? t("radar_unbookmark") : t("radar_bookmark")}
+                        aria-pressed={isBookmarked}
+                      >
+                        <IconBookmark bookmarked={isBookmarked} />
+                      </button>
+                      {/* External link */}
+                      {signal.url && (
+                        <a
+                          href={signal.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={e => e.stopPropagation()}
+                          className="text-[var(--border)] hover:text-[var(--text-secondary)] text-xs transition-all opacity-0 group-hover:opacity-100 hover:scale-110"
+                          title={t("radar_view_original")}
+                        ><IconExternalLink /></a>
+                      )}
+                    </div>
+                    {/* Timestamp: always visible, right-aligned */}
+                    <span className="text-[11px] tabular-nums" style={{ color: "var(--text-muted)" }}>
+                      {relativeTime(signal.created_at, lang)}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           {filtered.length === 0 && signals.length > 0 && (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-              <p className="text-lg font-medium text-gray-500">{t("radar_empty_cat")}</p>
-              <p className="text-sm mt-1">{t("radar_empty_cat_desc")}</p>
+            <div className="flex flex-col items-center justify-center py-20 animate-page-enter">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: "var(--bg-panel)" }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--text-secondary)" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </div>
+              <p className="text-lg font-medium" style={{ color: "var(--text-secondary)" }}>{t("radar_empty_cat")}</p>
+              <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>{t("radar_empty_cat_desc")}</p>
             </div>
           )}
           {filtered.length === 0 && signals.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-              <FlywheelLogo size={48} className="text-gray-300 animate-[spin_8s_linear_infinite] mb-4" />
-              <p className="text-lg font-medium text-gray-500">{t("radar_empty_all")}</p>
-              <p className="text-sm mt-1">{t("radar_empty_all_desc")}</p>
+            <div className="flex flex-col items-center justify-center py-20 animate-page-enter">
+              <FlywheelLogo size={48} className="animate-[spin_8s_linear_infinite] mb-4" style={{ color: "var(--text-muted)" }} />
+              <p className="text-lg font-medium" style={{ color: "var(--text-secondary)" }}>{t("radar_empty_all")}</p>
+              <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>{t("radar_empty_all_desc")}</p>
               <button
                 type="button"
                 onClick={() => { fetch("/api/scan", { method: "POST" }).catch((err) => console.error("radar/scanTrigger:", err)); }}
-                className="text-xs text-gray-400 hover:text-gray-600 underline mt-4"
+                className="text-xs underline mt-4 transition-colors hover:text-[var(--text-secondary)]" style={{ color: "var(--text-muted)" }}
                 aria-label={t("radar_manual_scan")}
               >
                 {t("radar_manual_scan")}
@@ -544,7 +739,7 @@ function RadarContent() {
 
 export default function RadarPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center h-full bg-white"><span className="text-gray-400">...</span></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center h-full" style={{ backgroundColor: "var(--bg)" }}><span style={{ color: "var(--text-muted)" }}>...</span></div>}>
       <RadarContent />
     </Suspense>
   );

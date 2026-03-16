@@ -3,6 +3,7 @@
 import { Suspense } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FlywheelLogo } from "@/components/flywheel-logo";
+import { OpportunityIcon } from "@/components/icons";
 import { ShareCardModal } from "@/components/share-card-modal";
 import { useOpportunities } from "@/components/opportunities/use-opportunities";
 import { OpportunityFilters } from "@/components/opportunities/opportunity-filters";
@@ -12,18 +13,18 @@ function OpportunitiesContent() {
   const h = useOpportunities();
 
   if (h.loading) return (
-    <div className="flex flex-col h-full bg-white p-6">
-      <div className="h-7 bg-gray-100 rounded w-40 mb-4 animate-pulse" />
+    <div className="flex flex-col h-full p-6 animate-page-enter" style={{ backgroundColor: "var(--bg)" }}>
+      <div className="h-7 skeleton-shimmer rounded w-40 mb-4" />
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-white border border-gray-100 rounded-2xl p-5 animate-pulse">
-            <div className="h-4 bg-gray-100 rounded w-2/3 mb-3" />
-            <div className="h-3 bg-gray-100 rounded w-full mb-2" />
-            <div className="h-3 bg-gray-100 rounded w-4/5 mb-4" />
+          <div key={i} className="rounded-2xl p-5 border" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
+            <div className="h-4 skeleton-shimmer rounded w-2/3 mb-3" />
+            <div className="h-3 skeleton-shimmer rounded w-full mb-2" />
+            <div className="h-3 skeleton-shimmer rounded w-4/5 mb-4" />
             <div className="flex gap-2">
-              <div className="h-8 bg-gray-100 rounded w-20" />
-              <div className="h-8 bg-gray-100 rounded w-20" />
-              <div className="h-8 bg-gray-100 rounded w-24" />
+              <div className="h-8 skeleton-shimmer rounded w-20" />
+              <div className="h-8 skeleton-shimmer rounded w-20" />
+              <div className="h-8 skeleton-shimmer rounded w-24" />
             </div>
           </div>
         ))}
@@ -44,7 +45,6 @@ function OpportunitiesContent() {
       const today = new Date().toLocaleDateString("zh-TW");
       if (new Date(opp.created_at + " UTC").toLocaleDateString("zh-TW") !== today) return false;
     }
-    // Freshness filter
     if (h.freshnessFilter !== "all") {
       const hoursAgo = (Date.now() - new Date(opp.created_at + " UTC").getTime()) / (1000 * 60 * 60);
       if (h.freshnessFilter === "fresh" && hoursAgo > 24) return false;
@@ -61,17 +61,22 @@ function OpportunitiesContent() {
   });
 
   return (
-    <div className="flex flex-col h-full bg-white p-6">
+    <div className="flex flex-col h-full p-6 animate-page-enter" style={{ backgroundColor: "var(--bg)" }}>
       {h.showWelcome && (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-4 flex items-start justify-between">
+        <div className="rounded-2xl p-4 mb-4 flex items-start justify-between animate-fade-in"
+          style={{ backgroundColor: "rgba(255,184,0,0.08)", border: "1px solid rgba(255,184,0,0.3)" }}>
           <div>
-            <p className="text-amber-700 font-medium">{h.t("opp_welcome_title")}</p>
-            <p className="text-gray-500 text-sm mt-1">
+            <p className="font-medium" style={{ color: "var(--signal-amber)" }}>{h.t("opp_welcome_title")}</p>
+            <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>
               {h.t("opp_welcome_desc")}<br />
-              {h.lang === "zh" ? "記得去 " : "Go to "}<a href="/settings" className="text-amber-600 underline">{h.lang === "zh" ? "設置頁面" : "Settings"}</a>{h.lang === "zh" ? " 綁定 Telegram，才能收到每日推送。" : " to bind Telegram for daily push."}
+              {h.lang === "zh" ? "記得去 " : "Go to "}
+              <a href="/settings" style={{ color: "var(--signal-amber)" }} className="underline">
+                {h.lang === "zh" ? "設置頁面" : "Settings"}
+              </a>
+              {h.lang === "zh" ? " 綁定 Telegram，才能收到每日推送。" : " to bind Telegram for daily push."}
             </p>
           </div>
-          <button onClick={() => h.setShowWelcome(false)} className="text-gray-300 hover:text-gray-500 ml-4">✕</button>
+          <button onClick={() => h.setShowWelcome(false)} className="ml-4 transition-colors" style={{ color: "var(--text-muted)" }}>✕</button>
         </div>
       )}
 
@@ -84,25 +89,29 @@ function OpportunitiesContent() {
         setFreshnessFilter={h.setFreshnessFilter}
         count={h.opportunities.length}
         latestDate={h.opportunities[0]?.created_at}
+        lang={h.lang}
         t={h.t}
       />
 
       {h.undoState && (
-        <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white border border-gray-200 shadow-lg text-gray-700 px-4 py-3 rounded-xl flex items-center gap-3 text-sm whitespace-nowrap">
-          <span>{h.t("opp_undo_marked")} {ACTION_LABELS[h.undoState.action] ?? h.undoState.action} · <button onClick={h.handleUndo} className="text-blue-500 font-medium hover:text-blue-600">{h.t("opp_undo")}</button></span>
+        <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-50 shadow-lg px-4 py-3 rounded-xl flex items-center gap-3 text-sm whitespace-nowrap animate-slide-in-right"
+          style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border)", color: "var(--text-primary)" }}>
+          <span>{h.t("opp_undo_marked")} {ACTION_LABELS[h.undoState.action] ?? h.undoState.action} · <button onClick={h.handleUndo} className="text-blue-500 font-medium hover:text-blue-400 transition-colors">{h.t("opp_undo")}</button></span>
         </div>
       )}
 
       <ScrollArea className="flex-1 h-[calc(100vh-8rem)] md:h-auto">
         <div className="space-y-5 pr-4">
-          {filtered.map((opp) => (
+          {filtered.map((opp, idx) => (
             <OpportunityCard
               key={opp.id}
               opp={opp}
               lang={h.lang}
               isWelcome={h.isWelcome}
               isTop3={h.top3Ids.has(opp.id)}
+              defaultExpanded={idx === 0}
               actionLoading={h.actionLoading}
+              actionSuccess={h.actionSuccess}
               adv={h.advisorMap[opp.id]}
               todoSuccess={h.todoSuccess[opp.id] ?? false}
               signalExpanded={h.signalExpanded[opp.id] ?? false}
@@ -116,11 +125,33 @@ function OpportunitiesContent() {
               t={h.t}
             />
           ))}
+          {filtered.length === 0 && h.opportunities.length > 0 && (
+            <div className="flex flex-col items-center justify-center py-20 animate-page-enter">
+              <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4"
+                style={{ backgroundColor: "var(--bg-panel)", border: "1px solid var(--border)" }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" style={{ color: "var(--text-secondary)" }}>
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+              </div>
+              <p className="text-lg font-semibold mb-1" style={{ color: "var(--text-secondary)" }}>{h.t("opp_empty_title")}</p>
+              <p className="text-sm text-center max-w-xs" style={{ color: "var(--text-muted)" }}>{h.t("opp_empty_desc")}</p>
+            </div>
+          )}
           {h.opportunities.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-              <FlywheelLogo size={48} className="text-gray-300 animate-[spin_8s_linear_infinite] mb-4" />
-              <p className="text-lg font-medium text-gray-500">{h.t("opp_empty_title")}</p>
-              <p className="text-sm mt-1">{h.t("opp_empty_desc")}</p>
+            <div className="flex flex-col items-center justify-center py-20 animate-page-enter">
+              <div className="relative w-24 h-24 mb-6">
+                <div className="w-24 h-24 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: "var(--bg-panel)", border: "1px solid var(--border)" }}>
+                  <FlywheelLogo size={40} className="animate-[spin_8s_linear_infinite]" style={{ color: "var(--signal)" }} />
+                </div>
+                <span className="absolute -top-1 -right-1">
+                  <OpportunityIcon size={16} style={{ color: "var(--signal-amber)" }} />
+                </span>
+              </div>
+              <p className="text-lg font-semibold mb-1" style={{ color: "var(--text-secondary)" }}>{h.t("opp_empty_title")}</p>
+              <p className="text-sm text-center max-w-xs" style={{ color: "var(--text-muted)" }}>{h.t("opp_empty_desc")}</p>
+              <p className="text-xs mt-3" style={{ color: "var(--text-muted)" }}>雷達正在掃描市場信號，請稍後回來查看</p>
             </div>
           )}
         </div>
@@ -145,7 +176,7 @@ function OpportunitiesContent() {
 
 export default function OpportunitiesPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center h-full bg-white"><span className="text-gray-400">...</span></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center h-full" style={{ backgroundColor: "var(--bg)" }}><span style={{ color: "var(--text-muted)" }}>...</span></div>}>
       <OpportunitiesContent />
     </Suspense>
   );

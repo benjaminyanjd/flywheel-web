@@ -131,90 +131,109 @@ export default function ControlPage() {
   };
 
   const STATUS_COLORS: Record<string, string> = {
-    todo: "bg-blue-50 text-blue-600 border border-blue-200",
-    bias: "bg-orange-50 text-orange-600 border border-orange-200",
-    action: "bg-green-50 text-green-600 border border-green-200",
-    missed: "bg-gray-100 text-gray-500 border border-gray-200",
-    done: "bg-emerald-50 text-emerald-600 border border-emerald-200",
-    cancel: "bg-red-50 text-red-500 border border-red-200",
-    cancelled: "bg-red-50 text-red-500 border border-red-200",
+    todo: "bg-blue-500/10 text-blue-500 border border-blue-500/30",
+    bias: "bg-orange-500/10 text-orange-500 border border-orange-500/30",
+    action: "bg-green-500/10 text-green-500 border border-green-500/30",
+    missed: "bg-gray-500/10 text-gray-400 border border-gray-500/30",
+    done: "bg-emerald-500/10 text-emerald-500 border border-emerald-500/30",
+    cancel: "bg-red-500/10 text-red-500 border border-red-500/30",
+    cancelled: "bg-red-500/10 text-red-500 border border-red-500/30",
+  };
+
+  const SOURCE_LABELS: Record<string, string> = {
+    blockbeats_telegram: "BlockBeats",
+    kol_tweet: "KOL 推文",
+    x_kol: "KOL 推文",
+    hl_whale: "HL 鯨魚",
+    reddit: "Reddit",
+    hacker_news: "Hacker News",
+    rss: "RSS 訂閱",
+    github_trending: "GitHub",
+    coingecko_trending: "CoinGecko",
+    aicoin_newsflash: "AiCoin 快訊",
+    messari: "Messari",
+    leakmealpha: "LeakMeAlpha",
+    bwe_telegram: "BWE Telegram",
+    cointelegraph: "CoinTelegraph",
+    decrypt: "Decrypt",
+    theblock: "The Block",
   };
 
   return (
-    <div className="flex flex-col h-full bg-white p-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">{t("ctrl_title")}</h1>
+    <div className="flex flex-col h-full p-6" style={{ backgroundColor: "var(--bg)" }}>
+      <h1 className="text-2xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>{t("ctrl_title")}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Manual Scan */}
-        <Card className="bg-white border border-gray-100 rounded-2xl p-5">
-          <h3 className="text-gray-900 font-semibold mb-3">{t("ctrl_scan_title")}</h3>
-          <p className="text-sm text-gray-500 mb-4">
+        <Card className="rounded-2xl p-5" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-subtle)" }}>
+          <h3 className="font-semibold mb-3" style={{ color: "var(--text-primary)" }}>{t("ctrl_scan_title")}</h3>
+          <p className="text-sm mb-4" style={{ color: "var(--text-secondary)" }}>
             {t("ctrl_scan_desc")}
           </p>
           <Button
-            className="bg-black hover:bg-gray-800 text-white w-full rounded-xl"
+            className="w-full rounded-xl" style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
             onClick={handleScan}
             disabled={scanLoading || scanCooldown > 0}
           >
             {scanLoading ? t("ctrl_scan_running") : scanCooldown > 0 ? `${t("ctrl_scan_cooldown")} ${formatCooldown(scanCooldown)}` : t("ctrl_scan_btn")}
           </Button>
           {scanResult && (
-            <pre className="mt-3 text-xs text-gray-500 bg-gray-50 rounded-xl p-3 overflow-auto max-h-40">
+            <pre className="mt-3 text-xs rounded-xl p-3 overflow-auto max-h-40" style={{ color: "var(--text-secondary)", backgroundColor: "var(--bg-panel)" }}>
               {scanResult}
             </pre>
           )}
         </Card>
 
         {/* Manual Opportunity */}
-        <Card className="bg-white border border-gray-100 rounded-2xl p-5">
-          <h3 className="text-gray-900 font-semibold mb-3">{t("ctrl_opp_title")}</h3>
-          <p className="text-sm text-gray-500 mb-4">
+        <Card className="rounded-2xl p-5" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-subtle)" }}>
+          <h3 className="font-semibold mb-3" style={{ color: "var(--text-primary)" }}>{t("ctrl_opp_title")}</h3>
+          <p className="text-sm mb-4" style={{ color: "var(--text-secondary)" }}>
             {t("ctrl_opp_desc")}
           </p>
           <Button
-            className="bg-black hover:bg-gray-800 text-white w-full rounded-xl"
+            className="w-full rounded-xl" style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
             onClick={handleOpportunity}
             disabled={oppLoading || oppCooldown > 0}
           >
             {oppLoading ? t("ctrl_opp_running") : oppCooldown > 0 ? `${t("ctrl_opp_cooldown")} ${formatCooldown(oppCooldown)}` : t("ctrl_opp_btn")}
           </Button>
           {oppResult && (
-            <pre className="mt-3 text-xs text-gray-500 bg-gray-50 rounded-xl p-3 overflow-auto max-h-40">
+            <pre className="mt-3 text-xs rounded-xl p-3 overflow-auto max-h-40" style={{ color: "var(--text-secondary)", backgroundColor: "var(--bg-panel)" }}>
               {oppResult}
             </pre>
           )}
         </Card>
 
         {/* Signal Stats */}
-        <Card className="bg-white border border-gray-100 rounded-2xl p-5">
-          <h3 className="text-gray-900 font-semibold mb-3">{t("ctrl_stats_title")}</h3>
+        <Card className="rounded-2xl p-5" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-subtle)" }}>
+          <h3 className="font-semibold mb-3" style={{ color: "var(--text-primary)" }}>{t("ctrl_stats_title")}</h3>
           {statsLoading ? (
-            <p className="text-sm text-gray-400">{t("ctrl_loading")}</p>
+            <p className="text-sm" style={{ color: "var(--text-muted)" }}>{t("ctrl_loading")}</p>
           ) : stats ? (
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">{t("ctrl_today")}</span>
-                <span className="text-2xl font-bold text-gray-900">
+                <span className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("ctrl_today")}</span>
+                <span className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
                   {stats.todaySignals}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">{t("ctrl_total")}</span>
-                <span className="text-2xl font-bold text-gray-900">
+                <span className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("ctrl_total")}</span>
+                <span className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
                   {stats.totalSignals}
                 </span>
               </div>
-              <Separator className="bg-gray-100" />
-              <h4 className="text-sm font-medium text-gray-700">{t("ctrl_by_source")}</h4>
+              <Separator style={{ backgroundColor: "var(--border-subtle)" }} />
+              <h4 className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>{t("ctrl_by_source")}</h4>
               <div className="grid grid-cols-2 gap-2">
                 {stats.signalsBySource &&
                   Object.entries(stats.signalsBySource).map(([source, count]) => (
                     <div
                       key={source}
-                      className="flex justify-between items-center bg-gray-50 rounded-lg px-3 py-1.5"
+                      className="flex justify-between items-center rounded-lg px-3 py-1.5" style={{ backgroundColor: "var(--bg-panel)" }}
                     >
-                      <span className="text-xs text-gray-500">{source}</span>
-                      <span className="text-sm font-medium text-gray-700">
+                      <span className="text-xs" style={{ color: "var(--text-secondary)" }}>{SOURCE_LABELS[source] || source}</span>
+                      <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
                         {count}
                       </span>
                     </div>
@@ -222,15 +241,15 @@ export default function ControlPage() {
               </div>
             </div>
           ) : (
-            <p className="text-sm text-gray-400">{t("ctrl_stats_error")}</p>
+            <p className="text-sm" style={{ color: "var(--text-muted)" }}>{t("ctrl_stats_error")}</p>
           )}
         </Card>
 
         {/* Opportunity Status */}
-        <Card className="bg-white border border-gray-100 rounded-2xl p-5">
-          <h3 className="text-gray-900 font-semibold mb-3">{t("ctrl_opp_status")}</h3>
+        <Card className="rounded-2xl p-5" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-subtle)" }}>
+          <h3 className="font-semibold mb-3" style={{ color: "var(--text-primary)" }}>{t("ctrl_opp_status")}<span className="text-xs font-normal ml-2" style={{ color: "var(--text-muted)" }}>（{lang === "zh" ? "累計" : "Total"}）</span></h3>
           {statsLoading ? (
-            <p className="text-sm text-gray-400">{t("ctrl_loading")}</p>
+            <p className="text-sm" style={{ color: "var(--text-muted)" }}>{t("ctrl_loading")}</p>
           ) : stats?.opportunityStatusCounts ? (
             <div className="space-y-2">
               {Object.entries(stats.opportunityStatusCounts).map(
@@ -240,20 +259,20 @@ export default function ControlPage() {
                     className="flex justify-between items-center"
                   >
                     <Badge
-                      className={`${STATUS_COLORS[status] || "bg-gray-100 text-gray-500"} text-xs`}
+                      className={`${STATUS_COLORS[status] || "bg-gray-500/10 text-gray-400 border border-gray-500/30"} text-xs`}
                     >
                       {STATUS_LABELS[status] || status}
                     </Badge>
-                    <span className="text-lg font-semibold text-gray-700">
+                    <span className="text-lg font-semibold" style={{ color: "var(--text-secondary)" }}>
                       {count}
                     </span>
                   </div>
                 )
               )}
-              <Separator className="bg-gray-100" />
+              <Separator style={{ backgroundColor: "var(--border-subtle)" }} />
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">{t("ctrl_subtotal")}</span>
-                <span className="text-lg font-bold text-gray-900">
+                <span className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("ctrl_subtotal")}</span>
+                <span className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>
                   {Object.values(stats.opportunityStatusCounts).reduce(
                     (a, b) => a + b,
                     0
@@ -262,37 +281,10 @@ export default function ControlPage() {
               </div>
             </div>
           ) : (
-            <p className="text-sm text-gray-400">{t("ctrl_status_error")}</p>
+            <p className="text-sm" style={{ color: "var(--text-muted)" }}>{t("ctrl_status_error")}</p>
           )}
         </Card>
       </div>
-
-      {/* Language Setting — bottom */}
-      <Card className="bg-white border border-gray-100 rounded-2xl p-5 mt-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-gray-900 font-semibold">{t("ctrl_lang_title")}</h3>
-            <p className="text-xs text-gray-400 mt-0.5">
-              {t("ctrl_lang_current")}<span className="text-gray-700 font-medium">{lang === "zh" ? t("ctrl_lang_desc_zh") : t("ctrl_lang_desc_en")}</span>
-            </p>
-          </div>
-          <div className="flex gap-2">
-            {(["zh", "en"] as Lang[]).map((l) => (
-              <button
-                key={l}
-                onClick={() => setLang(l)}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold border transition-all ${
-                  lang === l
-                    ? "bg-black border-black text-white"
-                    : "bg-white border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-400"
-                }`}
-              >
-                {l === "zh" ? "🇹🇼 繁體中文" : "🇺🇸 English"}
-              </button>
-            ))}
-          </div>
-        </div>
-      </Card>
     </div>
   );
 }

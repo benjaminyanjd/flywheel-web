@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Serif_TC } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { ThemeProvider } from "next-themes";
 import { runMigrations } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import "./globals.css";
@@ -24,33 +25,33 @@ const notoSerifTC = Noto_Serif_TC({
 
 export const metadata: Metadata = {
   title: {
-    default: "Flywheel — 你的 AI 市場情報助理",
-    template: "%s | Flywheel",
+    default: "嗅鐘 — 你的 AI 市場情報助理",
+    template: "%s | 嗅鐘",
   },
-  description: "每天早上 8 點，把全球信號提煉成你今天可以行動的 3–5 件事，直達 Telegram。不是新聞摘要，是帶「為什麼是現在」和「第一步怎麼做」的行動清單。",
+  description: "每天從 280+ 信號源掃描 500+ 條信號，AI 過濾匹配後，每日早 8 點推送 3-5 個定向可執行機會到你的 Telegram。",
   keywords: ["市場情報", "AI 助理", "機會雷達", "信號掃描", "Telegram 推送", "創業", "投資機會"],
-  authors: [{ name: "Flywheel" }],
+  authors: [{ name: "嗅鐘" }],
   metadataBase: new URL("https://flywheelsea.club"),
   openGraph: {
     type: "website",
     locale: "zh_TW",
     url: "https://flywheelsea.club",
-    siteName: "Flywheel",
-    title: "Flywheel — 你的 AI 市場情報助理",
-    description: "每天早 8 點，把全球信號提煉成可執行行動清單，直達 Telegram。",
+    siteName: "嗅鐘",
+    title: "嗅鐘 — 你的 AI 市場情報助理",
+    description: "每天從 280+ 信號源掃描 500+ 條信號，AI 過濾匹配後，每日早 8 點推送 3-5 個定向可執行機會到你的 Telegram。",
     images: [
       {
         url: "/og-image",
         width: 1200,
         height: 630,
-        alt: "Flywheel — AI 市場情報助理",
+        alt: "嗅鐘 — AI 市場情報助理",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Flywheel — 你的 AI 市場情報助理",
-    description: "每天早 8 點，把全球信號提煉成可執行行動清單，直達 Telegram。",
+    title: "嗅鐘 — 你的 AI 市場情報助理",
+    description: "每天從 280+ 信號源掃描 500+ 條信號，AI 過濾匹配後，每日早 8 點推送 3-5 個定向可執行機會到你的 Telegram。",
     images: ["/og-image"],
   },
   robots: {
@@ -76,11 +77,14 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="zh-TW" className={`${notoSerifTC.variable}`}>
+      <html lang="zh-TW" className={`${notoSerifTC.variable}`} suppressHydrationWarning>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900 min-h-screen`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
+          style={{ backgroundColor: "var(--bg)", color: "var(--text-primary)" }}
         >
-          {children}
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+            {children}
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

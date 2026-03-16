@@ -1,19 +1,37 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { getLangStored, type Lang } from "@/lib/lang";
 import { useT } from "@/lib/i18n";
 import { useToast } from "@/components/toast";
+import { IconAITech, IconCrypto, IconOnchain, IconCommunity, IconKOL, IconAlpha } from "@/components/icons";
 
-const CATEGORIES = [
-  { value: "ai_tech", zh: "🤖 AI 科技", en: "🤖 AI Tech" },
-  { value: "crypto_policy", zh: "₿ 加密政策", en: "₿ Crypto Policy" },
-  { value: "new_tools", zh: "🔧 新工具", en: "🔧 New Tools" },
-  { value: "overseas_trends", zh: "🌍 海外趨勢", en: "🌍 Overseas Trends" },
-  { value: "x_kol", zh: "⭐ KOL 動態", en: "⭐ KOL" },
+function CheckboxIcon({ checked }: { checked: boolean }) {
+  if (checked) {
+    return (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+        <rect x="0.5" y="0.5" width="15" height="15" rx="3.5" fill="currentColor" fillOpacity="0.15" stroke="currentColor"/>
+        <path d="M4 8L6.5 10.5L12 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    );
+  }
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+      <rect x="0.5" y="0.5" width="15" height="15" rx="3.5" stroke="currentColor" strokeOpacity="0.4"/>
+    </svg>
+  );
+}
+
+const CATEGORIES: { value: string; zh: string; en: string; icon: React.ReactNode }[] = [
+  { value: "kol", zh: "KOL 動態", en: "KOL", icon: <IconKOL /> },
+  { value: "crypto_news", zh: "加密新聞", en: "Crypto News", icon: <IconCrypto /> },
+  { value: "onchain", zh: "鏈上資金", en: "On-chain", icon: <IconOnchain /> },
+  { value: "ai_tech", zh: "AI 科技", en: "AI & Tech", icon: <IconAITech /> },
+  { value: "community", zh: "社區情報", en: "Community", icon: <IconCommunity /> },
+  { value: "alpha", zh: "Alpha", en: "Alpha", icon: <IconAlpha /> },
 ];
 
 interface UserSettings {
@@ -48,9 +66,20 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
     return () => window.removeEventListener("flywheel-lang-change", handler);
   }, []);
 
+  // Subscription state
+  const [trialInfo, setTrialInfo] = useState<{ daysLeft: number | null; plan: string | null } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/user/trial")
+      .then(r => r.json())
+      .then(d => setTrialInfo(d))
+      .catch(() => {});
+  }, []);
+
   // Telegram state
   const [chatId, setChatId] = useState(initialSettings?.telegram_chat_id || "");
   const [tgStatus, setTgStatus] = useState<"idle" | "saving" | "saved" | "testing" | "sent" | "error">("idle");
+  const [tgVerified, setTgVerified] = useState<"none" | "ok" | "fail">(initialSettings?.telegram_chat_id ? "ok" : "none");
   // Track if user already had Telegram bound (to avoid re-sending welcome digest)
   const [hasExistingTelegram, setHasExistingTelegram] = useState(!!initialSettings?.telegram_chat_id);
 
@@ -59,7 +88,7 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
     try {
       return JSON.parse(initialSettings?.categories || "[]");
     } catch {
-      return ["ai_tech", "crypto_policy", "new_tools", "overseas_trends", "x_kol"];
+      return ["kol", "crypto_news", "onchain", "ai_tech", "community", "alpha"];
     }
   });
   const [catStatus, setCatStatus] = useState<"idle" | "saving" | "saved">("idle");
@@ -86,7 +115,6 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
         body: JSON.stringify({
           telegram_chat_id: chatId || null,
           notify_channel: chatId ? "telegram" : "none",
-          categories,
         }),
       });
       if (res.ok) {
@@ -98,8 +126,19 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
           fetch("/api/user/welcome-digest", { method: "POST" }).catch((err) => console.error("settings/welcomeDigest:", err))
           setHasExistingTelegram(true)
         }
+        // Auto-verify by sending test message
+        if (chatId) {
+          try {
+            const verifyRes = await fetch("/api/notify/telegram", { method: "POST" });
+            const verifyData = await verifyRes.json();
+            setTgVerified(verifyData.success ? "ok" : "fail");
+          } catch {
+            setTgVerified("fail");
+          }
+        }
       } else {
         setTgStatus("error");
+        setTgVerified("fail");
         toast(tr("settings_tg_toast_fail"), "error");
       }
     } catch {
@@ -150,87 +189,140 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
   }
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-8 pb-24 md:pb-8">
+    <div className="min-h-screen p-4 md:p-8 pb-24 md:pb-8 animate-page-enter" style={{ backgroundColor: "var(--bg)" }}>
       <div className="max-w-2xl mx-auto space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
           {tr("settings_title")}
         </h1>
 
+        {/* Subscription Status Card */}
+        {trialInfo && (
+          <Card className="rounded-2xl" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-subtle)" }}>
+            <CardContent className="py-4 px-5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+                      {trialInfo.plan === "pro" ? "✅ 專業版訂閱" : trialInfo.plan === "trial" ? "🔔 試用期" : "⚠️ 訂閱已過期"}
+                    </span>
+                    <span className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>
+                      {trialInfo.plan === "pro"
+                        ? "享有無限次顧問諮詢及所有功能"
+                        : trialInfo.daysLeft !== null && trialInfo.daysLeft > 0
+                          ? `還剩 ${trialInfo.daysLeft} 天試用期`
+                          : "試用期已結束，請升級以繼續使用"}
+                    </span>
+                  </div>
+                </div>
+                {trialInfo.plan !== "pro" && (
+                  <a
+                    href="/expired"
+                    className="text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
+                    style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
+                  >
+                    升級訂閱
+                  </a>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {!hasTelegram && (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 flex items-center justify-between mb-2">
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 flex items-center justify-between mb-2 animate-fade-in">
             <span className="text-amber-700 text-sm">尚未綁定 Telegram，無法收到機會推送</span>
             <a href="#telegram" className="text-amber-600 hover:underline text-sm font-medium shrink-0 ml-4">立即綁定 →</a>
           </div>
         )}
 
         {/* Telegram Push */}
-        <Card id="telegram" className="bg-white border border-gray-100 rounded-2xl">
+        <Card id="telegram" className="rounded-2xl card-hover" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-subtle)" }}>
           <CardHeader>
-            <CardTitle className="text-gray-900 text-lg">
+            <CardTitle className="text-lg" style={{ color: "var(--text-primary)" }}>
               {tr("settings_tg_title")}
             </CardTitle>
-            <p className="text-gray-500 text-sm">
+            <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
               {tr("settings_tg_desc")}
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="bg-gray-50 rounded-xl p-3 text-sm text-gray-500 space-y-1 mb-2">
-              <p className="text-gray-700 font-medium">
+            <div className="rounded-xl p-3 text-sm space-y-1 mb-2" style={{ backgroundColor: "var(--bg-panel)", color: "var(--text-secondary)" }}>
+              <p className="font-medium" style={{ color: "var(--text-primary)" }}>
                 {tr("settings_tg_howto")}
               </p>
-              <p>1. {tr("settings_tg_step1")} <span className="font-mono text-gray-900">@userinfobot</span></p>
+              <p>1. {tr("settings_tg_step1")} <span className="font-mono" style={{ color: "var(--text-primary)" }}>@userinfobot</span></p>
               <p>2. {tr("settings_tg_step2")}</p>
-              <p>3. {tr("settings_tg_step3_pre")} <span className="font-mono text-gray-900">Id:</span> {tr("settings_tg_step3_post")}</p>
+              <p>3. {tr("settings_tg_step3_pre")} <span className="font-mono" style={{ color: "var(--text-primary)" }}>Id:</span> {tr("settings_tg_step3_post")}</p>
             </div>
 
             <Input
               value={chatId}
-              onChange={(e) => setChatId(e.target.value.replace(/\D/g, ""))}
+              onChange={(e) => { setChatId(e.target.value.replace(/\D/g, "")); setTgVerified("none"); }}
               placeholder={tr("settings_tg_placeholder")}
-              className="border border-gray-200 rounded-xl bg-white text-gray-900 placeholder-gray-400 font-mono"
+              className="rounded-xl font-mono input-focus-ring focus:outline-none border" style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" }}
             />
 
             <div className="flex gap-3">
               <Button
                 onClick={saveTelegram}
                 disabled={tgStatus === "saving" || !chatId}
-                className="bg-black hover:bg-gray-800 text-white rounded-xl"
+                className="rounded-xl btn-press" style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
               >
-                {tgStatus === "saving"
-                  ? tr("settings_tg_saving")
-                  : tr("settings_tg_save")}
+                {tgStatus === "saving" ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    {tr("settings_tg_saving")}
+                  </span>
+                ) : tr("settings_tg_save")}
               </Button>
               <Button
                 onClick={testTelegram}
                 disabled={tgStatus === "testing" || !chatId}
                 variant="outline"
-                className="border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-xl"
+                className="rounded-xl btn-press border hover:bg-[var(--bg-panel)]" style={{ borderColor: "var(--border)", color: "var(--text-secondary)" }}
               >
-                {tgStatus === "testing"
-                  ? tr("settings_tg_testing")
-                  : tr("settings_tg_test")}
+                {tgStatus === "testing" ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-3.5 h-3.5 border-2 border-t-[var(--text-primary)] rounded-full animate-spin" style={{ borderColor: "var(--border)" }} />
+                    {tr("settings_tg_testing")}
+                  </span>
+                ) : tr("settings_tg_test")}
               </Button>
             </div>
 
             {tgStatus === "saved" && (
-              <p className="text-green-600 text-sm">{tr("settings_tg_saved")}</p>
+              <p className="text-green-600 text-sm animate-fade-in">{tr("settings_tg_saved")}</p>
             )}
             {tgStatus === "sent" && (
-              <p className="text-green-600 text-sm">{tr("settings_tg_sent")}</p>
+              <p className="text-green-600 text-sm animate-fade-in">{tr("settings_tg_sent")}</p>
             )}
             {tgStatus === "error" && (
-              <p className="text-red-500 text-sm">{tr("settings_tg_error")}</p>
+              <p className="text-red-500 text-sm animate-fade-in">{tr("settings_tg_error")}</p>
+            )}
+            {tgVerified === "ok" && tgStatus === "idle" && (
+              <p className="text-green-600 text-sm flex items-center gap-1.5 animate-fade-in">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-green-500/10 border border-green-500/30">
+                  {lang === "zh" ? "✅ 已驗證" : "✅ Verified"}
+                </span>
+              </p>
+            )}
+            {tgVerified === "fail" && tgStatus === "idle" && (
+              <p className="text-red-500 text-sm flex items-center gap-1.5 animate-fade-in">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-red-500/10 border border-red-500/30">
+                  {lang === "zh" ? "❌ Token 無效，請重新確認" : "❌ Invalid token, please check"}
+                </span>
+              </p>
             )}
           </CardContent>
         </Card>
 
         {/* Categories */}
-        <Card className="bg-white border border-gray-100 rounded-2xl">
+        <Card className="rounded-2xl card-hover" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-subtle)" }}>
           <CardHeader>
-            <CardTitle className="text-gray-900 text-lg">
+            <CardTitle className="text-lg" style={{ color: "var(--text-primary)" }}>
               {tr("settings_cat_title")}
             </CardTitle>
-            <p className="text-gray-500 text-sm">
+            <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
               {tr("settings_cat_desc")}
             </p>
           </CardHeader>
@@ -239,23 +331,34 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
               <button
                 key={cat.value}
                 onClick={() => toggleCategory(cat.value)}
-                className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${
+                className={`w-full text-left px-4 py-3 rounded-xl border transition-all duration-200 btn-press ${
                   categories.includes(cat.value)
-                    ? "border-2 border-black bg-black/5 text-black font-medium"
-                    : "border border-gray-200 text-gray-600 hover:border-gray-400"
+                    ? "border-2 font-medium shadow-sm"
+                    : "hover:bg-[var(--bg-panel)]"
                 }`}
+                style={categories.includes(cat.value)
+                  ? { borderColor: "var(--signal)", backgroundColor: "color-mix(in srgb, var(--signal) 10%, transparent)", color: "var(--signal)" }
+                  : { borderColor: "var(--border)", color: "var(--text-secondary)" }
+                }
               >
-                {lang === "zh" ? cat.zh : cat.en}
+                <span className="inline-flex items-center gap-2">
+                  <CheckboxIcon checked={categories.includes(cat.value)} />
+                  {cat.icon}
+                  {lang === "zh" ? cat.zh : cat.en}
+                </span>
               </button>
             ))}
             <Button
               onClick={saveCategories}
               disabled={catStatus === "saving" || categories.length === 0}
-              className="w-full bg-black hover:bg-gray-800 text-white rounded-xl mt-2"
+              className="w-full rounded-xl mt-2 btn-press" style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
             >
-              {catStatus === "saving"
-                ? tr("settings_cat_saving")
-                : catStatus === "saved"
+              {catStatus === "saving" ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  {tr("settings_cat_saving")}
+                </span>
+              ) : catStatus === "saved"
                 ? tr("settings_cat_saved")
                 : tr("settings_cat_save")}
             </Button>
@@ -263,30 +366,34 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
         </Card>
 
         {/* Language */}
-        <Card className="bg-white border border-gray-100 rounded-2xl">
+        <Card className="rounded-2xl card-hover" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-subtle)" }}>
           <CardHeader>
-            <CardTitle className="text-gray-900 text-lg">
+            <CardTitle className="text-lg" style={{ color: "var(--text-primary)" }}>
               {tr("settings_lang_title")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <button
               onClick={() => switchLang("zh")}
-              className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${
-                lang === "zh"
-                  ? "border-2 border-black bg-black/5 text-black font-medium"
-                  : "border border-gray-200 text-gray-600 hover:border-gray-400"
+              className={`w-full text-left px-4 py-3 rounded-xl border transition-all duration-200 btn-press ${
+                lang === "zh" ? "border-2 font-medium shadow-sm" : "hover:bg-[var(--bg-panel)]"
               }`}
+              style={lang === "zh"
+                ? { borderColor: "var(--signal)", backgroundColor: "color-mix(in srgb, var(--signal) 10%, transparent)", color: "var(--signal)" }
+                : { borderColor: "var(--border)", color: "var(--text-secondary)" }
+              }
             >
               {tr("settings_lang_zh")}
             </button>
             <button
               onClick={() => switchLang("en")}
-              className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${
-                lang === "en"
-                  ? "border-2 border-black bg-black/5 text-black font-medium"
-                  : "border border-gray-200 text-gray-600 hover:border-gray-400"
+              className={`w-full text-left px-4 py-3 rounded-xl border transition-all duration-200 btn-press ${
+                lang === "en" ? "border-2 font-medium shadow-sm" : "hover:bg-[var(--bg-panel)]"
               }`}
+              style={lang === "en"
+                ? { borderColor: "var(--signal)", backgroundColor: "color-mix(in srgb, var(--signal) 10%, transparent)", color: "var(--signal)" }
+                : { borderColor: "var(--border)", color: "var(--text-secondary)" }
+              }
             >
               {tr("settings_lang_en")}
             </button>

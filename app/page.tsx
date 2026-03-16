@@ -26,11 +26,11 @@ function getCounts(): { userCount: number; waitlistCount: number } {
 const JSON_LD = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "Flywheel",
+  "name": "嗅鐘",
   "url": "https://flywheelsea.club",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web",
-  "description": "每天早上 8 點，把全球信號提煉成你今天可以行動的 3–5 件事，直達 Telegram。自動掃描 Reddit、Hacker News、GitHub 等平台信號，AI 生成落地行動計劃。",
+  "description": "每天從 280+ 信號源掃描 500+ 條信號，AI 過濾匹配後，每日早 8 點推送 3-5 個定向可執行機會到你的 Telegram。",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -40,7 +40,7 @@ const JSON_LD = {
   "inLanguage": "zh-TW",
   "author": {
     "@type": "Organization",
-    "name": "Flywheel"
+    "name": "嗅鐘 Sniffing Clock"
   }
 };
 

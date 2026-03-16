@@ -14,6 +14,7 @@ export function useOpportunities() {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<Record<string, boolean>>({});
+  const [actionSuccess, setActionSuccess] = useState<Record<string, boolean>>({});
   const [confFilter, setConfFilter] = useState<"all" | "high" | "mid" | "low">("all");
   const [dateFilter, setDateFilter] = useState<"today" | "all">("today");
   const [freshnessFilter, setFreshnessFilter] = useState<"all" | "fresh" | "expired">("all");
@@ -114,6 +115,8 @@ export function useOpportunities() {
       if (action === "bias" || action === "todo") {
         setOpportunities((prev) => prev.filter((o) => o.id !== id));
       }
+      setActionSuccess((p) => ({ ...p, [key]: true }));
+      setTimeout(() => setActionSuccess((p) => ({ ...p, [key]: false })), 1500);
     } catch (err) {
       console.error("opportunities/markAction:", err);
     } finally {
@@ -212,6 +215,7 @@ export function useOpportunities() {
     opportunities,
     loading,
     actionLoading,
+    actionSuccess,
     confFilter,
     setConfFilter,
     dateFilter,

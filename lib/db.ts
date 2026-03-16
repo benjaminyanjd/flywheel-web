@@ -83,7 +83,7 @@ export function runMigrations(): void {
 
     CREATE TABLE IF NOT EXISTS user_settings (
       user_id           TEXT PRIMARY KEY,
-      categories        TEXT DEFAULT '["ai_tech","crypto_policy","new_tools","overseas_trends","x_kol"]',
+      categories        TEXT DEFAULT '["kol","crypto_news","onchain","ai_tech","community","alpha"]',
       scan_interval     INTEGER DEFAULT 60,
       notify_channel    TEXT DEFAULT 'none',
       telegram_chat_id  TEXT,

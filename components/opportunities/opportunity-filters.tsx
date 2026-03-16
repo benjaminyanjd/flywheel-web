@@ -12,20 +12,26 @@ interface OpportunityFiltersProps {
   setFreshnessFilter: (f: "all" | "fresh" | "expired") => void;
   count: number;
   latestDate: string | undefined;
+  lang: string;
   t: (key: TKey) => string;
 }
 
 export function OpportunityFilters({
   dateFilter, setDateFilter, confFilter, setConfFilter,
   freshnessFilter, setFreshnessFilter,
-  count, latestDate, t,
+  count, latestDate, lang, t,
 }: OpportunityFiltersProps) {
+  const pillBase = "relative z-10 text-xs px-3 py-1 rounded-full transition-all duration-200";
+  const pillActive = "font-semibold shadow-sm";
+  const pillInactive = "hover:text-[var(--text-primary)]";
+
   return (
     <div className="flex flex-col gap-2 mb-4">
       <div className="flex items-center gap-3 flex-wrap">
-        <h1 className="text-2xl font-bold text-gray-900">{t("opp_title")}</h1>
+        <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>{t("opp_title")}</h1>
         {count > 0 && (
-          <span className="bg-gray-100 text-gray-600 border border-gray-200 text-xs font-bold px-2 py-0.5 rounded-full">
+          <span className="text-xs font-bold px-2 py-0.5 rounded-full border"
+            style={{ backgroundColor: "var(--bg-panel)", color: "var(--text-secondary)", borderColor: "var(--border)" }}>
             {count}
           </span>
         )}
@@ -39,13 +45,29 @@ export function OpportunityFilters({
           if (diffDays === 0) label = `${t("opp_time_today")} ${timeStr}`;
           else if (diffDays === 1) label = `${t("opp_time_yesterday")} ${timeStr}`;
           else label = `${diffDays} ${t("opp_time_days_ago")}`;
-          return <span className="text-xs text-gray-400">{t("opp_last_updated")}{label}</span>;
+          const hoursAgo = Math.floor(diffMs / (1000 * 60 * 60));
+          const relLabel = hoursAgo < 1 ? (lang === "zh" ? "剛剛" : "just now") : lang === "zh" ? `${hoursAgo} 小時前` : `${hoursAgo}h ago`;
+          return <span className="text-xs" style={{ color: "var(--text-muted)" }}>{t("opp_last_updated")}{label}（{relLabel}）</span>;
         })()}
-        <div className="flex gap-1 bg-gray-50 rounded-2xl p-1">
-          <button onClick={() => setDateFilter("today")} className={dateFilter === "today" ? "bg-black text-white text-xs px-3 py-1 rounded-full" : "text-gray-500 text-xs px-3 py-1"}>{t("opp_date_today")}</button>
-          <button onClick={() => setDateFilter("all")} className={dateFilter === "all" ? "bg-black text-white text-xs px-3 py-1 rounded-full" : "text-gray-500 text-xs px-3 py-1"}>{t("opp_date_all")}</button>
+        <div className="flex gap-1 rounded-2xl p-1 relative" style={{ backgroundColor: "var(--bg-panel)" }}>
+          <button
+            onClick={() => setDateFilter("today")}
+            className={`${pillBase} ${dateFilter === "today" ? pillActive : pillInactive}`}
+            style={dateFilter === "today"
+              ? { backgroundColor: "var(--signal)", color: "var(--bg)" }
+              : { color: "var(--text-muted)" }
+            }
+          >{t("opp_date_today")}</button>
+          <button
+            onClick={() => setDateFilter("all")}
+            className={`${pillBase} ${dateFilter === "all" ? pillActive : pillInactive}`}
+            style={dateFilter === "all"
+              ? { backgroundColor: "var(--signal)", color: "var(--bg)" }
+              : { color: "var(--text-muted)" }
+            }
+          >{t("opp_date_all")}</button>
         </div>
-        <div className="flex items-center gap-1 ml-2 bg-gray-50 rounded-2xl p-1 overflow-x-auto flex-nowrap">
+        <div className="flex items-center gap-1 ml-2 rounded-2xl p-1 overflow-x-auto flex-nowrap" style={{ backgroundColor: "var(--bg-panel)" }}>
           {([
             { key: "all", label: t("common_all") },
             { key: "high", label: t("opp_conf_high") + " ≥70%" },
@@ -55,11 +77,11 @@ export function OpportunityFilters({
             <button
               key={tab.key}
               onClick={() => setConfFilter(tab.key)}
-              className={`text-xs px-3 py-1 rounded-full transition-colors ${
-                confFilter === tab.key
-                  ? "bg-black text-white font-semibold"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
+              className={`${pillBase} ${confFilter === tab.key ? pillActive : pillInactive}`}
+              style={confFilter === tab.key
+                ? { backgroundColor: "var(--signal)", color: "var(--bg)" }
+                : { color: "var(--text-muted)" }
+              }
             >
               {tab.label}
             </button>
@@ -69,8 +91,8 @@ export function OpportunityFilters({
 
       {/* 時效篩選 */}
       <div className="flex items-center gap-2">
-        <span className="text-xs text-gray-400">{t("opp_filter_label")}：</span>
-        <div className="flex items-center gap-1 bg-gray-50 rounded-2xl p-1">
+        <span className="text-xs" style={{ color: "var(--text-muted)" }}>{t("opp_filter_label")}：</span>
+        <div className="flex items-center gap-1 rounded-2xl p-1" style={{ backgroundColor: "var(--bg-panel)" }}>
           {([
             { key: "all", labelKey: "opp_filter_all" },
             { key: "fresh", labelKey: "opp_filter_fresh" },
@@ -79,15 +101,15 @@ export function OpportunityFilters({
             <button
               key={tab.key}
               onClick={() => setFreshnessFilter(tab.key)}
-              className={`text-xs px-3 py-1 rounded-full transition-colors ${
-                freshnessFilter === tab.key
-                  ? tab.key === "fresh"
-                    ? "bg-green-50 text-green-700 border border-green-200 font-semibold"
-                    : tab.key === "expired"
-                    ? "bg-gray-100 text-gray-500 font-semibold"
-                    : "bg-black text-white font-semibold"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
+              className={`${pillBase} ${freshnessFilter === tab.key ? pillActive : pillInactive}`}
+              style={freshnessFilter === tab.key
+                ? tab.key === "fresh"
+                  ? { backgroundColor: "color-mix(in srgb, var(--signal) 15%, transparent)", color: "var(--signal)", border: "1px solid color-mix(in srgb, var(--signal) 30%, transparent)" }
+                  : tab.key === "expired"
+                  ? { backgroundColor: "var(--border-subtle)", color: "var(--text-secondary)" }
+                  : { backgroundColor: "var(--signal)", color: "var(--bg)" }
+                : { color: "var(--text-muted)" }
+              }
             >
               {t(tab.labelKey as Parameters<typeof t>[0])}
             </button>

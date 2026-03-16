@@ -16,7 +16,7 @@ export async function GET() {
   }
 }
 
-const VALID_CATEGORIES = ["ai_tech", "crypto_policy", "new_tools", "overseas_trends", "x_kol", "finance", "geopolitics"];
+const VALID_CATEGORIES = ["kol", "crypto_news", "onchain", "ai_tech", "community", "alpha"];
 const VALID_CHANNELS = ["none", "telegram", "email"];
 const VALID_INTERVALS = [30, 60, 120, 360];
 const VALID_ROLES = ["indie_dev", "investor", "founder", "researcher"];
@@ -35,57 +35,63 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  // Validate categories
-  const rawCats = Array.isArray(body.categories) ? body.categories : [];
-  const categories = rawCats
-    .filter((c): c is string => typeof c === "string" && VALID_CATEGORIES.includes(c))
-    .slice(0, 10);
-
-  // Validate scan_interval
-  const scanInterval = VALID_INTERVALS.includes(Number(body.scan_interval))
-    ? Number(body.scan_interval)
-    : 60;
-
-  // Validate notify_channel
-  const notifyChannel =
-    typeof body.notify_channel === "string" && VALID_CHANNELS.includes(body.notify_channel)
-      ? body.notify_channel
-      : "none";
-
-  // Validate email
-  const email =
-    typeof body.email === "string" && body.email.length <= 256 && body.email.includes("@")
-      ? body.email.trim()
-      : null;
-
-  // Validate telegram_chat_id (numeric string)
-  const telegramChatId =
-    typeof body.telegram_chat_id === "string" && /^-?\d{1,20}$/.test(body.telegram_chat_id.trim())
-      ? body.telegram_chat_id.trim()
-      : typeof body.telegram_chat_id === "number"
-        ? String(body.telegram_chat_id)
-        : null;
-
   const db = getDb();
 
-  db.prepare(`
-    INSERT INTO user_settings (user_id, categories, scan_interval, notify_channel, email, telegram_chat_id, onboarding_done)
-    VALUES (?, ?, ?, ?, ?, ?, 1)
-    ON CONFLICT(user_id) DO UPDATE SET
-      categories = excluded.categories,
-      scan_interval = excluded.scan_interval,
-      notify_channel = excluded.notify_channel,
-      email = excluded.email,
-      telegram_chat_id = excluded.telegram_chat_id,
-      onboarding_done = 1
-  `).run(
-    userId,
-    JSON.stringify(categories.length > 0 ? categories : ["ai_tech", "crypto_policy", "new_tools", "overseas_trends", "x_kol"]),
-    scanInterval,
-    notifyChannel,
-    email,
-    telegramChatId
-  );
+  // Ensure row exists
+  db.prepare(`INSERT OR IGNORE INTO user_settings (user_id) VALUES (?)`).run(userId);
+
+  // Build partial update — only update fields present in the request body
+  const updates: string[] = ["onboarding_done = 1"];
+  const values: unknown[] = [];
+
+  if ("categories" in body) {
+    const rawCats = Array.isArray(body.categories) ? body.categories : [];
+    const categories = rawCats
+      .filter((c): c is string => typeof c === "string" && VALID_CATEGORIES.includes(c))
+      .slice(0, 10);
+    updates.push("categories = ?");
+    values.push(JSON.stringify(categories.length > 0 ? categories : ["kol", "crypto_news", "onchain", "ai_tech", "community", "alpha"]));
+  }
+
+  if ("scan_interval" in body) {
+    const scanInterval = VALID_INTERVALS.includes(Number(body.scan_interval))
+      ? Number(body.scan_interval)
+      : 60;
+    updates.push("scan_interval = ?");
+    values.push(scanInterval);
+  }
+
+  if ("notify_channel" in body) {
+    const notifyChannel =
+      typeof body.notify_channel === "string" && VALID_CHANNELS.includes(body.notify_channel)
+        ? body.notify_channel
+        : "none";
+    updates.push("notify_channel = ?");
+    values.push(notifyChannel);
+  }
+
+  if ("email" in body) {
+    const email =
+      typeof body.email === "string" && body.email.length <= 256 && body.email.includes("@")
+        ? body.email.trim()
+        : null;
+    updates.push("email = ?");
+    values.push(email);
+  }
+
+  if ("telegram_chat_id" in body) {
+    const telegramChatId =
+      typeof body.telegram_chat_id === "string" && /^-?\d{1,20}$/.test(body.telegram_chat_id.trim())
+        ? body.telegram_chat_id.trim()
+        : typeof body.telegram_chat_id === "number"
+          ? String(body.telegram_chat_id)
+          : null;
+    updates.push("telegram_chat_id = ?");
+    values.push(telegramChatId);
+  }
+
+  values.push(userId);
+  db.prepare(`UPDATE user_settings SET ${updates.join(", ")} WHERE user_id = ?`).run(...values);
 
   logger.info("user/settings/POST", "Settings saved", { userId });
   return NextResponse.json({ success: true });
