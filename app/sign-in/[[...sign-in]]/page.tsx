@@ -2,9 +2,66 @@
 import { SignIn } from "@clerk/nextjs";
 import { FlywheelLogo } from "@/components/flywheel-logo";
 import { useT } from "@/lib/i18n";
+import { useTheme } from "next-themes";
 
 export default function SignInPage() {
   const { t } = useT();
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+
+  const clerkDark = {
+    variables: {
+      colorPrimary: "#3CB371",
+      colorBackground: "#141A12",
+      colorText: "#E8EDE6",
+      colorTextSecondary: "#8A9A80",
+      colorInputBackground: "#111610",
+      colorInputText: "#E8EDE6",
+      colorNeutral: "#E8EDE6",
+    },
+    elements: {
+      headerTitle: { color: "#E8EDE6" },
+      headerSubtitle: { color: "#8A9A80" },
+      formFieldLabel: { color: "#8A9A80" },
+      socialButtonsBlockButton: { borderColor: "#1E2A1A", backgroundColor: "#111610", color: "#E8EDE6" },
+      dividerText: { color: "#556650", opacity: "1" },
+      dividerLine: { backgroundColor: "#1E2A1A" },
+      footerActionText: { color: "#8A9A80", opacity: "1" },
+      footerAction: { opacity: "1" },
+      footer: { opacity: "1" },
+      footerActionLink: { color: "#3CB371" },
+      badge: { opacity: "1", color: "#556650" },
+      card: { borderRadius: "16px", border: "1px solid #1E2A1A", boxShadow: "0 0 30px rgba(60,179,113,0.05)", backgroundColor: "#141A12" },
+      formButtonPrimary: { backgroundColor: "#3CB371", color: "#0A0E08" },
+    },
+  };
+
+  const clerkLight = {
+    variables: {
+      colorPrimary: "#2D5A27",
+      colorBackground: "#FAFAF7",
+      colorText: "#1A2E16",
+      colorTextSecondary: "#556650",
+      colorInputBackground: "#FFFFFF",
+      colorInputText: "#1A2E16",
+      colorNeutral: "#1A2E16",
+    },
+    elements: {
+      headerTitle: { color: "#1A2E16" },
+      headerSubtitle: { color: "#556650" },
+      formFieldLabel: { color: "#556650" },
+      socialButtonsBlockButton: { borderColor: "#D4DDD0", backgroundColor: "#FFFFFF", color: "#1A2E16" },
+      dividerText: { color: "#8A9A80", opacity: "1" },
+      dividerLine: { backgroundColor: "#D4DDD0" },
+      footerActionText: { color: "#556650", opacity: "1" },
+      footerAction: { opacity: "1" },
+      footer: { opacity: "1" },
+      footerActionLink: { color: "#2D5A27" },
+      badge: { opacity: "1", color: "#8A9A80" },
+      card: { borderRadius: "16px", border: "1px solid #D4DDD0", boxShadow: "0 2px 12px rgba(0,0,0,0.06)", backgroundColor: "#FFFFFF" },
+      formButtonPrimary: { backgroundColor: "#2D5A27", color: "#FFFFFF" },
+    },
+  };
 
   const features = [
     { title: t("auth_f1_title"), desc: t("auth_f1_desc") },
@@ -64,32 +121,7 @@ export default function SignInPage() {
       {/* Right: Clerk sign-in */}
       <div className="relative z-10">
         <SignIn
-          appearance={{
-            variables: {
-              colorPrimary: "#3CB371",
-              colorBackground: "#141A12",
-              colorText: "#E8EDE6",
-              colorTextSecondary: "#8A9A80",
-              colorInputBackground: "#111610",
-              colorInputText: "#E8EDE6",
-              colorNeutral: "#E8EDE6",
-            },
-            elements: {
-              headerTitle: { color: "#E8EDE6" },
-              headerSubtitle: { color: "#8A9A80" },
-              formFieldLabel: { color: "#8A9A80" },
-              socialButtonsBlockButton: { borderColor: "#1E2A1A", backgroundColor: "#111610", color: "#E8EDE6" },
-              dividerText: { color: "#556650", opacity: "1" },
-              dividerLine: { backgroundColor: "#1E2A1A" },
-              footerActionText: { color: "#8A9A80", opacity: "1" },
-              footerAction: { opacity: "1" },
-              footer: { opacity: "1" },
-              footerActionLink: { color: "#3CB371" },
-              badge: { opacity: "1", color: "#556650" },
-              card: { borderRadius: "16px", border: "1px solid #1E2A1A", boxShadow: "0 0 30px rgba(60,179,113,0.05)", backgroundColor: "#141A12" },
-              formButtonPrimary: { backgroundColor: "#3CB371", color: "#0A0E08" },
-            }
-          }}
+          appearance={isDark ? clerkDark : clerkLight}
           fallbackRedirectUrl="/radar"
         />
       </div>
