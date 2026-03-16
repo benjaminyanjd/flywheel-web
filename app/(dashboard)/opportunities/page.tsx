@@ -91,6 +91,8 @@ function OpportunitiesContent() {
         latestDate={h.opportunities[0]?.created_at}
         lang={h.lang}
         t={h.t}
+        onRefresh={h.handleRefresh}
+        refreshing={h.refreshing}
       />
 
       {h.undoState && (

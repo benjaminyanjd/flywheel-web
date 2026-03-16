@@ -18,11 +18,19 @@ function FAQItem({ q, a }: { q: string; a: string }) {
         style={{ color: "var(--text-secondary)" }}
       >
         {q}
-        <span className="ml-2 shrink-0 transition-transform" style={{ color: "var(--text-muted)", transform: open ? "rotate(180deg)" : "rotate(0deg)" }}>↓</span>
+        <span className="ml-2 shrink-0 transition-transform duration-200" style={{ color: "var(--text-muted)", transform: open ? "rotate(180deg)" : "rotate(0deg)" }}>↓</span>
       </button>
-      {open && (
-        <p className="px-4 pb-4 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{a}</p>
-      )}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateRows: open ? "1fr" : "0fr",
+          transition: "grid-template-rows 200ms ease",
+        }}
+      >
+        <div style={{ overflow: "hidden", minHeight: 0 }}>
+          <p className="px-4 pb-4 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{a}</p>
+        </div>
+      </div>
     </div>
   )
 }
@@ -67,32 +75,32 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
       {/* ── Hero ── */}
       <section className="max-w-4xl mx-auto px-6 pt-20 pb-8 text-center">
         {/* slot count badge */}
-        <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs mb-10 border font-mono"
-          style={{ borderColor: "var(--signal)", color: "var(--signal)", backgroundColor: "color-mix(in srgb, var(--signal) 5%, transparent)" }}>
+        <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs mb-10 border font-mono animate-fade-in-up"
+          style={{ borderColor: "var(--signal)", color: "var(--signal)", backgroundColor: "color-mix(in srgb, var(--signal) 5%, transparent)", animationDelay: "0ms", animationFillMode: "both" }}>
           <span className="w-1.5 h-1.5 rounded-full animate-pulse inline-block" style={{ backgroundColor: "var(--signal)" }}/>
           {t("landing_beta")} · {t("landing_quota")} {quotaTotal} {t("landing_quota_unit")} · {t("landing_applied")} {waitlistCount} {t("landing_applied_unit")}
         </div>
 
         {/* pain point */}
-        <p className="text-lg mb-3" style={{ color: "var(--text-muted)" }}>{t("landing_pain")}</p>
+        <p className="text-lg mb-3 animate-fade-in-up" style={{ color: "var(--text-muted)", animationDelay: "100ms", animationFillMode: "both" }}>{t("landing_pain")}</p>
 
         {/* core promise */}
-        <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6 font-[family-name:var(--font-display)] tracking-tight"
-          style={{ color: "var(--text-primary)" }}>
+        <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6 font-[family-name:var(--font-display)] tracking-tight animate-fade-in-up"
+          style={{ color: "var(--text-primary)", animationDelay: "200ms", animationFillMode: "both" }}>
           {t("landing_h1a")}
           <br/>
           {t("landing_h1b")}
         </h1>
 
-        <p className="text-xl mb-3 max-w-2xl mx-auto leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+        <p className="text-xl mb-3 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ color: "var(--text-secondary)", animationDelay: "200ms", animationFillMode: "both" }}>
           {t("landing_desc_pre")}<br/>
           <strong style={{ color: "var(--text-primary)" }}>{t("landing_desc_bold")}</strong>{t("landing_desc_post")}
         </p>
-        <p className="text-sm mb-10" style={{ color: "var(--text-muted)" }}>
+        <p className="text-sm mb-10 animate-fade-in-up" style={{ color: "var(--text-muted)", animationDelay: "200ms", animationFillMode: "both" }}>
           {t("landing_note")}
         </p>
 
-        <div id="waitlist-form">
+        <div id="waitlist-form" className="animate-fade-in-up" style={{ animationDelay: "300ms", animationFillMode: "both" }}>
           <WaitlistForm />
         </div>
       </section>

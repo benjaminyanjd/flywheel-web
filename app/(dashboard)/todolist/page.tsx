@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/toast";
-import { TodoListIcon } from "@/components/icons";
+import { TodoListIcon, OpportunityIcon } from "@/components/icons";
 import {
   Dialog,
   DialogContent,
@@ -173,8 +173,9 @@ export default function TodolistPage() {
           </div>
           <p className="text-lg font-semibold mb-1" style={{ color: "var(--text-secondary)" }}>{t("todo_title")}清單是空的</p>
           <p className="text-sm text-center max-w-xs" style={{ color: "var(--text-muted)" }}>在機會頁面標記「待辦」，它就會出現在這裡</p>
-          <a href="/opportunities" className="mt-4 text-xs px-4 py-2 rounded-full transition-colors" style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}>
-            去看機會 →
+          <a href="/opportunities" className="mt-4 flex items-center gap-2 text-xs px-4 py-2.5 rounded-xl font-semibold transition-all btn-press hover:opacity-90" style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}>
+            <OpportunityIcon size={14} />
+            {t("todo_title") === "待辦清單" ? "去看機會" : "View Opportunities"} →
           </a>
         </div>
       ) : (

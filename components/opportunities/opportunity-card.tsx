@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -43,6 +43,17 @@ export const OpportunityCard = React.memo(function OpportunityCard({
   const displayTitle = useEn && opp.opp_title_en ? opp.opp_title_en : opp.opp_title;
   const confidence = rawEmbed?.confidence ?? 0;
   const pct = confidence <= 1 ? Math.round(confidence * 100) : Math.round(confidence * 10);
+  // IX13: confidence bar animation
+  const [barWidth, setBarWidth] = useState(0);
+  const barAnimatedRef = useRef(false);
+  useEffect(() => {
+    if (!barAnimatedRef.current) {
+      barAnimatedRef.current = true;
+      const t = setTimeout(() => setBarWidth(pct), 10);
+      return () => clearTimeout(t);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const borderColor = pct >= 70
     ? "border-l-4 border-l-green-500"
@@ -120,8 +131,16 @@ export const OpportunityCard = React.memo(function OpportunityCard({
           </div>
         </button>
 
-        {/* Body — collapsible */}
-        {isExpanded && embed && (
+        {/* Body — collapsible with accordion animation (IX14) */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateRows: isExpanded && embed ? "1fr" : "0fr",
+            transition: "grid-template-rows 200ms ease",
+          }}
+        >
+        <div style={{ overflow: "hidden" }}>
+        {embed && (
           <div className="expand-content">
             <div className="flex flex-col md:flex-row gap-0 text-sm">
               <div className="flex-1 space-y-4 md:pr-5 min-w-0">
@@ -173,7 +192,7 @@ export const OpportunityCard = React.memo(function OpportunityCard({
                   return (
                     <div className="flex items-center gap-2 pt-1 border-t" style={{ borderColor: "var(--border-subtle)" }}>
                       <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "var(--border-subtle)" }}>
-                        <div className={`h-full rounded-full transition-all duration-500 ${barColor}`} style={{ width: `${pct}%` }} />
+                        <div className={`h-full rounded-full ${barColor}`} style={{ width: `${barWidth}%`, transition: "width 500ms ease-out" }} />
                       </div>
                       <span className="text-xs shrink-0" style={{ color: "var(--text-muted)" }} title="置信度基於信號密度、時效性、可執行性綜合評分">{confLabel} {pct}%</span>
                     </div>
@@ -214,6 +233,8 @@ export const OpportunityCard = React.memo(function OpportunityCard({
             />
           </div>
         )}
+        </div>
+        </div>
 
         {/* Action buttons */}
         <div className="flex items-center gap-2 mt-4 pt-3 border-t" style={{ borderColor: "var(--border-subtle)" }}>

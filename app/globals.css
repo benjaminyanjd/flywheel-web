@@ -36,9 +36,25 @@ html {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes expandHeight {
   from { opacity: 0; max-height: 0; }
   to { opacity: 1; max-height: 2000px; }
+}
+
+@keyframes ix-scan-progress {
+  0% { transform: translateX(-200%); }
+  100% { transform: translateX(350%); }
+}
+
+@keyframes ix-delta-fade {
+  0% { opacity: 1; transform: translateY(0); }
+  60% { opacity: 1; transform: translateY(-6px); }
+  100% { opacity: 0; transform: translateY(-12px); }
 }
 
 @theme inline {
@@ -47,6 +63,7 @@ html {
   --animate-slide-out-right: slideOutRight 0.2s ease-in forwards;
   --animate-page-enter: pageEnter 0.3s ease-out;
   --animate-expand: expandHeight 0.3s ease-out;
+  --animate-fade-in-up: fade-in-up 0.5s ease-out;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);

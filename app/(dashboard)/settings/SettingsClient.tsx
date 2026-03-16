@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -92,7 +92,26 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
     }
   });
   const [catStatus, setCatStatus] = useState<"idle" | "saving" | "saved">("idle");
+  // IX24: track if categories have been initialized (skip first render auto-save)
+  const catInitializedRef = useRef(false);
+  const catDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
+
+  // IX24: Auto-save categories on change with 1s debounce
+  useEffect(() => {
+    if (!catInitializedRef.current) {
+      catInitializedRef.current = true;
+      return;
+    }
+    if (catDebounceRef.current) clearTimeout(catDebounceRef.current);
+    catDebounceRef.current = setTimeout(() => {
+      saveCategories();
+    }, 1000);
+    return () => {
+      if (catDebounceRef.current) clearTimeout(catDebounceRef.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categories]);
 
   function switchLang(l: Lang) {
     localStorage.setItem("flywheel-lang", l);
@@ -258,7 +277,7 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
             <Input
               value={chatId}
               onChange={(e) => { setChatId(e.target.value.replace(/\D/g, "")); setTgVerified("none"); }}
-              placeholder={tr("settings_tg_placeholder")}
+              placeholder="僅輸入數字 ID（如 5825881638）"
               className="rounded-xl font-mono input-focus-ring focus:outline-none border" style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-card)", color: "var(--text-primary)" }}
             />
 
@@ -348,20 +367,16 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
                 </span>
               </button>
             ))}
-            <Button
-              onClick={saveCategories}
-              disabled={catStatus === "saving" || categories.length === 0}
-              className="w-full rounded-xl mt-2 btn-press" style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
-            >
-              {catStatus === "saving" ? (
-                <span className="flex items-center gap-2">
-                  <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  {tr("settings_cat_saving")}
-                </span>
-              ) : catStatus === "saved"
-                ? tr("settings_cat_saved")
-                : tr("settings_cat_save")}
-            </Button>
+            {/* IX24: auto-save status indicator */}
+            {catStatus === "saving" && (
+              <p className="text-xs flex items-center gap-1.5 animate-fade-in" style={{ color: "var(--text-muted)" }}>
+                <span className="w-3 h-3 border-2 border-t-[var(--signal)] rounded-full animate-spin" style={{ borderColor: "var(--border)" }} />
+                自動保存中…
+              </p>
+            )}
+            {catStatus === "saved" && (
+              <p className="text-xs text-green-600 animate-fade-in">✓ 已保存</p>
+            )}
           </CardContent>
         </Card>
 

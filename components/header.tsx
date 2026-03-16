@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, type CSSProperties } from "react";
 import { getLangStored, type Lang } from "@/lib/lang";
 import { UserButton } from "@clerk/nextjs";
 import { FlywheelLogo } from "@/components/flywheel-logo";
@@ -164,27 +164,34 @@ function HeaderInner() {
         }}
       >
         <Link href="/radar" className={tabCls(pathname.startsWith("/radar"))}>
-          <RadarIcon size={22} style={{ color: pathname.startsWith("/radar") ? "var(--signal)" : "var(--text-muted)" }} />
-          <span className="text-xs mt-0.5">{lang === "zh" ? "雷達" : "Radar"}</span>
+          <RadarIcon size={20} style={{ color: pathname.startsWith("/radar") ? "var(--signal)" : "var(--text-muted)" }} />
+          <span style={{ fontSize: "10px" }} className="mt-0.5">{lang === "zh" ? "雷達" : "Radar"}</span>
         </Link>
         <Link href="/opportunities" className={tabCls(pathname.startsWith("/opportunities"))}>
-          <OpportunityIcon size={22} style={{ color: pathname.startsWith("/opportunities") ? "var(--signal)" : "var(--text-muted)" }} />
-          <span className="text-xs mt-0.5">{lang === "zh" ? "機會" : "Opps"}</span>
+          <OpportunityIcon size={20} style={{ color: pathname.startsWith("/opportunities") ? "var(--signal)" : "var(--text-muted)" }} />
+          <span style={{ fontSize: "10px" }} className="mt-0.5">{lang === "zh" ? "機會" : "Opps"}</span>
         </Link>
         <Link href="/todolist" className={tabCls(pathname.startsWith("/todolist"))}>
-          <TodoListIcon size={22} style={{ color: pathname.startsWith("/todolist") ? "var(--signal)" : "var(--text-muted)" }} />
-          <span className="text-xs mt-0.5">{lang === "zh" ? "待辦" : "Todo"}</span>
+          <TodoListIcon size={20} style={{ color: pathname.startsWith("/todolist") ? "var(--signal)" : "var(--text-muted)" }} />
+          <span style={{ fontSize: "10px" }} className="mt-0.5">{lang === "zh" ? "待辦" : "Todo"}</span>
         </Link>
         <Link href="/archive" className={tabCls(pathname.startsWith("/archive"))}>
-          <ArchiveIcon size={22} style={{ color: pathname.startsWith("/archive") ? "var(--signal)" : "var(--text-muted)" }} />
-          <span className="text-xs mt-0.5">{lang === "zh" ? "歸檔" : "Archive"}</span>
+          <ArchiveIcon size={20} style={{ color: pathname.startsWith("/archive") ? "var(--signal)" : "var(--text-muted)" }} />
+          <span style={{ fontSize: "10px" }} className="mt-0.5">{lang === "zh" ? "歸檔" : "Archive"}</span>
         </Link>
         <Link
           href="/advisor"
-          className={tabCls(pathname.startsWith("/advisor") || pathname.startsWith("/control"))}
+          className={tabCls(pathname.startsWith("/advisor"))}
         >
-          <AdvisorIcon size={22} style={{ color: (pathname.startsWith("/advisor") || pathname.startsWith("/control")) ? "var(--signal)" : "var(--text-muted)" }} />
-          <span className="text-xs mt-0.5">{lang === "zh" ? "顧問" : "Advisor"}</span>
+          <AdvisorIcon size={20} style={{ color: pathname.startsWith("/advisor") ? "var(--signal)" : "var(--text-muted)" }} />
+          <span style={{ fontSize: "10px" }} className="mt-0.5">{lang === "zh" ? "顧問" : "Advisor"}</span>
+        </Link>
+        <Link
+          href="/settings"
+          className={tabCls(pathname.startsWith("/settings") || pathname.startsWith("/control"))}
+        >
+          <span style={{ color: (pathname.startsWith("/settings") || pathname.startsWith("/control")) ? "var(--signal)" : "var(--text-muted)" } as CSSProperties}><GearIcon size={20} /></span>
+          <span style={{ fontSize: "10px" }} className="mt-0.5">{lang === "zh" ? "設定" : "Settings"}</span>
         </Link>
       </div>
     </>
