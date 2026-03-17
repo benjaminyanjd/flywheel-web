@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useT } from "@/lib/i18n";
 import { FlywheelLogo } from "@/components/flywheel-logo";
+import { TopNav } from "@/components/top-nav";
 
 interface ExpiredContentProps {
   isActuallyExpired: boolean;
@@ -38,7 +39,9 @@ export function ExpiredContent({ isActuallyExpired, daysLeft, totalOpps, actione
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: "var(--bg)" }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "var(--bg)" }}>
+      <TopNav hideCta hideLogin />
+      <div className="flex-1 flex items-center justify-center p-4">
       <div className="text-center max-w-lg">
         <div className="flex justify-center mb-4">
           <FlywheelLogo size={52} className="animate-[spin_8s_linear_infinite]" style={{ color: "var(--signal)" }} />
@@ -121,7 +124,7 @@ export function ExpiredContent({ isActuallyExpired, daysLeft, totalOpps, actione
         >
           {loading === "yearly" ? "跳轉中..." : `${t("expired_yearly")} $199/年 →`}
         </button>
-        <p className="text-xs" style={{ color: "var(--text-muted)" }}>{t("expired_referral")}</p>
+      </div>
       </div>
     </div>
   );
