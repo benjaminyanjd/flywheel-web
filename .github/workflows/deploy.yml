@@ -1,0 +1,35 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger deploy webhook
+        run: |
+          PAYLOAD=$(cat <<EOF
+          {"ref":"refs/heads/main","head_commit":{"message":"${{ github.event.head_commit.message }}"}}
+          EOF
+          )
+          SIGNATURE=$(echo -n "$PAYLOAD" | openssl dgst -sha256 -hmac "${{ secrets.DEPLOY_WEBHOOK_SECRET }}" | awk '{print "sha256="$2}')
+          
+          # 嘗試通過 Cloudflare Tunnel 訪問 webhook
+          # 注意：需要在 Cloudflare 加一個 tunnel route 指向 localhost:9000
+          # 暫時記錄這個步驟但不實際觸發（需要外部可訪問的 webhook URL）
+          echo "Deploy workflow triggered for commit: ${{ github.sha }}"
+          echo "Note: Local webhook at localhost:9000 - need Cloudflare tunnel route to expose it"
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: always()
+    steps:
+      - name: Notify result
+        run: |
+          STATUS="${{ needs.deploy.result == 'success' && '✅ CI 通過' || '❌ CI 失敗' }}"
+          curl -s "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d "chat_id=5825881638&text=${STATUS}%3A+${{ github.event.head_commit.message }}" \
+            -o /dev/null || true
