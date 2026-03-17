@@ -13,7 +13,7 @@ export default function SignInPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       (document.querySelector('input[name="identifier"]') as HTMLInputElement | null)?.focus();
-    }, 500);
+    }, 800);
     return () => clearTimeout(timer);
   }, []);
   const isDark = resolvedTheme === "dark";
