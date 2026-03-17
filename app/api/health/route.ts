@@ -1,29 +1,25 @@
-import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
-
-export const dynamic = "force-dynamic";
+import { NextResponse } from "next/server"
+import Database from "better-sqlite3"
+import path from "path"
 
 export async function GET() {
-  const start = Date.now();
-  let dbOk = false;
-
+  const start = Date.now()
+  let dbStatus = "ok"
+  
   try {
-    const db = getDb();
-    db.prepare("SELECT 1").get();
-    dbOk = true;
-  } catch {
-    dbOk = false;
+    const dbPath = process.env.FLYWHEEL_DB_PATH || path.join(process.cwd(), "flywheel.db")
+    const db = new Database(dbPath, { readonly: true })
+    db.prepare("SELECT 1").get()
+    db.close()
+  } catch (e) {
+    dbStatus = "error"
   }
-
-  const status = dbOk ? "ok" : "degraded";
-  return NextResponse.json(
-    {
-      status,
-      db: dbOk ? "ok" : "error",
-      uptime: process.uptime(),
-      latencyMs: Date.now() - start,
-      timestamp: new Date().toISOString(),
-    },
-    { status: dbOk ? 200 : 503 }
-  );
+  
+  return NextResponse.json({
+    status: "ok",
+    db: dbStatus,
+    uptime: process.uptime(),
+    ts: Date.now(),
+    latency: Date.now() - start,
+  })
 }

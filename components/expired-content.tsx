@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useT } from "@/lib/i18n";
 import { FlywheelLogo } from "@/components/flywheel-logo";
 import { TopNav } from "@/components/top-nav";
+import { track } from "@/lib/analytics";
 
 interface ExpiredContentProps {
   isActuallyExpired: boolean;
@@ -18,6 +19,7 @@ export function ExpiredContent({ isActuallyExpired, daysLeft, totalOpps, actione
 
   async function handleSubscribe(plan: "monthly" | "yearly") {
     if (loading) return;
+    track("subscription_click", { plan, from: "expired" });
     setLoading(plan);
     try {
       const res = await fetch("/api/payment/create", {
