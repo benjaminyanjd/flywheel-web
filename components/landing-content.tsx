@@ -437,6 +437,33 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
       {/* ── Product preview card ── */}
       <PreviewCards lang={lang} t={t} scrollToForm={scrollToForm} />
 
+      {/* ── Waitlist Form Section (middle) ── */}
+      <section className="max-w-xl mx-auto px-6 py-12 text-center">
+        <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>{t("landing_bottom_note")}</p>
+        <h3 className="text-3xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>{t("landing_bottom_title")}</h3>
+        <p className="mb-8 whitespace-pre-line leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+          {t("landing_bottom_desc")}
+        </p>
+        <div
+          id="waitlist-form-middle"
+          className="rounded-2xl transition-all duration-500"
+          style={{
+            scrollMarginTop: "80px",
+            padding: formHighlight ? "20px" : "4px",
+            border: formHighlight ? "2px solid var(--signal)" : "2px solid transparent",
+            backgroundColor: formHighlight ? "color-mix(in srgb, var(--signal) 5%, transparent)" : "transparent",
+            boxShadow: formHighlight ? "0 0 0 4px color-mix(in srgb, var(--signal) 15%, transparent)" : "none",
+          }}
+        >
+          {formHighlight && (
+            <p className="text-xs font-medium text-center mb-3 animate-pulse" style={{ color: "var(--signal)" }}>
+              👇 {lang === "zh" ? "在這裡輸入信息，獲取專屬邀請碼" : "Enter your info here to get an invite code"}
+            </p>
+          )}
+          <WaitlistForm />
+        </div>
+      </section>
+
       {/* ── Before / After ── */}
       <section className="max-w-4xl mx-auto px-6 py-12">
         <h2 className="text-2xl font-bold text-center mb-10" style={{ color: "var(--text-primary)" }}>{t("landing_ba_title")}</h2>
