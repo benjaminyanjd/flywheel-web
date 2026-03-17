@@ -35,24 +35,35 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 // Animated counter on scroll into view
 function AnimatedStat({ value, label }: { value: string; label: string }) {
   const ref = useRef<HTMLDivElement>(null)
-  const [displayed, setDisplayed] = useState("0")
+  const numMatch = value.match(/^(\d+)/)
+  const isAnimatable = !!numMatch
+  const [displayed, setDisplayed] = useState(value) // SSR: show final value
   const [triggered, setTriggered] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  // On mount, reset to "0+suffix" for animatable values so animation is visible
+  useEffect(() => {
+    setMounted(true)
+    if (isAnimatable && numMatch) {
+      const suffix = value.slice(numMatch[1].length)
+      setDisplayed("0" + suffix)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
+    if (!mounted || !isAnimatable) return
     const el = ref.current
     if (!el) return
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting && !triggered) { setTriggered(true) } },
-      { threshold: 0.5 }
+      { threshold: 0.3 }
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, [triggered])
+  }, [mounted, triggered, isAnimatable])
 
   useEffect(() => {
-    if (!triggered) return
-    const numMatch = value.match(/^(\d+)/)
-    if (!numMatch) { setDisplayed(value); return }
+    if (!triggered || !numMatch) return
     const target = parseInt(numMatch[1])
     const suffix = value.slice(numMatch[1].length)
     let start = 0
@@ -65,11 +76,11 @@ function AnimatedStat({ value, label }: { value: string; label: string }) {
       else setDisplayed(Math.floor(start) + suffix)
     }, step)
     return () => clearInterval(timer)
-  }, [triggered, value])
+  }, [triggered, value, numMatch])
 
   return (
     <div ref={ref} className="rounded-2xl p-6 text-center" style={{ backgroundColor: "var(--bg-panel)", border: "1px solid var(--border-subtle)" }}>
-      <p className="text-3xl font-bold font-mono mb-1 transition-all duration-300" style={{ color: "var(--signal)" }}>{triggered ? displayed : "0"}</p>
+      <p className="text-3xl font-bold font-mono mb-1 transition-all duration-300" style={{ color: "var(--signal)" }}>{displayed}</p>
       <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{label}</p>
     </div>
   )
