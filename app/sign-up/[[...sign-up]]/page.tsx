@@ -1,6 +1,5 @@
 "use client";
 import { SignUp } from "@clerk/nextjs";
-import { FlywheelLogo } from "@/components/flywheel-logo";
 import { useT } from "@/lib/i18n";
 import { useTheme } from "next-themes";
 
@@ -79,15 +78,6 @@ export default function SignUpPage() {
       {/* Left: Product intro */}
       <div className="hidden md:flex flex-col justify-between w-[420px] min-h-[540px] p-6 relative z-10">
         <div>
-          {/* Logo */}
-          <div className="flex items-center gap-3 mb-10">
-            <FlywheelLogo size={32} style={{ color: "var(--signal)" }} />
-            <div>
-              <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>{lang === "en" ? "Sniffing Clock" : "嗅鐘"}</h1>
-              <p className="text-sm" style={{ color: "var(--text-muted)" }}>{t("auth_subtitle")}</p>
-            </div>
-          </div>
-
           {/* Main headline */}
           <h2 className="text-4xl font-bold mb-4 leading-tight" style={{ color: "var(--text-primary)" }}>
             {t("auth_signup_h1")}<br/>{t("auth_signup_h2")}<br/>{t("auth_signup_h3")}
