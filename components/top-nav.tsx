@@ -27,6 +27,9 @@ export function TopNav({ ctaHref = "/", ctaOnClick, hideCta, hideLogin }: TopNav
           <span className="font-bold" style={{ color: "var(--text-primary)" }}>
             {lang === "en" ? "Sniffing Clock" : "嗅鐘"}
           </span>
+          <span className="text-xs hidden sm:inline" style={{ color: "var(--text-muted)" }}>
+            {lang === "en" ? "Skip the cognitive burden, take direct action." : "跳過認知負擔，直接行動"}
+          </span>
         </Link>
         <div className="flex items-center gap-6">
           {!hideLogin && (
