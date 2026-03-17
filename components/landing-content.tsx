@@ -503,9 +503,9 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
       {/* ── Stats — scroll-triggered counter ── */}
       <section className="max-w-4xl mx-auto px-6 py-10">
         <div className="grid grid-cols-3 gap-4 text-center">
-          <AnimatedStat value="500+" label={lang === "zh" ? "每日信號" : "Daily Signals"} />
-          <AnimatedStat value="30min" label={lang === "zh" ? "最快送達" : "Fastest Push"} />
+          <AnimatedStat value="1000+" label={lang === "zh" ? "每日信號" : "Daily Signals"} />
           <AnimatedStat value="100%" label={lang === "zh" ? "個人化過濾" : "Personalized"} />
+          <AnimatedStat value="1min" label={lang === "zh" ? "最快送達" : "Fastest Push"} />
         </div>
       </section>
 
