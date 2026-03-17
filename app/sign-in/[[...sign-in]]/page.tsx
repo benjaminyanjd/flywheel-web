@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import { SignIn } from "@clerk/nextjs";
 import { TopNav } from "@/components/top-nav";
 import { useT } from "@/lib/i18n";
@@ -7,6 +8,14 @@ import { useTheme } from "next-themes";
 export default function SignInPage() {
   const { t, lang } = useT();
   const { resolvedTheme } = useTheme();
+
+  // #9: Auto-focus email input after Clerk renders
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      (document.querySelector('input[name="identifier"]') as HTMLInputElement | null)?.focus();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
   const isDark = resolvedTheme === "dark";
 
   const clerkDark = {
@@ -83,14 +92,10 @@ export default function SignInPage() {
         <div>
           {/* Main headline */}
           <h2 className="text-4xl font-bold mb-4 leading-tight" style={{ color: "var(--text-primary)" }}>
-            {lang === "zh" ? (
-              <>看到了，<br/><span style={{ color: "var(--signal)" }}>不等於</span><br/>知道怎麼做</>
-            ) : (
-              <>You saw it.<br/>But did you<br/><span style={{ color: "var(--signal)" }}>know what to do?</span></>
-            )}
+            {lang === "zh" ? "歡迎回來" : "Welcome back"}
           </h2>
           <p className="text-base mb-10 leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-            {t("auth_signin_desc")}
+            {lang === "zh" ? "登入後繼續你的專屬機會雷達" : "Sign in to continue your personalized opportunity radar"}
           </p>
 
           {/* Feature list */}
