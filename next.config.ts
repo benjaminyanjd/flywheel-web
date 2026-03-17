@@ -50,6 +50,22 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   serverExternalPackages: ["better-sqlite3"],
   compress: true, // Enable gzip/Brotli compression for API responses and static assets
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "flywheelsea.club" }],
+        destination: "https://sniffingclock.club/:path*",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.flywheelsea.club" }],
+        destination: "https://sniffingclock.club/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
