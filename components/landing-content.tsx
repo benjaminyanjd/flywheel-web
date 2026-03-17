@@ -5,10 +5,10 @@ import Link from "next/link"
 import WaitlistForm from "@/components/waitlist-form"
 import { FlywheelLogo } from "@/components/flywheel-logo"
 import { useT } from "@/lib/i18n"
-import { LangToggle } from "@/components/lang-toggle"
-import { ThemeToggle } from "@/components/theme-toggle"
+
 import { ProfileGearIcon, BrainNeuralIcon, ClipboardCheckIcon } from "@/components/solution-icons"
 import { InfoGapIcon, CognitionGapIcon, ActionGapIcon } from "@/components/problem-icons"
+import { TopNav } from "@/components/top-nav"
 
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false)
@@ -251,30 +251,7 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
       </button>
 
       {/* ── Header ── */}
-      <header className="border-b px-6 py-4" style={{ borderColor: "var(--border-subtle)" }}>
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <FlywheelLogo size={33} style={{ color: "var(--signal)" }} />
-            <span className="font-bold" style={{ color: "var(--text-primary)" }}>{lang === "en" ? "Sniffing Clock" : "嗅鐘"}</span>
-            <span className="text-xs font-bold hidden sm:inline" style={{ color: "var(--text-primary)" }}>
-              {lang === "en" ? "Skip the cognitive burden, take direct action." : "跳過認知負擔，直接行動"}
-            </span>
-          </div>
-          <div className="flex items-center gap-6">
-            <Link href="/sign-in" className="text-sm transition-colors hover:text-[var(--text-primary)]" style={{ color: "var(--text-secondary)" }}>
-              {t("landing_login")}
-            </Link>
-            <LangToggle />
-            <ThemeToggle />
-            <button
-              onClick={scrollToForm}
-              className="text-sm px-4 py-1.5 rounded-lg transition-all duration-200 font-medium font-mono cursor-pointer hover:opacity-90 active:scale-95"
-              style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}>
-              {t("landing_cta")}
-            </button>
-          </div>
-        </div>
-      </header>
+      <TopNav ctaOnClick={scrollToForm} />
 
       {/* ── Hero ── */}
       <section className="max-w-3xl mx-auto px-6 pt-20 pb-16 text-center">
