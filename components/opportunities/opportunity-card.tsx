@@ -284,7 +284,7 @@ export const OpportunityCard = React.memo(function OpportunityCard({
         </div>
 
         {/* Action buttons */}
-        <div className="flex items-center gap-2 mt-4 pt-3 border-t" style={{ borderColor: "var(--border-subtle)" }}>
+        <div className="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t" style={{ borderColor: "var(--border-subtle)" }}>
           <Button
             variant="outline" size="sm"
             className={`text-xs transition-all rounded-xl btn-press ${opp.action === "todo" ? "border-blue-400 text-blue-500 bg-blue-500/10" : "hover:bg-[var(--border-subtle)]"}`}
