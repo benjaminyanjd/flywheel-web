@@ -36,6 +36,8 @@ function FAQItem({ q, a, defaultOpen = false }: { q: string; a: string; defaultO
 function AnimatedStat({ value, label }: { value: string; label: string }) {
   const ref = useRef<HTMLDivElement>(null)
   const numMatch = value.match(/^(\d+)/)
+  const targetNum = numMatch ? parseInt(numMatch[1]) : 0
+  const suffix = numMatch ? value.slice(numMatch[1].length) : ""
   const isAnimatable = !!numMatch
   const [displayed, setDisplayed] = useState(value) // SSR: show final value
   const [triggered, setTriggered] = useState(false)
@@ -44,8 +46,7 @@ function AnimatedStat({ value, label }: { value: string; label: string }) {
   // On mount, reset to "0+suffix" for animatable values so animation is visible
   useEffect(() => {
     setMounted(true)
-    if (isAnimatable && numMatch) {
-      const suffix = value.slice(numMatch[1].length)
+    if (isAnimatable) {
       setDisplayed("0" + suffix)
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -56,27 +57,25 @@ function AnimatedStat({ value, label }: { value: string; label: string }) {
     if (!el) return
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting && !triggered) { setTriggered(true) } },
-      { threshold: 0.3 }
+      { threshold: 0.1 }
     )
     observer.observe(el)
     return () => observer.disconnect()
   }, [mounted, triggered, isAnimatable])
 
   useEffect(() => {
-    if (!triggered || !numMatch) return
-    const target = parseInt(numMatch[1])
-    const suffix = value.slice(numMatch[1].length)
+    if (!triggered || !isAnimatable) return
     let start = 0
     const duration = 1200
     const step = 16
-    const increment = target / (duration / step)
+    const increment = targetNum / (duration / step)
     const timer = setInterval(() => {
       start += increment
-      if (start >= target) { setDisplayed(target + suffix); clearInterval(timer) }
+      if (start >= targetNum) { setDisplayed(targetNum + suffix); clearInterval(timer) }
       else setDisplayed(Math.floor(start) + suffix)
     }, step)
     return () => clearInterval(timer)
-  }, [triggered, value, numMatch])
+  }, [triggered]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div ref={ref} className="rounded-2xl p-6 text-center" style={{ backgroundColor: "var(--bg-panel)", border: "1px solid var(--border-subtle)" }}>
