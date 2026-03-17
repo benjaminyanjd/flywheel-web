@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FlywheelLogo } from "@/components/flywheel-logo";
 import { useToast } from "@/components/toast";
+import { track } from "@/lib/analytics";
 
 interface Signal {
   id: number;
@@ -484,7 +485,7 @@ function RadarContent() {
             <button
               key={cat.value}
               type="button"
-              onClick={() => router.push(cat.value === "all" ? "/radar" : `/radar?category=${cat.value}`)}
+              onClick={() => { track("signal_filter", { category: cat.value }); router.push(cat.value === "all" ? "/radar" : `/radar?category=${cat.value}`) }}
               className={`relative flex items-center gap-1.5 px-3 py-1.5 text-sm whitespace-nowrap transition-all duration-200 ${
                 isActive
                   ? "font-semibold text-[var(--text-primary)]"
@@ -652,6 +653,7 @@ function RadarContent() {
                         type="button"
                         onClick={async (e) => {
                           e.stopPropagation();
+                          track("signal_copy", { signal_id: String(signal.id), source: signal.source || "" });
                           const text = `${signal.title}\n${signal.url}`;
                           await navigator.clipboard.writeText(text);
                           setCopiedId(signal.id);
@@ -673,6 +675,7 @@ function RadarContent() {
                         type="button"
                         onClick={async (e) => {
                           e.stopPropagation();
+                          track("signal_bookmark", { signal_id: String(signal.id) });
                           const wasBookmarked = bookmarks.has(signal.id);
                           // Optimistically update UI
                           if (wasBookmarked) {
@@ -711,7 +714,7 @@ function RadarContent() {
                           href={signal.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          onClick={e => e.stopPropagation()}
+                          onClick={e => { e.stopPropagation(); track("signal_original", { signal_id: String(signal.id), source: signal.source || "" }) }}
                           className="text-[var(--border)] hover:text-[var(--text-secondary)] text-xs transition-all opacity-0 group-hover:opacity-100 hover:scale-110"
                           title={t("radar_view_original")}
                         ><IconExternalLink /></a>
