@@ -5,7 +5,7 @@ import { useT } from "@/lib/i18n";
 import { useTheme } from "next-themes";
 
 export default function SignInPage() {
-  const { t } = useT();
+  const { t, lang } = useT();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
@@ -81,16 +81,20 @@ export default function SignInPage() {
         <div>
           {/* Logo */}
           <div className="flex items-center gap-3 mb-10">
-            <FlywheelLogo size={32} className="animate-[spin_8s_linear_infinite]" style={{ color: "var(--signal)" }} />
+            <FlywheelLogo size={32} style={{ color: "var(--signal)" }} />
             <div>
-              <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>嗅鐘</h1>
+              <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>{lang === "en" ? "Sniffing Clock" : "嗅鐘"}</h1>
               <p className="text-sm" style={{ color: "var(--text-muted)" }}>{t("auth_subtitle")}</p>
             </div>
           </div>
 
           {/* Main headline */}
           <h2 className="text-4xl font-bold mb-4 leading-tight" style={{ color: "var(--text-primary)" }}>
-            {t("auth_signin_h_pre")}<span style={{ color: "var(--signal)" }}>8</span>{t("auth_signin_h_mid")}<br/>{t("auth_signin_h_line2")}<br/>{t("auth_signin_h_line3")}
+            {lang === "zh" ? (
+              <>看到了，<br/><span style={{ color: "var(--signal)" }}>不等於</span><br/>知道怎麼做</>
+            ) : (
+              <>You saw it.<br/>But did you<br/><span style={{ color: "var(--signal)" }}>know what to do?</span></>
+            )}
           </h2>
           <p className="text-base mb-10 leading-relaxed" style={{ color: "var(--text-secondary)" }}>
             {t("auth_signin_desc")}

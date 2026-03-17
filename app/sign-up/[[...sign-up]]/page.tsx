@@ -5,7 +5,7 @@ import { useT } from "@/lib/i18n";
 import { useTheme } from "next-themes";
 
 export default function SignUpPage() {
-  const { t } = useT();
+  const { t, lang } = useT();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
@@ -81,9 +81,9 @@ export default function SignUpPage() {
         <div>
           {/* Logo */}
           <div className="flex items-center gap-3 mb-10">
-            <FlywheelLogo size={32} className="animate-[spin_8s_linear_infinite]" style={{ color: "var(--signal)" }} />
+            <FlywheelLogo size={32} style={{ color: "var(--signal)" }} />
             <div>
-              <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>嗅鐘</h1>
+              <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>{lang === "en" ? "Sniffing Clock" : "嗅鐘"}</h1>
               <p className="text-sm" style={{ color: "var(--text-muted)" }}>{t("auth_subtitle")}</p>
             </div>
           </div>
