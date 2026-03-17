@@ -266,8 +266,9 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
           {t("landing_pain")}
         </p>
 
-        {/* H1 — fixed line break */}
-        <h1
+        {/* H1 — SEO keyword (sr-only) + visual headline as div */}
+        <h1 className="sr-only">嗅鐘 — AI 市場情報雷達，個人化機會推送</h1>
+        <div
           className="font-bold leading-tight mb-6 font-[family-name:var(--font-display)] tracking-tight animate-fade-in-up"
           style={{ color: "var(--text-primary)", animationDelay: "200ms", animationFillMode: "both", fontSize: "clamp(2.5rem, 7vw, 4rem)" }}
         >
@@ -276,7 +277,7 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
           ) : (
             <><span>You saw it.</span><br/><span style={{ color: "var(--signal)" }}>But did you act?</span></>
           )}
-        </h1>
+        </div>
 
         <p className="text-lg mb-3 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ color: "var(--text-secondary)", animationDelay: "250ms", animationFillMode: "both" }}>
           {t("landing_desc_pre")}<br/>
