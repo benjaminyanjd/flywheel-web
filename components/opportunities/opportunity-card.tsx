@@ -38,10 +38,10 @@ export const OpportunityCard = React.memo(function OpportunityCard({
   onBtn, onAdvisor, onToggleSignal, onAddTodo, onShare, t,
 }: OpportunityCardProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
-  const rawEmbed = parseEmbed(opp.opp_embed);
+  const rawEmbed = parseEmbed(opp.opp_embed ?? "");
   const useEn = lang === "en" && opp.opp_embed_en;
   const embed = useEn ? parseEmbed(opp.opp_embed_en!) ?? rawEmbed : rawEmbed;
-  const rawTitle = useEn && opp.opp_title_en ? opp.opp_title_en : opp.opp_title;
+  const rawTitle = (useEn && opp.opp_title_en ? opp.opp_title_en : opp.opp_title) ?? "";
   // #13: Extract confidence badge from title
   const confBadgeMatch = rawTitle.match(/[🔴🟡🟢]\s*(高置信|中置信|低置信)/);
   const confBadgeLabel = confBadgeMatch?.[1] as "高置信" | "中置信" | "低置信" | undefined;
@@ -290,7 +290,7 @@ export const OpportunityCard = React.memo(function OpportunityCard({
 
             <SignalSourcesSection
               oppId={opp.id}
-              signalIds={opp.signal_ids}
+              signalIds={opp.signal_ids ?? ""}
               signalExpanded={signalExpanded}
               signalSources={signalSources}
               onToggle={onToggleSignal}
@@ -374,7 +374,7 @@ export const OpportunityCard = React.memo(function OpportunityCard({
       <AdvisorPanel
         adv={adv!}
         oppId={opp.id}
-        oppTitle={opp.opp_title}
+        oppTitle={opp.opp_title ?? ""}
         finalText={finalText}
         todoSuccess={todoSuccess}
         onAddTodo={onAddTodo}

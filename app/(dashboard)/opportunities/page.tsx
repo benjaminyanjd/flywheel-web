@@ -52,7 +52,7 @@ function OpportunitiesContent() {
       if (h.freshnessFilter === "expired" && hoursAgo <= 48) return false;
     }
     if (h.confFilter === "all") return true;
-    const raw = (() => { try { return JSON.parse(opp.opp_embed); } catch { return {}; } })();
+    const raw = (() => { try { return JSON.parse(opp.opp_embed ?? ""); } catch { return {}; } })();
     const c = raw.confidence ?? 0;
     const pct = c <= 1 ? Math.round(c * 100) : Math.round(c * 10);
     if (h.confFilter === "high") return pct >= 70;

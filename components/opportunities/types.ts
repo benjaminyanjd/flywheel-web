@@ -1,34 +1,7 @@
-export interface SignalSource {
-  id: number;
-  source: string;
-  title: string;
-  url: string;
-  heat_score: number;
-}
+// Re-export canonical types from lib/types.ts
+export type { SignalSource, Opportunity, AdvisorState } from "@/lib/types";
 
-export interface Opportunity {
-  id: number;
-  signal_ids: string;
-  opp_window: string;
-  opp_rank: number;
-  opp_title: string;
-  opp_url: string;
-  opp_embed: string;
-  opp_title_en: string | null;
-  opp_embed_en: string | null;
-  action: string;
-  advisor_notes: string | null;
-  cancel_reason: string | null;
-  created_at: string;
-  acted_at: string | null;
-  action_count?: number;
-}
-
-export interface AdvisorState {
-  text: string;
-  loading: boolean;
-  open: boolean;
-}
+// UI-specific constants and helpers
 
 export const ACTION_BADGE_STYLES: Record<string, { cls: string }> = {
   todo:   { cls: "bg-blue-50 text-blue-600 border border-blue-200" },

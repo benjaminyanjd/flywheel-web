@@ -1,6 +1,9 @@
 import Database from "better-sqlite3";
 import path from "path";
 
+// Re-export types for backward compatibility
+export type { Signal, Opportunity, UserSettings } from "@/lib/types";
+
 const DB_PATH =
   process.env.FLYWHEEL_DB_PATH ||
   path.join(process.env.HOME || "", "Projects/flywheel-bot/flywheel.db");
@@ -13,53 +16,6 @@ export function getDb(): Database.Database {
     _db.pragma("journal_mode = WAL");
   }
   return _db;
-}
-
-export interface Signal {
-  id: number;
-  source: string;
-  title: string;
-  url: string | null;
-  description: string | null;
-  category: string | null;
-  heat_score: number;
-  monetize_score: number;
-  window: string | null;
-  created_at: string;
-}
-
-export interface Opportunity {
-  id: number;
-  signal_ids: string | null;
-  opp_window: string | null;
-  opp_rank: number | null;
-  opp_title: string | null;
-  opp_url: string | null;
-  opp_embed: string | null;
-  action: string;
-  cancel_reason: string | null;
-  created_at: string;
-  acted_at: string | null;
-}
-
-export interface UserSettings {
-  user_id: string;
-  categories: string;
-  scan_interval: number;
-  notify_channel: string;
-  telegram_chat_id: string | null;
-  email: string | null;
-  onboarding_done: number;
-  last_scan_at: string | null;
-  user_role: string | null;
-  user_focus: string | null;
-  opp_type: string | null;
-  profit_source: string | null;
-  core_skills: string | null;
-  opp_horizon: string | null;
-  risk_level: string | null;
-  time_budget: string | null;
-  opp_dislike: string | null;
 }
 
 export function runMigrations(): void {
