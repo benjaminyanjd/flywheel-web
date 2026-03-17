@@ -6,6 +6,7 @@ import WaitlistForm from "@/components/waitlist-form"
 import { FlywheelLogo } from "@/components/flywheel-logo"
 import { useT } from "@/lib/i18n"
 import { LangToggle } from "@/components/lang-toggle"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { ProfileGearIcon, BrainNeuralIcon, ClipboardCheckIcon } from "@/components/solution-icons"
 import { InfoGapIcon, CognitionGapIcon, ActionGapIcon } from "@/components/problem-icons"
 
@@ -132,6 +133,7 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
               {t("landing_login")}
             </Link>
             <LangToggle />
+            <ThemeToggle />
             <button
               onClick={scrollToForm}
               className="text-sm px-4 py-1.5 rounded-lg transition-all duration-200 font-medium font-mono cursor-pointer hover:opacity-90 active:scale-95"
