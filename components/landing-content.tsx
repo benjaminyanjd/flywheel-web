@@ -369,14 +369,10 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
 
       {/* ── Waitlist Form Section ── */}
       <section className="max-w-xl mx-auto px-6 py-12 text-center">
-        <p className="text-xs font-mono uppercase tracking-widest mb-2" style={{ color: "var(--signal)" }}>
-          {lang === "zh" ? "限量名額開放中" : "Limited spots available"}
-        </p>
-        <h3 className="text-xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>
-          {lang === "zh" ? "填寫申請，24小時內收到邀請碼" : "Apply now, receive invite code within 24h"}
-        </h3>
-        <p className="text-sm mb-8" style={{ color: "var(--text-muted)" }}>
-          {lang === "zh" ? "7 天免費試用 · 不自動扣費 · 隨時取消" : "7-day free trial · No auto-charge · Cancel anytime"}
+        <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>{t("landing_bottom_note")}</p>
+        <h3 className="text-3xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>{t("landing_bottom_title")}</h3>
+        <p className="mb-8 whitespace-pre-line leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+          {t("landing_bottom_desc")}
         </p>
         <div
           id="waitlist-form"
@@ -455,15 +451,18 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
 
       {/* ── Bottom CTA ── */}
       <section className="max-w-2xl mx-auto px-6 py-20 text-center">
-        <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>{t("landing_bottom_note")}</p>
-        <h2 className="text-3xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>{t("landing_bottom_title")}</h2>
-        <p className="mb-8 whitespace-pre-line leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-          {t("landing_bottom_desc")}
+        <p className="text-xs font-mono uppercase tracking-widest mb-2" style={{ color: "var(--signal)" }}>
+          {lang === "zh" ? "限量名額開放中" : "Limited spots available"}
+        </p>
+        <h2 className="text-xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>
+          {lang === "zh" ? "填寫申請，24小時內收到邀請碼" : "Apply now, receive invite code within 24h"}
+        </h2>
+        <p className="text-sm mb-8" style={{ color: "var(--text-muted)" }}>
+          {lang === "zh" ? "7 天免費試用 · 不自動扣費 · 隨時取消" : "7-day free trial · No auto-charge · Cancel anytime"}
         </p>
         <div id="waitlist-form-bottom">
           <WaitlistForm />
         </div>
-        <p className="text-xs mt-4" style={{ color: "var(--text-muted)" }}>{t("landing_bottom_price")}</p>
       </section>
 
       {/* ── Footer ── */}
