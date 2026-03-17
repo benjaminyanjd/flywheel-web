@@ -68,7 +68,7 @@ export async function POST() {
           try { conf = `  置信度：${JSON.parse(o.opp_embed).confidence}%`; } catch {}
           return `💎 *${o.opp_title}*${conf}`;
         });
-        const msg = `🔔 *嗅鐘新機會*\n\n${lines.join("\n\n")}\n\n🔗 [查看詳情](https://flywheelsea.club/opportunities)`;
+        const msg = `🔔 *嗅鐘新機會*\n\n${lines.join("\n\n")}\n\n🔗 [查看詳情](https://sniffingclock.club/opportunities)`;
 
         const token = process.env.TELEGRAM_BOT_TOKEN;
         if (!token) {

@@ -188,7 +188,7 @@ export function ShareCard({ title, whyNow, profitLogic, confidence, risks = [], 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div>
           <div style={{ fontSize: 12, color: C.textMuted }}>{L.footer}</div>
-          <div style={{ fontSize: 15, fontWeight: 600, color: C.signal, marginTop: 2 }}>flywheelsea.club</div>
+          <div style={{ fontSize: 15, fontWeight: 600, color: C.signal, marginTop: 2 }}>sniffingclock.club</div>
         </div>
         {userInviteCode && (
           <div style={{ textAlign: "right" }}>

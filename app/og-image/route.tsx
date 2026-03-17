@@ -115,7 +115,7 @@ export async function GET() {
             color: "#475569",
           }}
         >
-          flywheelsea.club
+          sniffingclock.club
         </div>
       </div>
     ),

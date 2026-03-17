@@ -32,11 +32,11 @@ export const metadata: Metadata = {
   description: "每天從 280+ 信號源掃描 500+ 條信號，AI 過濾匹配後，每日早 8 點推送 3-5 個定向可執行機會到你的 Telegram。",
   keywords: ["市場情報", "AI 助理", "機會雷達", "信號掃描", "Telegram 推送", "創業", "投資機會"],
   authors: [{ name: "嗅鐘" }],
-  metadataBase: new URL("https://flywheelsea.club"),
+  metadataBase: new URL("https://sniffingclock.club"),
   openGraph: {
     type: "website",
     locale: "zh_TW",
-    url: "https://flywheelsea.club",
+    url: "https://sniffingclock.club",
     siteName: "嗅鐘",
     title: "嗅鐘 — 你的 AI 市場情報助理",
     description: "每天從 280+ 信號源掃描 500+ 條信號，AI 過濾匹配後，每日早 8 點推送 3-5 個定向可執行機會到你的 Telegram。",

@@ -27,7 +27,7 @@ const JSON_LD = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "嗅鐘",
-  "url": "https://flywheelsea.club",
+  "url": "https://sniffingclock.club",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web",
   "description": "每天從 280+ 信號源掃描 500+ 條信號，AI 過濾匹配後，每日早 8 點推送 3-5 個定向可執行機會到你的 Telegram。",

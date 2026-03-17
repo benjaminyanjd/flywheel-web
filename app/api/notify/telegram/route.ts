@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 
   const ok = await sendTelegramMessage(
     settings.telegram_chat_id,
-    "✅ *嗅鐘通知測試*\n\n你已成功綁定 Telegram！當有高價值機會時，你將收到即時推送。\n\n🔗 [查看機會](https://flywheelsea.club/opportunities)"
+    "✅ *嗅鐘通知測試*\n\n你已成功綁定 Telegram！當有高價值機會時，你將收到即時推送。\n\n🔗 [查看機會](https://sniffingclock.club/opportunities)"
   );
 
   if (ok) {

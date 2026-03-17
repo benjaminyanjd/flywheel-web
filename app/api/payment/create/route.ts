@@ -5,7 +5,7 @@ import { rateLimit, getRateLimitKey } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://flywheelsea.club";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://sniffingclock.club";
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth();

@@ -29,16 +29,16 @@ const securityHeaders = [
     // Content-Security-Policy: tighten XSS attack surface.
     // - default-src self covers most resources
     // - script-src: unsafe-inline required by Next.js inline scripts; unsafe-eval for React dev HMR
-    // - connect-src: Clerk (accounts.flywheelsea.club), Anthropic API, Telegram are server-side only
+    // - connect-src: Clerk (accounts.sniffingclock.club), Anthropic API, Telegram are server-side only
     // - img-src: data: for inline base64 images
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.flywheelsea.club https://*.clerk.accounts.dev",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.sniffingclock.club https://*.clerk.accounts.dev",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
-      "connect-src 'self' https://*.clerk.accounts.dev https://clerk.flywheelsea.club wss://*.clerk.accounts.dev",
+      "connect-src 'self' https://*.clerk.accounts.dev https://clerk.sniffingclock.club wss://*.clerk.accounts.dev",
       "frame-src 'self' https://*.clerk.accounts.dev",
       "object-src 'none'",
       "base-uri 'self'",

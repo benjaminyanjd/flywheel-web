@@ -79,7 +79,7 @@ export async function POST() {
     lines.push("")
   })
 
-  lines.push("👉 查看詳情並製定行動計劃：https://flywheelsea.club/opportunities")
+  lines.push("👉 查看詳情並製定行動計劃：https://sniffingclock.club/opportunities")
   lines.push("")
   lines.push("每天早上 8 點你還會收到最新的市場情報推送 🚀")
 
