@@ -44,6 +44,61 @@ const JSON_LD = {
   }
 };
 
+const FAQ_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "嗅鐘和 newsletter 有什麼不同？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Newsletter 是編輯挑給所有人看的。嗅鐘根據你的角色和風險偏好個人化過濾，推的是「你現在能做的」——附帶置信度評分、時效窗口、具體行動步驟。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "邀請碼從哪裡獲取？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "填寫申請表單，我們會在 24 小時內通過 Telegram 聯繫你並發送邀請碼。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "必須有 Telegram 才能用嗎？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Telegram 是主要推送渠道。網頁端 sniffingclock.club 也可以隨時查看全部機會和雷達。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "7 天試用結束後會自動扣費嗎？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不會。試用期結束後系統暫停，不會自動續費。你可以隨時選擇訂閱繼續使用。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "掃描哪些資訊源？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Reddit、Hacker News、KOL 推文、BlockBeats、GitHub Trending、全球 RSS 訂閱，每 15-30 分鐘掃描一次，每天超過 500 條信號。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "我的資料安全嗎？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "我們只存儲你的 Telegram Chat ID 和偏好設置，不收集個人身份信息，不出售數據。"
+      }
+    }
+  ]
+};
+
 export default function LandingPage() {
   const { userCount, waitlistCount } = getCounts()
   return (
@@ -51,6 +106,10 @@ export default function LandingPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }}
       />
       <LandingContent userCount={userCount} waitlistCount={waitlistCount} quotaTotal={QUOTA_TOTAL} />
     </>
