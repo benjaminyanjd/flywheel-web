@@ -398,7 +398,7 @@ export function ThemeIcon({
 // Suite C — Category Icons (14x14 viewBox, reusable)
 // ============================================================
 
-export function IconAITech({ size = 14, className = "", style }: IconProps) {
+export function IconAITech({ size = 16, className = "", style }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
       <circle cx="12" cy="12" r="3"/>
@@ -408,7 +408,7 @@ export function IconAITech({ size = 14, className = "", style }: IconProps) {
   );
 }
 
-export function IconCrypto({ size = 14, className = "", style }: IconProps) {
+export function IconCrypto({ size = 16, className = "", style }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
       <path d="M12 2L2 7l10 5 10-5-10-5z"/>
@@ -418,7 +418,7 @@ export function IconCrypto({ size = 14, className = "", style }: IconProps) {
   );
 }
 
-export function IconNewTools({ size = 14, className = "", style }: IconProps) {
+export function IconNewTools({ size = 16, className = "", style }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
       <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3-3a1 1 0 000-1.4l-1.6-1.6a1 1 0 00-1.4 0z"/>
@@ -429,7 +429,7 @@ export function IconNewTools({ size = 14, className = "", style }: IconProps) {
   );
 }
 
-export function IconOnchain({ size = 14, className = "", style }: IconProps) {
+export function IconOnchain({ size = 16, className = "", style }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
       <rect x="1" y="5" width="6" height="6" rx="1"/>
@@ -440,7 +440,7 @@ export function IconOnchain({ size = 14, className = "", style }: IconProps) {
   );
 }
 
-export function IconCommunity({ size = 14, className = "", style }: IconProps) {
+export function IconCommunity({ size = 16, className = "", style }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
       <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
@@ -449,7 +449,7 @@ export function IconCommunity({ size = 14, className = "", style }: IconProps) {
   );
 }
 
-export function IconOverseas({ size = 14, className = "", style }: IconProps) {
+export function IconOverseas({ size = 16, className = "", style }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
       <circle cx="12" cy="12" r="9"/>
@@ -459,7 +459,7 @@ export function IconOverseas({ size = 14, className = "", style }: IconProps) {
   );
 }
 
-export function IconKOL({ size = 14, className = "", style }: IconProps) {
+export function IconKOL({ size = 16, className = "", style }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
       <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
@@ -469,7 +469,7 @@ export function IconKOL({ size = 14, className = "", style }: IconProps) {
   );
 }
 
-export function IconAlpha({ size = 14, className = "", style }: IconProps) {
+export function IconAlpha({ size = 16, className = "", style }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}>
       <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
@@ -478,7 +478,7 @@ export function IconAlpha({ size = 14, className = "", style }: IconProps) {
   );
 }
 
-export function HotIcon({ size = 14, className = "", style }: IconProps) {
+export function HotIcon({ size = 16, className = "", style }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} style={style}>
       <path d="M12 2c0 0-6 6.67-6 12a6 6 0 0012 0c0-5.33-6-12-6-12zm0 16a4 4 0 01-4-4c0-2.67 2-5.67 4-8 2 2.33 4 5.33 4 8a4 4 0 01-4 4z"/>
