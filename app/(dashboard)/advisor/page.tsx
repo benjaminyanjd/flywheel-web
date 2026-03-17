@@ -181,9 +181,10 @@ function AdvisorInner() {
 
   // IX21: quick questions chips
   const quickQuestions = [
-    t("advisor_quick_q1"),
-    t("advisor_quick_q2"),
-    t("advisor_quick_q3"),
+    "今天有什麼值得關注的？",
+    "幫我分析最新的加密趨勢",
+    "哪些機會適合我的背景？",
+    "總結今天的高置信度機會",
   ];
 
   return (
