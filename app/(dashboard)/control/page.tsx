@@ -170,6 +170,11 @@ export default function ControlPage() {
 
   return (
     <div className="flex flex-col h-full p-6 animate-page-enter" style={{ backgroundColor: "var(--bg)" }}>
+      {/* Admin-only notice */}
+      <div className="flex items-center gap-2 rounded-xl px-4 py-2.5 mb-4 text-sm" style={{ backgroundColor: "var(--bg-panel)", border: "1px solid var(--border-subtle)", color: "var(--text-secondary)" }}>
+        <span>🔒</span>
+        <span>{lang === "zh" ? "此功能僅供管理員使用。系統會自動執行掃描，你無需手動操作。" : "This feature is for admins only. The system runs scans automatically — no manual action needed."}</span>
+      </div>
       <h1 className="text-2xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>{t("ctrl_title")}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

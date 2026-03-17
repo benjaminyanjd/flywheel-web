@@ -26,7 +26,7 @@ const NAV_ITEMS = [
   { href: "/todolist",      zh: "待辦清單", en: "Todolist" },
   { href: "/archive",       zh: "歸檔",    en: "Archive" },
   { href: "/advisor",       zh: "顧問",    en: "Advisor" },
-  { href: "/control",       zh: "掃描中心", en: "Scan Center" },
+  { href: "/control",       zh: "🔒 掃描中心", en: "🔒 Scan Center" },
 ];
 
 function ThemeToggle() {
