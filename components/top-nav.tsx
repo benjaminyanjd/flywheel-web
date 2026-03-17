@@ -27,7 +27,7 @@ export function TopNav({ ctaHref = "/", ctaOnClick, hideCta, hideLogin }: TopNav
           <span className="font-bold" style={{ color: "var(--text-primary)" }}>
             {lang === "en" ? "Sniffing Clock" : "嗅鐘"}
           </span>
-          <span className="text-xs hidden sm:inline" style={{ color: "var(--text-muted)" }}>
+          <span className="text-xs font-semibold hidden sm:inline" style={{ color: "var(--text-secondary)" }}>
             {lang === "en" ? "Skip the cognitive burden, take direct action." : "跳過認知負擔，直接行動"}
           </span>
         </Link>

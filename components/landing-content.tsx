@@ -245,6 +245,9 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
           <div className="flex items-center gap-2.5">
             <FlywheelLogo size={33} style={{ color: "var(--signal)" }} />
             <span className="font-bold" style={{ color: "var(--text-primary)" }}>{lang === "en" ? "Sniffing Clock" : "嗅鐘"}</span>
+            <span className="text-xs font-semibold hidden sm:inline" style={{ color: "var(--text-secondary)" }}>
+              {lang === "en" ? "Skip the cognitive burden, take direct action." : "跳過認知負擔，直接行動"}
+            </span>
           </div>
           <div className="flex items-center gap-6">
             <Link href="/sign-in" className="text-sm transition-colors hover:text-[var(--text-primary)]" style={{ color: "var(--text-secondary)" }}>
