@@ -29,17 +29,23 @@ export const metadata: Metadata = {
     default: "嗅鐘 — 你的 AI 市場情報助理",
     template: "%s | 嗅鐘",
   },
-  description: "每天從 280+ 信號源掃描 500+ 條信號，AI 過濾匹配後，每日早 8 點推送 3-5 個定向可執行機會到你的 Telegram。",
-  keywords: ["市場情報", "AI 助理", "機會雷達", "信號掃描", "Telegram 推送", "創業", "投資機會"],
+  description: "嗅鐘 AI 從 280+ 信號源即時掃描，根據你的背景個人化過濾，直接推送可執行行動方案到 Telegram。7 天免費試用。",
   authors: [{ name: "嗅鐘" }],
   metadataBase: new URL("https://sniffingclock.club"),
+  alternates: {
+    canonical: "https://sniffingclock.club",
+    languages: {
+      "zh-TW": "https://sniffingclock.club",
+      "en": "https://sniffingclock.club",
+    },
+  },
   openGraph: {
     type: "website",
     locale: "zh_TW",
     url: "https://sniffingclock.club",
     siteName: "嗅鐘",
     title: "嗅鐘 — 你的 AI 市場情報助理",
-    description: "每天從 280+ 信號源掃描 500+ 條信號，AI 過濾匹配後，每日早 8 點推送 3-5 個定向可執行機會到你的 Telegram。",
+    description: "嗅鐘 AI 從 280+ 信號源即時掃描，根據你的背景個人化過濾，直接推送可執行行動方案到 Telegram。7 天免費試用。",
     images: [
       {
         url: "/og-image",
@@ -52,7 +58,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "嗅鐘 — 你的 AI 市場情報助理",
-    description: "每天從 280+ 信號源掃描 500+ 條信號，AI 過濾匹配後，每日早 8 點推送 3-5 個定向可執行機會到你的 Telegram。",
+    description: "嗅鐘 AI 從 280+ 信號源即時掃描，根據你的背景個人化過濾，直接推送可執行行動方案到 Telegram。7 天免費試用。",
     images: ["/og-image"],
   },
   robots: {
