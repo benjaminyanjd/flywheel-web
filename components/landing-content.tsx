@@ -75,6 +75,121 @@ function AnimatedStat({ value, label }: { value: string; label: string }) {
   )
 }
 
+// Static fallback cards for preview section
+type PreviewOpp = {
+  badge: string
+  badgeColor: string
+  title: string
+  why: string
+  action: string
+}
+
+function usePreviewOpps(t: (key: import("@/lib/i18n").TKey) => string, lang: string): PreviewOpp[] {
+  const [apiOpps, setApiOpps] = useState<PreviewOpp[]>([])
+
+  const fallback: PreviewOpp[] = [
+    { badge: t("landing_high_conf"), badgeColor: "var(--signal)", title: t("landing_preview_opp1_title"), why: t("landing_preview_opp1_why"), action: t("landing_preview_opp1_action") },
+    { badge: t("landing_high_conf"), badgeColor: "var(--signal)", title: t("landing_preview_opp2_title"), why: t("landing_preview_opp2_why"), action: t("landing_preview_opp2_action") },
+    { badge: t("landing_high_conf"), badgeColor: "var(--signal)", title: t("landing_preview_opp3_title"), why: t("landing_preview_opp3_why"), action: t("landing_preview_opp3_action") },
+    { badge: t("landing_high_conf"), badgeColor: "var(--signal)", title: t("landing_preview_opp4_title"), why: t("landing_preview_opp4_why"), action: t("landing_preview_opp4_action") },
+    { badge: t("landing_high_conf"), badgeColor: "var(--signal)", title: t("landing_preview_opp5_title"), why: t("landing_preview_opp5_why"), action: t("landing_preview_opp5_action") },
+    { badge: t("landing_high_conf"), badgeColor: "var(--signal)", title: t("landing_preview_opp6_title"), why: t("landing_preview_opp6_why"), action: t("landing_preview_opp6_action") },
+  ]
+
+  useEffect(() => {
+    fetch("/api/preview-opps")
+      .then(r => r.json())
+      .then(data => {
+        if (data.opps && data.opps.length >= 6) {
+          setApiOpps(data.opps.slice(0, 6).map((o: { title_zh: string; title_en: string; why_zh: string; why_en: string; action_zh: string; action_en: string; confidence: number }) => ({
+            badge: t("landing_high_conf"),
+            badgeColor: "var(--signal)",
+            title: lang === "zh" ? o.title_zh : o.title_en,
+            why: lang === "zh" ? o.why_zh : o.why_en,
+            action: lang === "zh" ? o.action_zh : o.action_en,
+          })))
+        }
+      })
+      .catch(() => { /* use fallback */ })
+  }, [lang]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  return apiOpps.length >= 6 ? apiOpps : fallback
+}
+
+function PreviewCards({ lang, t, scrollToForm }: { lang: string; t: (key: import("@/lib/i18n").TKey) => string; scrollToForm: () => void }) {
+  const allCards = usePreviewOpps(t, lang)
+  const [page, setPage] = useState(0)
+  const [opacity, setOpacity] = useState(1)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setOpacity(0)
+      setTimeout(() => {
+        setPage(p => (p + 1) % 2)
+        setOpacity(1)
+      }, 400)
+    }, 5000)
+    return () => clearInterval(timer)
+  }, [])
+
+  const visibleCards = allCards.slice(page * 3, page * 3 + 3)
+
+  return (
+    <section className="max-w-2xl mx-auto px-6 py-10">
+      <p className="text-xs text-center mb-4 uppercase tracking-widest font-mono" style={{ color: "var(--text-muted)" }}>{t("landing_preview_label")}</p>
+      <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border)" }}>
+        <div className="flex items-center gap-3 mb-4 pb-4" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
+          <div className="w-11 h-11 flex items-center justify-center shrink-0">
+            <FlywheelLogo size={32} style={{ color: "var(--signal)" }} />
+          </div>
+          <div>
+            <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{lang === "en" ? "Sniffing Clock" : "嗅鐘日報"}</p>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full inline-block animate-pulse" style={{ backgroundColor: "var(--signal)" }}/>
+              <p className="text-xs" style={{ color: "var(--signal)" }}>{t("landing_preview_time")}</p>
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs" style={{ color: "var(--text-muted)" }}>{t("landing_preview_summary")}</p>
+          <div className="flex gap-1">
+            {[0, 1].map(i => (
+              <span key={i} className="w-1.5 h-1.5 rounded-full transition-all duration-300" style={{ backgroundColor: page === i ? "var(--signal)" : "var(--border)" }} />
+            ))}
+          </div>
+        </div>
+        <div className="space-y-3" style={{ opacity, transition: "opacity 400ms ease-in-out" }}>
+          {visibleCards.map((item, i) => (
+            <div key={`${page}-${i}`} className="rounded-xl p-3 border" style={{ backgroundColor: "var(--bg-panel)", borderColor: "var(--border-subtle)" }}>
+              <div className="flex items-start justify-between gap-2 mb-1.5">
+                <span className="text-sm font-medium leading-snug" style={{ color: "var(--text-primary)" }}>{item.title}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded font-medium shrink-0 font-mono"
+                  style={{ color: item.badgeColor, backgroundColor: `color-mix(in srgb, ${item.badgeColor} 8%, transparent)` }}>{item.badge}</span>
+              </div>
+              <p className="text-xs mb-1.5" style={{ color: "var(--text-muted)" }}>{t("landing_why_now")}{item.why}</p>
+              <p className="text-xs" style={{ color: "var(--text-secondary)" }}>&rarr; {item.action}</p>
+            </div>
+          ))}
+        </div>
+        {/* CTA — bigger, more prominent */}
+        <div className="mt-5">
+          <button
+            onClick={scrollToForm}
+            className="w-full group relative overflow-hidden font-medium py-3 px-4 rounded-xl transition-all duration-200 text-sm cursor-pointer hover:opacity-90 active:scale-[0.98]"
+            style={{ backgroundColor: "color-mix(in srgb, var(--signal) 15%, transparent)", color: "var(--signal)", border: "1px solid color-mix(in srgb, var(--signal) 40%, transparent)" }}
+          >
+            <span className="pointer-events-none absolute inset-0 -translate-x-full animate-[shimmer_sweep_2.5s_ease-in-out_infinite]"
+              style={{ background: "linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--signal) 25%, transparent) 50%, transparent 100%)" }} />
+            <span className="relative font-semibold">
+              {lang === "zh" ? "👉 申請邀請碼，解鎖完整推送" : "👉 Get invite code, unlock full access"}
+            </span>
+          </button>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 interface LandingContentProps {
   userCount: number
   waitlistCount: number
@@ -327,54 +442,7 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
       </div>
 
       {/* ── Product preview card ── */}
-      <section className="max-w-2xl mx-auto px-6 py-10">
-        <p className="text-xs text-center mb-4 uppercase tracking-widest font-mono" style={{ color: "var(--text-muted)" }}>{t("landing_preview_label")}</p>
-        <div className="rounded-2xl p-6 shadow-sm" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border)" }}>
-          <div className="flex items-center gap-3 mb-4 pb-4" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
-            <div className="w-11 h-11 flex items-center justify-center shrink-0">
-              <FlywheelLogo size={32} style={{ color: "var(--signal)" }} />
-            </div>
-            <div>
-              <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{lang === "en" ? "Sniffing Clock" : "嗅鐘日報"}</p>
-              <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full inline-block animate-pulse" style={{ backgroundColor: "var(--signal)" }}/>
-                <p className="text-xs" style={{ color: "var(--signal)" }}>{t("landing_preview_time")}</p>
-              </div>
-            </div>
-          </div>
-          <p className="text-xs mb-3" style={{ color: "var(--text-muted)" }}>{t("landing_preview_summary")}</p>
-          <div className="space-y-3">
-            {[
-              { badge: t("landing_high_conf"), badgeColor: "var(--signal)", title: t("landing_preview_opp1_title"), why: t("landing_preview_opp1_why"), action: t("landing_preview_opp1_action") },
-              { badge: t("landing_mid_conf"), badgeColor: "var(--signal-amber)", title: t("landing_preview_opp2_title"), why: t("landing_preview_opp2_why"), action: t("landing_preview_opp2_action") },
-            ].map((item, i) => (
-              <div key={i} className="rounded-xl p-3 border" style={{ backgroundColor: "var(--bg-panel)", borderColor: "var(--border-subtle)" }}>
-                <div className="flex items-start justify-between gap-2 mb-1.5">
-                  <span className="text-sm font-medium leading-snug" style={{ color: "var(--text-primary)" }}>{item.title}</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded font-medium shrink-0 font-mono"
-                    style={{ color: item.badgeColor, backgroundColor: `color-mix(in srgb, ${item.badgeColor} 8%, transparent)` }}>{item.badge}</span>
-                </div>
-                <p className="text-xs mb-1.5" style={{ color: "var(--text-muted)" }}>{t("landing_why_now")}{item.why}</p>
-                <p className="text-xs" style={{ color: "var(--text-secondary)" }}>&rarr; {item.action}</p>
-              </div>
-            ))}
-          </div>
-          {/* CTA — bigger, more prominent */}
-          <div className="mt-5">
-            <button
-              onClick={scrollToForm}
-              className="w-full group relative overflow-hidden font-medium py-3 px-4 rounded-xl transition-all duration-200 text-sm cursor-pointer hover:opacity-90 active:scale-[0.98]"
-              style={{ backgroundColor: "color-mix(in srgb, var(--signal) 15%, transparent)", color: "var(--signal)", border: "1px solid color-mix(in srgb, var(--signal) 40%, transparent)" }}
-            >
-              <span className="pointer-events-none absolute inset-0 -translate-x-full animate-[shimmer_sweep_2.5s_ease-in-out_infinite]"
-                style={{ background: "linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--signal) 25%, transparent) 50%, transparent 100%)" }} />
-              <span className="relative font-semibold">
-                {lang === "zh" ? "👉 申請邀請碼，解鎖完整推送" : "👉 Get invite code, unlock full access"}
-              </span>
-            </button>
-          </div>
-        </div>
-      </section>
+      <PreviewCards lang={lang} t={t} scrollToForm={scrollToForm} />
 
       {/* ── Waitlist Form Section ── */}
       <section className="max-w-xl mx-auto px-6 py-12 text-center">

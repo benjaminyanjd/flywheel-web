@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 
 // Public endpoint — no auth required (landing page preview)
-// Returns latest 2 high-score opportunities for display
+// Returns latest 6 high-score opportunities for display
 export async function GET() {
   try {
     const db = getDb();
@@ -15,7 +15,7 @@ export async function GET() {
            AND opp_embed IS NOT NULL
            AND created_at >= datetime('now', '-7 days')
          ORDER BY created_at DESC
-         LIMIT 2`
+         LIMIT 6`
       )
       .all() as Array<{
         opp_title: string;
