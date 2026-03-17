@@ -59,7 +59,10 @@ export function ExpiredContent({ isActuallyExpired, daysLeft, totalOpps, actione
 
         {/* Trial report */}
         <div className="rounded-2xl p-5 mb-6 text-left border" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
-          <p className="text-sm mb-3" style={{ color: "var(--text-secondary)" }}>{t("expired_report")}</p>
+          <p className="text-sm mb-3 flex items-center gap-2" style={{ color: "var(--text-secondary)" }}>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><rect x="2" y="6" width="4" height="12" rx="1"/><rect x="8" y="3" width="4" height="15" rx="1"/><rect x="14" y="8" width="4" height="10" rx="1"/></svg>
+            {t("expired_report")}
+          </p>
           <div className="grid grid-cols-2 gap-4">
             <div className="text-center">
               <div className="text-3xl font-bold font-mono" style={{ color: "var(--text-primary)" }}>{totalOpps}</div>
@@ -74,7 +77,10 @@ export function ExpiredContent({ isActuallyExpired, daysLeft, totalOpps, actione
 
         {/* Pricing */}
         <div className="rounded-2xl p-5 mb-6 border text-left" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}>
-          <p className="text-sm font-semibold mb-3" style={{ color: "var(--text-primary)" }}>{t("expired_plan_title")}</p>
+          <p className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><polygon points="10,1 12.5,7 19,7.5 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.5 7.5,7"/></svg>
+            {t("expired_plan_title")}
+          </p>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <div>
