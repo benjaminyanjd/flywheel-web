@@ -12,9 +12,11 @@ interface TopNavProps {
   ctaOnClick?: () => void
   /** 不顯示 CTA */
   hideCta?: boolean
+  /** 不顯示登入連結 */
+  hideLogin?: boolean
 }
 
-export function TopNav({ ctaHref = "/", ctaOnClick, hideCta }: TopNavProps) {
+export function TopNav({ ctaHref = "/", ctaOnClick, hideCta, hideLogin }: TopNavProps) {
   const { t, lang } = useT()
 
   return (
@@ -27,9 +29,11 @@ export function TopNav({ ctaHref = "/", ctaOnClick, hideCta }: TopNavProps) {
           </span>
         </Link>
         <div className="flex items-center gap-6">
-          <Link href="/sign-in" className="text-sm transition-colors hover:text-[var(--text-primary)]" style={{ color: "var(--text-secondary)" }}>
-            {t("landing_login")}
-          </Link>
+          {!hideLogin && (
+            <Link href="/sign-in" className="text-sm transition-colors hover:text-[var(--text-primary)]" style={{ color: "var(--text-secondary)" }}>
+              {t("landing_login")}
+            </Link>
+          )}
           <LangToggle />
           <ThemeToggle />
           {!hideCta && (

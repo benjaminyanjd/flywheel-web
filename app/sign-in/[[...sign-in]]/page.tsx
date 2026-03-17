@@ -71,7 +71,7 @@ export default function SignInPage() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: "var(--bg)" }}>
-      <TopNav hideCta />
+      <TopNav hideCta hideLogin />
       <div className="flex-1 flex items-center justify-center p-6 gap-6">
       {/* Scanline overlay (dark mode) */}
       <div className="pointer-events-none fixed inset-0 z-0" style={{
@@ -107,12 +107,7 @@ export default function SignInPage() {
           </div>
         </div>
 
-        {/* Bottom tags */}
-        <div className="flex items-center gap-2 text-sm mt-8" style={{ color: "var(--text-muted)" }}>
-          <a href="/" className="underline underline-offset-4 transition-colors hover:text-[var(--text-primary)]">
-            {t("auth_invite_tag")}
-          </a>
-        </div>
+
       </div>
 
       {/* Right: Clerk sign-in */}
@@ -121,9 +116,9 @@ export default function SignInPage() {
           appearance={isDark ? clerkDark : clerkLight}
           fallbackRedirectUrl="/radar"
         />
-        <p className="text-xs mt-3 text-center" style={{ color: "var(--text-muted)" }}>
-          {lang === "zh" ? "僅限邀請碼用戶 · 7 天免費試用" : "Invite code required · 7-day free trial"}
-        </p>
+        <a href="/" className="block text-xs mt-3 text-center underline underline-offset-4 transition-colors hover:text-[var(--text-primary)]" style={{ color: "var(--text-muted)" }}>
+          {t("auth_invite_tag")}
+        </a>
       </div>
       </div>
     </div>
