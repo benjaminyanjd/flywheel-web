@@ -186,6 +186,7 @@ export default function ControlPage() {
           >
             {scanLoading ? t("ctrl_scan_running") : scanCooldown > 0 ? `${t("ctrl_scan_cooldown")} ${formatCooldown(scanCooldown)}` : t("ctrl_scan_btn")}
           </Button>
+          <p className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>從 Reddit、HN、KOL 等來源抓取最新信號</p>
           {/* IX22: indeterminate progress bar when scanning */}
           {scanLoading && (
             <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ backgroundColor: "var(--border-subtle)" }}>
@@ -219,6 +220,7 @@ export default function ControlPage() {
           >
             {oppLoading ? t("ctrl_opp_running") : oppCooldown > 0 ? `${t("ctrl_opp_cooldown")} ${formatCooldown(oppCooldown)}` : t("ctrl_opp_btn")}
           </Button>
+          <p className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>AI 分析信號，生成個人化行動方案</p>
           {oppResult && (
             <pre className="mt-3 text-xs rounded-xl p-3 overflow-auto max-h-40" style={{ color: "var(--text-secondary)", backgroundColor: "var(--bg-panel)" }}>
               {oppResult}
