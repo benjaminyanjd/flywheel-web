@@ -343,7 +343,7 @@ export const OpportunityCard = React.memo(function OpportunityCard({
               color: "var(--bg)",
             }}
             disabled={adv?.loading}
-            onClick={() => { track("opp_action", { opp_id: String(opp.id), category: ((opp as any).category) || "" }); if (!adv?.text) track("opp_view_plan", { opp_id: String(opp.id) }); onAdvisor(opp) }}
+            onClick={() => { track("opp_action", { opp_id: String(opp.id) }); if (!adv?.text) track("opp_view_plan", { opp_id: String(opp.id) }); onAdvisor(opp) }}
             title={t("opp_action_title_prefix")}
           >
             {adv?.loading ? (
