@@ -6,6 +6,7 @@ import WaitlistForm from "@/components/waitlist-form"
 import { FlywheelLogo } from "@/components/flywheel-logo"
 import { useT } from "@/lib/i18n"
 import { LangToggle } from "@/components/lang-toggle"
+import { ProfileGearIcon, BrainNeuralIcon, ClipboardCheckIcon } from "@/components/solution-icons"
 
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false)
@@ -186,6 +187,9 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
           <p className="text-xs mt-3" style={{ color: "var(--text-muted)" }}>
             {lang === "zh" ? "7 天免費 · 隨時取消 · 邀請制" : "7-day free · Cancel anytime · Invite only"}
           </p>
+          <p className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>
+            {lang === "zh" ? "⚡ 最快 1 分鐘送達" : "⚡ Delivered in as fast as 1 minute"}
+          </p>
         </div>
       </section>
 
@@ -212,73 +216,21 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
               desc: t("landing_gap_info_desc"),
               color: "var(--signal)",
               isSolved: true,
-              icon: (
-                <svg width="64" height="64" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <style>{`
-                    @keyframes gap_info_ring1{0%,100%{r:6;opacity:0.8}50%{r:8;opacity:0.3}}
-                    @keyframes gap_info_ring2{0%,100%{r:12;opacity:0.4}50%{r:15;opacity:0.1}}
-                    @keyframes gap_info_ring3{0%,100%{r:18;opacity:0.15}50%{r:21;opacity:0.04}}
-                    .gi_r1{animation:gap_info_ring1 2s ease-in-out infinite;}
-                    .gi_r2{animation:gap_info_ring2 2s ease-in-out 0.3s infinite;}
-                    .gi_r3{animation:gap_info_ring3 2s ease-in-out 0.6s infinite;}
-                  `}</style>
-                  <circle cx="24" cy="24" className="gi_r3" r="18" stroke="currentColor" strokeWidth="1" fill="none"/>
-                  <circle cx="24" cy="24" className="gi_r2" r="12" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-                  <circle cx="24" cy="24" className="gi_r1" r="6" stroke="currentColor" strokeWidth="2" fill="none"/>
-                  <circle cx="24" cy="24" r="3" fill="currentColor"/>
-                </svg>
-              ),
+              icon: <ProfileGearIcon />,
             },
             {
               label: t("landing_gap_cognition"),
               desc: t("landing_gap_cognition_desc"),
               color: "var(--signal)",
               isSolved: true,
-              icon: (
-                <svg width="64" height="64" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <style>{`
-                    @keyframes gap_cog_glow{0%,100%{opacity:0.12}50%{opacity:0.4}}
-                    @keyframes gap_cog_q{0%,100%{opacity:0}35%,65%{opacity:1}}
-                    @keyframes gap_cog_ray{0%,100%{opacity:0.15;transform:scale(0.9)}50%{opacity:0.8;transform:scale(1.1)}}
-                    .gc_glow{animation:gap_cog_glow 2.2s ease-in-out infinite;}
-                    .gc_q{animation:gap_cog_q 3s ease-in-out infinite;transform-origin:24px 22px;}
-                    .gc_ray{animation:gap_cog_ray 2.2s ease-in-out infinite;transform-origin:24px 24px;}
-                  `}</style>
-                  <circle cx="24" cy="21" r="11" fill="currentColor" className="gc_glow"/>
-                  <path d="M17 21a7 7 0 1 1 14 0c0 3-1.7 5.6-4 7v1.5a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V28c-2.3-1.4-4-4-4-7z" stroke="currentColor" strokeWidth="1.8" fill="none"/>
-                  <line x1="20" y1="32" x2="28" y2="32" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                  <text x="24" y="26" textAnchor="middle" fontSize="9" fontWeight="bold" fill="currentColor" className="gc_q">?</text>
-                  <g className="gc_ray">
-                    <line x1="24" y1="7" x2="24" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                    <line x1="35" y1="10" x2="33" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                    <line x1="13" y1="10" x2="15" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                  </g>
-                </svg>
-              ),
+              icon: <BrainNeuralIcon />,
             },
             {
               label: t("landing_gap_action"),
               desc: t("landing_gap_action_desc"),
               color: "var(--signal)",
               isSolved: true,
-              icon: (
-                <svg width="64" height="64" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <style>{`
-                    @keyframes gap_act_r1{0%{r:0;opacity:0.9}75%{r:11;opacity:0}100%{r:11;opacity:0}}
-                    @keyframes gap_act_r2{0%{r:0;opacity:0.6}75%{r:15;opacity:0}100%{r:15;opacity:0}}
-                    @keyframes gap_act_cur{0%,100%{transform:translate(0,0)}45%{transform:translate(2px,2px)}}
-                    .ga_r1{animation:gap_act_r1 2s ease-out 0.1s infinite;}
-                    .ga_r2{animation:gap_act_r2 2s ease-out 0.25s infinite;}
-                    .ga_cur{animation:gap_act_cur 2s ease-in-out infinite;transform-origin:20px 20px;}
-                  `}</style>
-                  <circle cx="30" cy="30" className="ga_r1" r="0" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-                  <circle cx="30" cy="30" className="ga_r2" r="0" stroke="currentColor" strokeWidth="1" fill="none"/>
-                  <g className="ga_cur">
-                    <path d="M12 10 L12 28 L17 24 L21 33 L24 32 L20 23 L27 23 Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" fill="none"/>
-                  </g>
-                  <circle cx="30" cy="30" r="3" fill="currentColor" opacity="0.9"/>
-                </svg>
-              ),
+              icon: <ClipboardCheckIcon />,
             },
           ].map((item) => (
             <div
