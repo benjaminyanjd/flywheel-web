@@ -100,7 +100,7 @@ function usePreviewOpps(t: (key: import("@/lib/i18n").TKey) => string, lang: str
     fetch("/api/preview-opps")
       .then(r => r.json())
       .then(data => {
-        if (data.opps && data.opps.length >= 6) {
+        if (data.opps && data.opps.length > 0) {
           setApiOpps(data.opps.slice(0, 6).map((o: { title_zh: string; title_en: string; why_zh: string; why_en: string; action_zh: string; action_en: string; confidence: number }) => ({
             badge: t("landing_high_conf"),
             badgeColor: "var(--signal)",
@@ -113,7 +113,7 @@ function usePreviewOpps(t: (key: import("@/lib/i18n").TKey) => string, lang: str
       .catch(() => { /* use fallback */ })
   }, [lang]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  return apiOpps.length >= 6 ? apiOpps : fallback
+  return apiOpps.length > 0 ? apiOpps : fallback
 }
 
 function PreviewCards({ lang, t, scrollToForm }: { lang: string; t: (key: import("@/lib/i18n").TKey) => string; scrollToForm: () => void }) {
@@ -121,16 +121,19 @@ function PreviewCards({ lang, t, scrollToForm }: { lang: string; t: (key: import
   const [page, setPage] = useState(0)
   const [opacity, setOpacity] = useState(1)
 
+  const totalPages = Math.max(1, Math.ceil(allCards.length / 3))
+
   useEffect(() => {
+    if (totalPages <= 1) return
     const timer = setInterval(() => {
       setOpacity(0)
       setTimeout(() => {
-        setPage(p => (p + 1) % 2)
+        setPage(p => (p + 1) % totalPages)
         setOpacity(1)
       }, 400)
     }, 5000)
     return () => clearInterval(timer)
-  }, [])
+  }, [totalPages])
 
   const visibleCards = allCards.slice(page * 3, page * 3 + 3)
 

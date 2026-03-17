@@ -10,6 +10,7 @@ const isPublicRoute = createRouteMatcher([
   "/og-image",
   "/api/webhooks/(.*)",
   "/api/waitlist",
+  "/api/preview-opps",
   "/api/payment/webhook",
   "/payment/success",
 ]);
