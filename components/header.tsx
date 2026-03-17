@@ -90,12 +90,11 @@ function HeaderInner() {
         {/* Logo */}
         <Link href="/radar" className="flex items-center gap-2 shrink-0">
           <FlywheelLogo
-            size={20}
-            className="animate-[spin_8s_linear_infinite]"
+            size={30}
             style={{ color: "var(--signal)" }}
           />
           <span className="font-bold text-base hidden sm:block" style={{ color: "var(--text-primary)" }}>
-            嗅鐘
+            {lang === "en" ? "Sniffing Clock" : "嗅鐘"}
           </span>
         </Link>
 
