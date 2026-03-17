@@ -274,7 +274,7 @@ export default function ArchivePage() {
             const dateLabel = isToday
               ? (lang === "zh" ? "今天" : "Today")
               : `${itemDate.getMonth() + 1}月${itemDate.getDate()}日`;
-            const prevItem = filtered[idx - 1];
+            const prevItem = visibleItems[idx - 1];
             const prevDate = prevItem ? new Date(prevItem.created_at + (prevItem.created_at.endsWith("Z") ? "" : "Z")) : null;
             const showDateHeader = idx === 0 || (prevDate && prevDate.toLocaleDateString("zh-TW") !== itemDate.toLocaleDateString("zh-TW"));
 
@@ -492,6 +492,18 @@ export default function ArchivePage() {
               </React.Fragment>
             );
           })}
+
+          {hasMore && (
+            <div className="flex justify-center pt-4 pb-2">
+              <button
+                onClick={() => setVisibleCount(prev => prev + 10)}
+                className="px-6 py-2 rounded-xl text-sm font-medium border transition-all duration-200 hover:bg-[var(--bg-panel)] btn-press"
+                style={{ borderColor: "var(--border)", color: "var(--text-secondary)", backgroundColor: "var(--bg-card)" }}
+              >
+                載入更多（還有 {filtered.length - visibleCount} 條）
+              </button>
+            </div>
+          )}
 
           {filtered.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 text-gray-400 animate-page-enter">

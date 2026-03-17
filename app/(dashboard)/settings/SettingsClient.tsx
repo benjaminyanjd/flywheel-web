@@ -223,17 +223,17 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
                   <div className="flex flex-col">
                     <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
                       {trialInfo.plan === "pro" ? (
-                        <span className="inline-flex items-center gap-1">
+                        <span className="inline-flex items-center gap-1.5">
                           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3.5 8.5L6.5 11.5L12.5 4.5"/></svg>
                           {tr("settings_plan_pro")}
                         </span>
                       ) : trialInfo.plan === "trial" ? (
-                        <span className="inline-flex items-center gap-1">
+                        <span className="inline-flex items-center gap-1.5">
                           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5V8L10.5 9.5"/></svg>
                           {tr("settings_plan_trial")}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1">
+                        <span className="inline-flex items-center gap-1.5">
                           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 1.5L1.5 13.5H14.5L8 1.5Z"/><path d="M8 6.5V9.5"/><circle cx="8" cy="11.5" r="0.5" fill="#f59e0b"/></svg>
                           {tr("settings_plan_expired")}
                         </span>
