@@ -188,9 +188,7 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
           <p className="text-xs mt-3" style={{ color: "var(--text-muted)" }}>
             {lang === "zh" ? "7 天免費 · 隨時取消 · 邀請制" : "7-day free · Cancel anytime · Invite only"}
           </p>
-          <p className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>
-            {lang === "zh" ? "⚡ 最快 1 分鐘送達" : "⚡ Delivered in as fast as 1 minute"}
-          </p>
+
         </div>
       </section>
 
