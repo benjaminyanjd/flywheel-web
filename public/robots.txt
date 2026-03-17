@@ -1,11 +1,16 @@
 User-agent: *
 Allow: /
-Allow: /privacy
 Disallow: /api/
 Disallow: /sign-in
 Disallow: /sign-up
 Disallow: /onboarding
+Disallow: /radar
+Disallow: /opportunities
+Disallow: /todolist
+Disallow: /archive
+Disallow: /advisor
+Disallow: /control
+Disallow: /settings
 Disallow: /expired
-Disallow: /og-image
 
-Sitemap: https://flywheelsea.club/sitemap.xml
+Sitemap: https://sniffingclock.club/sitemap.xml
