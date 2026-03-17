@@ -40,7 +40,16 @@ export const OpportunityCard = React.memo(function OpportunityCard({
   const rawEmbed = parseEmbed(opp.opp_embed);
   const useEn = lang === "en" && opp.opp_embed_en;
   const embed = useEn ? parseEmbed(opp.opp_embed_en!) ?? rawEmbed : rawEmbed;
-  const displayTitle = useEn && opp.opp_title_en ? opp.opp_title_en : opp.opp_title;
+  const rawTitle = useEn && opp.opp_title_en ? opp.opp_title_en : opp.opp_title;
+  // #13: Extract confidence badge from title
+  const confBadgeMatch = rawTitle.match(/[🔴🟡🟢]\s*(高置信|中置信|低置信)/);
+  const confBadgeLabel = confBadgeMatch?.[1] as "高置信" | "中置信" | "低置信" | undefined;
+  const displayTitle = confBadgeMatch ? rawTitle.replace(confBadgeMatch[0], "").trim() : rawTitle;
+  const confBadgeStyles: Record<string, { bg: string; color: string }> = {
+    "高置信": { bg: "color-mix(in srgb, #ef4444 15%, transparent)", color: "#ef4444" },
+    "中置信": { bg: "color-mix(in srgb, #eab308 15%, transparent)", color: "#eab308" },
+    "低置信": { bg: "color-mix(in srgb, var(--signal) 15%, transparent)", color: "var(--signal)" },
+  };
   const confidence = rawEmbed?.confidence ?? 0;
   const pct = confidence <= 1 ? Math.round(confidence * 100) : Math.round(confidence * 10);
   // IX13: confidence bar animation
@@ -101,6 +110,14 @@ export const OpportunityCard = React.memo(function OpportunityCard({
               <h3 className="font-semibold text-base leading-snug break-words" style={{ color: "var(--text-primary)" }}>
                 {displayTitle}
               </h3>
+              {confBadgeLabel && (
+                <span
+                  className="text-xs font-medium px-2 py-0.5 rounded-full shrink-0 self-center"
+                  style={{ backgroundColor: confBadgeStyles[confBadgeLabel].bg, color: confBadgeStyles[confBadgeLabel].color }}
+                >
+                  {confBadgeLabel}
+                </span>
+              )}
               {(() => {
                 const hoursAgo = (Date.now() - new Date(opp.created_at + " UTC").getTime()) / (1000 * 60 * 60);
                 if (hoursAgo > 48) return (
