@@ -116,6 +116,7 @@ export default function ArchivePage() {
   const [outcomeNote, setOutcomeNote] = useState<Record<number, string>>({});
   const [outcomeSubmitting, setOutcomeSubmitting] = useState<Record<number, boolean>>({});
   const [outcomeSuccess, setOutcomeSuccess] = useState<Record<number, boolean>>({});
+  const [visibleCount, setVisibleCount] = useState(10);
 
   useEffect(() => {
     fetch("/api/archive")
@@ -136,6 +137,14 @@ export default function ArchivePage() {
 
   const filtered = (activeTab === "all" ? items : items.filter((i) => i.action === activeTab))
     .filter(i => !search || i.opp_title.toLowerCase().includes(search.toLowerCase()));
+
+  const visibleItems = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+
+  // Reset visible count when filter/search changes
+  useEffect(() => {
+    setVisibleCount(10);
+  }, [activeTab, search]);
 
   function toggleExpand(id: number) {
     setExpanded((prev) => {
@@ -250,7 +259,7 @@ export default function ArchivePage() {
 
       <ScrollArea className="flex-1">
         <div className="space-y-2 pr-4">
-          {filtered.map((item, idx) => {
+          {visibleItems.map((item, idx) => {
             const cfg = STATUS_CONFIG[item.action] ?? { label: item.action, pill: "border text-[var(--text-muted)] bg-[var(--bg-panel)]", accent: "bg-[var(--text-muted)]" };
             const isOpen = expanded.has(item.id);
             const embed = isOpen ? parseEmbed(item.opp_embed) : null;

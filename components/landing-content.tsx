@@ -10,8 +10,8 @@ import { ProfileGearIcon, BrainNeuralIcon, ClipboardCheckIcon } from "@/componen
 import { InfoGapIcon, CognitionGapIcon, ActionGapIcon } from "@/components/problem-icons"
 import { TopNav } from "@/components/top-nav"
 
-function FAQItem({ q, a }: { q: string; a: string }) {
-  const [open, setOpen] = useState(false)
+function FAQItem({ q, a, defaultOpen = false }: { q: string; a: string; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen)
   return (
     <div className="rounded-xl" style={{ border: "1px solid var(--border)" }}>
       <button
@@ -515,7 +515,7 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
             { q: t("landing_faq4_q"), a: t("landing_faq4_a") },
             { q: t("landing_faq5_q"), a: t("landing_faq5_a") },
           ].map((item, i) => (
-            <FAQItem key={i} q={item.q} a={item.a} />
+            <FAQItem key={i} q={item.q} a={item.a} defaultOpen={i === 0} />
           ))}
         </div>
       </section>
