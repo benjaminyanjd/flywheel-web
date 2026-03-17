@@ -240,15 +240,16 @@ function AdvisorInner() {
               <div
                 key={i}
                 className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-fade-in`}
+                style={{ marginBottom: "4px" }}
               >
                 <div
-                  className={`max-w-[80%] rounded-xl px-4 py-3 text-sm ${
+                  className={`max-w-[80%] text-sm ${
                     msg.role === "user"
-                      ? "text-[var(--bg)] whitespace-pre-wrap"
-                      : "border"
+                      ? "rounded-2xl rounded-br-md px-4 py-3 whitespace-pre-wrap"
+                      : "rounded-2xl rounded-bl-md px-4 py-3 border"
                   }`}
                   style={msg.role === "user"
-                    ? { backgroundColor: "var(--signal)" }
+                    ? { backgroundColor: "color-mix(in srgb, var(--signal) 18%, var(--bg-card))", color: "var(--text-primary)" }
                     : { backgroundColor: "var(--bg-panel)", color: "var(--text-primary)", borderColor: "var(--border-subtle)" }
                   }
                 >
