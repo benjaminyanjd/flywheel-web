@@ -8,6 +8,7 @@ import { TopNav } from "@/components/top-nav";
 import { useT } from "@/lib/i18n";
 import { deriveFocus } from "@/lib/preferences";
 import { FlywheelLogo } from "@/components/flywheel-logo";
+import { track } from "@/lib/analytics";
 
 export default function OnboardingPage() {
   const { t } = useT();
@@ -98,6 +99,7 @@ export default function OnboardingPage() {
       if (!res.ok) {
         setInviteError(data.error || t("onboard_invite_error"));
       } else {
+        track("onboarding_step_complete", { step: 0 });
         setStep(1);
       }
     } catch {
@@ -152,6 +154,8 @@ export default function OnboardingPage() {
 
   async function finishWithTelegram() {
     setSaving(true);
+    track("onboarding_step_complete", { step: 4 });
+    track("onboarding_complete");
     try {
       await fetch("/api/user/settings", {
         method: "POST",
@@ -374,7 +378,7 @@ export default function OnboardingPage() {
 
               <div title={!step1Complete ? "請完成所有選項" : undefined}>
                 <Button
-                  onClick={() => setStep(2)}
+                  onClick={() => { track("onboarding_step_complete", { step: 1 }); setStep(2) }}
                   disabled={!step1Complete}
                   className="w-full rounded-xl mt-2"
                   style={step1Complete ? { backgroundColor: "var(--signal)", color: "var(--bg)" } : {}}
@@ -412,7 +416,7 @@ export default function OnboardingPage() {
               })}
               <div title={categories.length === 0 ? "請完成所有選項" : undefined}>
                 <Button
-                  onClick={() => setStep(3)}
+                  onClick={() => { track("onboarding_step_complete", { step: 2 }); setStep(3) }}
                   disabled={categories.length === 0}
                   className="w-full rounded-xl mt-2"
                   style={categories.length > 0 ? { backgroundColor: "var(--signal)", color: "var(--bg)" } : {}}
@@ -448,7 +452,7 @@ export default function OnboardingPage() {
                 );
               })}
               <Button
-                onClick={() => setStep(4)}
+                onClick={() => { track("onboarding_step_complete", { step: 3 }); setStep(4) }}
                 className="w-full rounded-xl mt-2"
                 style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
               >
