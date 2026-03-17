@@ -1,5 +1,6 @@
 "use client";
 import { SignUp } from "@clerk/nextjs";
+import { TopNav } from "@/components/top-nav";
 import { useT } from "@/lib/i18n";
 import { useTheme } from "next-themes";
 
@@ -69,7 +70,9 @@ export default function SignUpPage() {
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 gap-6" style={{ backgroundColor: "var(--bg)" }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "var(--bg)" }}>
+      <TopNav hideCta />
+      <div className="flex-1 flex items-center justify-center p-6 gap-6">
       {/* Scanline overlay */}
       <div className="pointer-events-none fixed inset-0 z-0" style={{
         background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px)"
@@ -114,6 +117,10 @@ export default function SignUpPage() {
           appearance={isDark ? clerkDark : clerkLight}
           fallbackRedirectUrl="/onboarding"
         />
+        <p className="text-xs mt-3 text-center" style={{ color: "var(--text-muted)" }}>
+          {lang === "zh" ? "僅限邀請碼用戶 · 7 天免費試用" : "Invite code required · 7-day free trial"}
+        </p>
+      </div>
       </div>
     </div>
   );

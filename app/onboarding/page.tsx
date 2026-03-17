@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TopNav } from "@/components/top-nav";
 import { useT } from "@/lib/i18n";
 import { deriveFocus } from "@/lib/preferences";
 import { FlywheelLogo } from "@/components/flywheel-logo";
@@ -196,7 +197,9 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: "var(--bg)" }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "var(--bg)" }}>
+      <TopNav hideCta />
+      <div className="flex-1 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-6">
@@ -487,6 +490,7 @@ export default function OnboardingPage() {
             </CardContent>
           </Card>
         )}
+      </div>
       </div>
     </div>
   );

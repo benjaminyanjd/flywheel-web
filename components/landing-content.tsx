@@ -201,7 +201,79 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
         </p>
       </div>
 
-      {/* ── Three Gaps ── */}
+      {/* ── Problem Diagnosis: Three Gaps ── */}
+      <section className="max-w-4xl mx-auto px-6 py-16">
+        <h2 className="text-2xl font-bold text-center mb-3" style={{ color: "var(--text-primary)" }}>
+          {t("landing_problem_title")}
+        </h2>
+        <p className="text-center text-sm mb-12 font-mono" style={{ color: "var(--signal)" }}>
+          — {t("landing_problem_sub")} —
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            {
+              label: t("landing_problem_info"),
+              desc: t("landing_problem_info_desc"),
+              solved: false,
+              icon: (
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="24" cy="24" r="4" />
+                  <circle cx="24" cy="24" r="12" opacity="0.4" />
+                  <circle cx="24" cy="24" r="20" opacity="0.15" />
+                </svg>
+              ),
+            },
+            {
+              label: t("landing_problem_cognition"),
+              desc: t("landing_problem_cognition_desc"),
+              solved: true,
+              icon: (
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="24" cy="18" r="8" />
+                  <path d="M16 42c0-6 4-10 8-10s8 4 8 10" />
+                  <path d="M30 14l4-4m-4 4l4 4" opacity="0.6" />
+                </svg>
+              ),
+            },
+            {
+              label: t("landing_problem_action"),
+              desc: t("landing_problem_action_desc"),
+              solved: true,
+              icon: (
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 8l24 16-24 16V8z" />
+                </svg>
+              ),
+            },
+          ].map((item) => (
+            <div
+              key={item.label}
+              className="rounded-2xl p-8 text-center relative"
+              style={{
+                backgroundColor: item.solved ? "color-mix(in srgb, var(--signal) 6%, var(--bg-card))" : "var(--bg-card)",
+                border: `1px solid ${item.solved ? "color-mix(in srgb, var(--signal) 30%, transparent)" : "var(--border-subtle)"}`,
+              }}
+            >
+              {item.solved && (
+                <span className="absolute top-3 right-3 text-xs font-medium px-2 py-0.5 rounded-full flex items-center gap-1"
+                  style={{ color: "var(--signal)", backgroundColor: "color-mix(in srgb, var(--signal) 12%, transparent)" }}>
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M2 6l3 3 5-5" />
+                  </svg>
+                  {t("landing_problem_solved")}
+                </span>
+              )}
+              <div className="flex justify-center mb-5" style={{ color: item.solved ? "var(--signal)" : "var(--text-muted)" }}>{item.icon}</div>
+              <p className="text-base font-bold mb-2" style={{ color: item.solved ? "var(--text-primary)" : "var(--text-muted)" }}>
+                {item.label}
+              </p>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Solution: How Sniffing Clock solves it ── */}
       <section className="max-w-4xl mx-auto px-6 py-16">
         <h2 className="text-2xl font-bold text-center mb-3" style={{ color: "var(--text-primary)" }}>
           {t("landing_gap_title")}
