@@ -156,7 +156,7 @@ function PreviewCards({ lang, t, scrollToForm }: { lang: string; t: (key: import
             <FlywheelLogo size={32} style={{ color: "var(--signal)" }} />
           </div>
           <div>
-            <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{lang === "en" ? "Sniffing Clock" : "嗅鐘日報"}</p>
+            <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{lang === "en" ? "Sniffing Clock Live Push" : "嗅鐘即時推送"}</p>
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full inline-block animate-pulse" style={{ backgroundColor: "var(--signal)" }}/>
               <p className="text-xs" style={{ color: "var(--signal)" }}>{t("landing_preview_time")}</p>

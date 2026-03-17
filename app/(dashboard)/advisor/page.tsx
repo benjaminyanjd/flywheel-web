@@ -223,12 +223,13 @@ function AdvisorInner() {
                   <p className="text-lg font-medium mb-1" style={{ color: "var(--text-primary)" }}>{t("advisor_welcome")}</p>
                   <p className="text-sm" style={{ color: "var(--text-muted)" }}>{t("advisor_welcome_sub")}</p>
                 </div>
-                {/* 快捷問題 (empty state - larger) */}
-                <div className="flex flex-col gap-2 w-full max-w-md">
+                {/* Quick question pills (empty state only) */}
+                <div className="flex flex-wrap justify-center gap-2 w-full max-w-lg">
                   {quickQuestions.map((q) => (
                     <button
                       key={q}
-                      className="text-left text-sm rounded-xl px-4 py-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm btn-press border hover:bg-[var(--bg-panel)]" style={{ color: "var(--text-secondary)", backgroundColor: "var(--bg-card)", borderColor: "var(--border)" }}
+                      className="text-xs rounded-full px-4 py-2 transition-all duration-200 btn-press border hover:text-[var(--signal)] hover:border-[var(--signal)]"
+                      style={{ color: "var(--text-secondary)", backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}
                       onClick={() => handleSend(q)}
                     >
                       {q}
@@ -311,22 +312,6 @@ function AdvisorInner() {
           </button>
         )}
       </div>
-
-      {/* IX21: Quick question chips (when has history and not streaming) */}
-      {messages.length > 0 && !streaming && (
-        <div className="flex flex-wrap gap-1.5 mb-2">
-          {quickQuestions.map((q) => (
-            <button
-              key={q}
-              onClick={() => handleSend(q)}
-              className="text-xs px-3 py-1 rounded-full border transition-all duration-150 hover:bg-[var(--bg-panel)] btn-press"
-              style={{ borderColor: "var(--border)", color: "var(--text-muted)", backgroundColor: "var(--bg-card)" }}
-            >
-              {q}
-            </button>
-          ))}
-        </div>
-      )}
 
       <div className="flex gap-2 items-end">
         <Textarea
