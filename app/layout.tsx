@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Serif_TC } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { zhTW } from "@clerk/localizations";
 import { ThemeProvider } from "next-themes";
 import { runMigrations } from "@/lib/db";
 import { logger } from "@/lib/logger";
@@ -76,7 +77,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider localization={zhTW}>
       <html lang="zh-TW" className={`${notoSerifTC.variable}`} suppressHydrationWarning>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
