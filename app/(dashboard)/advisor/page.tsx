@@ -10,6 +10,7 @@ import { AdvisorIcon } from "@/components/icons";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { PROSE_CLASS } from "@/lib/prose-class";
+import { track } from "@/lib/analytics";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -88,6 +89,7 @@ function AdvisorInner() {
 
   // IX20: clear confirm handler
   function handleClearHistory() {
+    track("advisor_clear", { message_count: messages.length });
     setMessages([]);
     setShowClearConfirm(false);
     try {
@@ -117,6 +119,7 @@ function AdvisorInner() {
   async function handleSend(textOverride?: string) {
     const text = (textOverride ?? input).trim();
     if (!text || streaming) return;
+    track("advisor_message_send", { is_quick_question: !!textOverride });
 
     setInput("");
     const userMsg: ChatMessage = { role: "user", content: text };
@@ -225,12 +228,12 @@ function AdvisorInner() {
                 </div>
                 {/* Quick question pills (empty state only) */}
                 <div className="flex flex-wrap justify-center gap-2 w-full max-w-lg">
-                  {quickQuestions.map((q) => (
+                  {quickQuestions.map((q, i) => (
                     <button
                       key={q}
                       className="text-xs rounded-full px-4 py-2 transition-all duration-200 btn-press border hover:text-[var(--signal)] hover:border-[var(--signal)]"
                       style={{ color: "var(--text-secondary)", backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}
-                      onClick={() => handleSend(q)}
+                      onClick={() => { track("advisor_quick_click", { question_index: i }); handleSend(q) }}
                     >
                       {q}
                     </button>
