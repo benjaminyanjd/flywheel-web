@@ -223,12 +223,12 @@ function SidebarInner() {
 
       {daysLeft !== null && daysLeft <= 7 && (
         <div className="px-3 pb-2">
-          <a href="/expired" className={`flex items-center gap-2 text-xs px-3 py-2 rounded-lg transition-colors ${
+          <Link href="/expired" className={`flex items-center gap-2 text-xs px-3 py-2 rounded-lg transition-colors ${
             daysLeft <= 2 ? "bg-red-50 text-red-600 hover:bg-red-100" : "bg-amber-50 text-amber-600 hover:bg-amber-100"
           }`}>
             <ClockIcon size={14} />
             <span>{t("sidebar_trial_left")} {daysLeft} {t("sidebar_trial_days")}</span>
-          </a>
+          </Link>
         </div>
       )}
       <div className="px-3 pb-2">

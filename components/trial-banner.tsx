@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useT } from "@/lib/i18n";
 
 export function TrialBanner({ daysLeft }: { daysLeft: number }) {
@@ -10,7 +11,7 @@ export function TrialBanner({ daysLeft }: { daysLeft: number }) {
         : "bg-amber-50 border-amber-200 text-amber-600"
     }`}>
       <span>{t("trial_banner_pre")} {daysLeft} {t("trial_banner_days")} {t("trial_banner_post")}</span>
-      <a href="/expired" className="hover:underline font-medium shrink-0">{t("trial_banner_link")}</a>
+      <Link href="/expired" className="hover:underline font-medium shrink-0">{t("trial_banner_link")}</Link>
     </div>
   );
 }
