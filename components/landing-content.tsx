@@ -7,6 +7,7 @@ import { FlywheelLogo } from "@/components/flywheel-logo"
 import { useT } from "@/lib/i18n"
 import { LangToggle } from "@/components/lang-toggle"
 import { ProfileGearIcon, BrainNeuralIcon, ClipboardCheckIcon } from "@/components/solution-icons"
+import { InfoGapIcon, CognitionGapIcon, ActionGapIcon } from "@/components/problem-icons"
 
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false)
@@ -202,7 +203,7 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
       </div>
 
       {/* ── Problem Diagnosis: Three Gaps ── */}
-      <section className="max-w-4xl mx-auto px-6 py-16">
+      <section className="max-w-4xl mx-auto px-6 pt-6 pb-10">
         <h2 className="text-2xl font-bold text-center mb-3" style={{ color: "var(--text-primary)" }}>
           {t("landing_problem_title")}
         </h2>
@@ -215,35 +216,19 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
               label: t("landing_problem_info"),
               desc: t("landing_problem_info_desc"),
               solved: false,
-              icon: (
-                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="24" cy="24" r="4" />
-                  <circle cx="24" cy="24" r="12" opacity="0.4" />
-                  <circle cx="24" cy="24" r="20" opacity="0.15" />
-                </svg>
-              ),
+              icon: <InfoGapIcon />,
             },
             {
               label: t("landing_problem_cognition"),
               desc: t("landing_problem_cognition_desc"),
               solved: true,
-              icon: (
-                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="24" cy="18" r="8" />
-                  <path d="M16 42c0-6 4-10 8-10s8 4 8 10" />
-                  <path d="M30 14l4-4m-4 4l4 4" opacity="0.6" />
-                </svg>
-              ),
+              icon: <CognitionGapIcon />,
             },
             {
               label: t("landing_problem_action"),
               desc: t("landing_problem_action_desc"),
               solved: true,
-              icon: (
-                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 8l24 16-24 16V8z" />
-                </svg>
-              ),
+              icon: <ActionGapIcon />,
             },
           ].map((item) => (
             <div
