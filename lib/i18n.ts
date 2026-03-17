@@ -100,7 +100,7 @@ export const translations = {
     landing_faq5_a: "我們只存儲你的 Telegram Chat ID 和偏好設置，不收集個人身份信息，不出售數據。",
     landing_bottom_note: "目前僅限邀請制 · 名額有限",
     landing_bottom_title: "跳過認知負擔，直接行動",
-    landing_bottom_desc: "加入第一批用戶，機會窗口開著就推\n你的背景過濾，你的行動清單。",
+    landing_bottom_desc: "加入第一批用戶，機會窗口開著就推\n根據你的背景過濾出你的行動清單。",
     landing_bottom_price: "試用結束後 $19.9/月，隨時取消",
     landing_footer_contact: "聯繫支持",
     landing_footer_privacy: "隱私政策",
