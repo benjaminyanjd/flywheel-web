@@ -8,6 +8,7 @@ import { getLangStored, type Lang } from "@/lib/lang";
 import { useT } from "@/lib/i18n";
 import { useToast } from "@/components/toast";
 import { IconAITech, IconCrypto, IconOnchain, IconCommunity, IconKOL, IconAlpha } from "@/components/icons";
+import { track } from "@/lib/analytics";
 
 function CheckboxIcon({ checked }: { checked: boolean }) {
   if (checked) {
@@ -137,6 +138,7 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
         }),
       });
       if (res.ok) {
+        track("telegram_bind", { success: true });
         setTgStatus("saved");
         toast(tr("settings_tg_toast_ok"));
         setTimeout(() => setTgStatus("idle"), 2000);
@@ -194,6 +196,7 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
         body: JSON.stringify({ categories }),
       });
       if (res.ok) {
+        track("settings_save");
         setCatStatus("saved");
         toast(tr("settings_cat_toast_ok"));
         setTimeout(() => setCatStatus("idle"), 2000);
