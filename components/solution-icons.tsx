@@ -21,12 +21,12 @@ export function ProfileGearIcon() {
       {/* Glow behind person */}
       <circle cx="26" cy="26" r="17" fill="currentColor" style={{ animation: `${pulse} 3s ease-in-out infinite`, opacity: 0.2 }} />
       {/* Head */}
-      <circle cx="26" cy="18" r="7" stroke="currentColor" strokeWidth="2" fill="none" />
+      <circle cx="26" cy="18" r="7" stroke="currentColor" strokeWidth="2.5" fill="none" />
       {/* Shoulders */}
-      <path d="M12 42c0-7.7 6.3-14 14-14s14 6.3 14 14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <path d="M12 42c0-7.7 6.3-14 14-14s14 6.3 14 14" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" />
       {/* Gear — bottom-right */}
       <g style={{ transformOrigin: "48px 48px", animation: `${spin} 6s linear infinite` }}>
-        <circle cx="48" cy="48" r="5.5" stroke="currentColor" strokeWidth="2" fill="none" />
+        <circle cx="48" cy="48" r="5.5" stroke="currentColor" strokeWidth="2.5" fill="none" />
         {[0, 45, 90, 135, 180, 225, 270, 315].map(deg => {
           const rad = (deg * Math.PI) / 180
           const x1 = 48 + 6.5 * Math.cos(rad)
@@ -59,28 +59,28 @@ export function BrainNeuralIcon() {
       {/* Brain outline — left hemisphere */}
       <path
         d="M32 13c-4 0-7.3 1.3-9.3 4-2.4 3.2-3.3 6.7-2.7 10.7.4 2.7-1.3 4.7-1.3 7.3 0 3.3 2 6 4.7 7.3 2 1.1 4.7 1.3 8.7 1.3"
-        stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"
+        stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round"
       />
       {/* Brain outline — right hemisphere */}
       <path
         d="M32 13c4 0 7.3 1.3 9.3 4 2.4 3.2 3.3 6.7 2.7 10.7-.4 2.7 1.3 4.7 1.3 7.3 0 3.3-2 6-4.7 7.3-2 1.1-4.7 1.3-8.7 1.3"
-        stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"
+        stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round"
       />
       {/* Center fold */}
       <path d="M32 16v26" stroke="currentColor" strokeWidth="1.2" strokeDasharray="2.5 2.5" opacity="0.4" />
       {/* Inner folds */}
-      <path d="M24 24c2.7-1.3 5.3 0 8 1.3" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.5" />
-      <path d="M40 24c-2.7-1.3-5.3 0-8 1.3" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.5" />
-      <path d="M22.5 32c2 1.3 6.7 1.3 9.3-0.7" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.5" />
-      <path d="M41.5 32c-2.7 1.3-5.3-0.7-9.3-0.7" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.5" />
+      <path d="M24 24c2.7-1.3 5.3 0 8 1.3" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.6" />
+      <path d="M40 24c-2.7-1.3-5.3 0-8 1.3" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.6" />
+      <path d="M22.5 32c2 1.3 6.7 1.3 9.3-0.7" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.6" />
+      <path d="M41.5 32c-2.7 1.3-5.3-0.7-9.3-0.7" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" opacity="0.6" />
       {/* Neural nodes */}
       <circle cx="18" cy="37" r="2.7" fill="currentColor" style={{ animation: `${blink1} 2.5s ease-in-out infinite` }} />
       <circle cx="46" cy="37" r="2.7" fill="currentColor" style={{ animation: `${blink2} 2.5s ease-in-out infinite` }} />
       <circle cx="32" cy="49" r="2.7" fill="currentColor" style={{ animation: `${blink3} 2.5s ease-in-out infinite` }} />
       {/* Connection lines to nodes */}
-      <line x1="21" y1="36" x2="25" y2="34.5" stroke="currentColor" strokeWidth="1.2" opacity="0.3" />
-      <line x1="43" y1="36" x2="39" y2="34.5" stroke="currentColor" strokeWidth="1.2" opacity="0.3" />
-      <line x1="32" y1="44" x2="32" y2="47" stroke="currentColor" strokeWidth="1.2" opacity="0.3" />
+      <line x1="21" y1="36" x2="25" y2="34.5" stroke="currentColor" strokeWidth="1.2" opacity="0.5" />
+      <line x1="43" y1="36" x2="39" y2="34.5" stroke="currentColor" strokeWidth="1.2" opacity="0.5" />
+      <line x1="32" y1="44" x2="32" y2="47" stroke="currentColor" strokeWidth="1.2" opacity="0.5" />
       {/* Lightning bolt */}
       <path
         d="M49 10l-4 7h4l-4 7"

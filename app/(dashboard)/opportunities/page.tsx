@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FlywheelLogo } from "@/components/flywheel-logo";
 import { OpportunityIcon } from "@/components/icons";
@@ -11,6 +11,7 @@ import { OpportunityCard } from "@/components/opportunities/opportunity-card";
 
 function OpportunitiesContent() {
   const h = useOpportunities();
+  const [visibleCount, setVisibleCount] = useState(10);
 
   if (h.loading) return (
     <div className="flex flex-col h-full p-6 animate-page-enter" style={{ backgroundColor: "var(--bg)" }}>
@@ -60,6 +61,14 @@ function OpportunitiesContent() {
     return true;
   });
 
+  // Reset visible count when filters change
+  useEffect(() => {
+    setVisibleCount(10);
+  }, [h.dateFilter, h.confFilter, h.freshnessFilter]);
+
+  const visibleItems = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+
   return (
     <div className="flex flex-col h-full p-6 animate-page-enter" style={{ backgroundColor: "var(--bg)" }}>
       {h.showWelcome && (
@@ -104,7 +113,7 @@ function OpportunitiesContent() {
 
       <ScrollArea className="flex-1 h-[calc(100vh-8rem)] md:h-auto">
         <div className="space-y-5 pr-4">
-          {filtered.map((opp, idx) => (
+          {visibleItems.map((opp, idx) => (
             <OpportunityCard
               key={opp.id}
               opp={opp}
