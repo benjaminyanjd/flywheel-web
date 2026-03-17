@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Noto_Serif_TC } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { zhTW } from "@clerk/localizations";
 import { ThemeProvider } from "next-themes";
+import { PostHogProvider } from "@/components/posthog-provider";
 import { runMigrations } from "@/lib/db";
 import { logger } from "@/lib/logger";
 import "./globals.css";
@@ -89,9 +90,11 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
           style={{ backgroundColor: "var(--bg)", color: "var(--text-primary)" }}
         >
-          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-            {children}
-          </ThemeProvider>
+          <PostHogProvider>
+            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+              {children}
+            </ThemeProvider>
+          </PostHogProvider>
         </body>
       </html>
     </ClerkProvider>
