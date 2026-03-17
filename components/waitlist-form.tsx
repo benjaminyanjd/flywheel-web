@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react"
 import { useT } from "@/lib/i18n"
+import { track } from "@/lib/analytics"
 
 export default function WaitlistForm() {
   const { t } = useT()
@@ -32,6 +33,7 @@ export default function WaitlistForm() {
     e.preventDefault()
     if (!validate()) return
     setStatus("loading")
+    track("waitlist_form_submit", { has_telegram: !!telegram, has_email: !!email })
     try {
       // Get current language from localStorage for tracking
       const lang = typeof window !== 'undefined' ? localStorage.getItem("flywheel-lang") || "zh" : "zh"
@@ -41,11 +43,14 @@ export default function WaitlistForm() {
         body: JSON.stringify({ telegram: telegram.trim(), email: email.trim() || undefined, lang }),
       })
       if (res.ok) {
+        track("waitlist_form_success")
         setSubmitted(true)
       } else {
+        track("waitlist_form_error", { error: "api_error" })
         setStatus("error")
       }
     } catch {
+      track("waitlist_form_error", { error: "network_error" })
       setStatus("error")
     }
   }

@@ -9,6 +9,7 @@ import { useT } from "@/lib/i18n"
 import { ProfileGearIcon, BrainNeuralIcon, ClipboardCheckIcon } from "@/components/solution-icons"
 import { InfoGapIcon, CognitionGapIcon, ActionGapIcon } from "@/components/problem-icons"
 import { TopNav } from "@/components/top-nav"
+import { track } from "@/lib/analytics"
 
 function FAQItem({ q, a, defaultOpen = false }: { q: string; a: string; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen)
@@ -16,7 +17,7 @@ function FAQItem({ q, a, defaultOpen = false }: { q: string; a: string; defaultO
     <div className="rounded-xl" style={{ border: "1px solid var(--border)" }}>
       <button
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={() => { if (!open) track("landing_faq_expand", { question: q }); setOpen(!open) }}
         className="w-full flex justify-between items-center p-4 cursor-pointer font-medium hover:text-[var(--text-primary)] select-none transition-colors text-left"
         style={{ color: "var(--text-secondary)" }}
       >
@@ -187,7 +188,7 @@ function PreviewCards({ lang, t, scrollToForm }: { lang: string; t: (key: import
         {/* CTA — bigger, more prominent */}
         <div className="mt-5">
           <button
-            onClick={scrollToForm}
+            onClick={() => { track("landing_cta_click", { location: "bottom" }); scrollToForm() }}
             className="w-full group relative overflow-hidden font-medium py-3 px-4 rounded-xl transition-all duration-200 text-sm cursor-pointer hover:opacity-90 active:scale-[0.98]"
             style={{ backgroundColor: "color-mix(in srgb, var(--signal) 15%, transparent)", color: "var(--signal)", border: "1px solid color-mix(in srgb, var(--signal) 40%, transparent)" }}
           >
@@ -290,7 +291,7 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
         {/* Hero CTA — anchor button only, no form here */}
         <div className="animate-fade-in-up" style={{ animationDelay: "350ms", animationFillMode: "both" }}>
           <button
-            onClick={scrollToForm}
+            onClick={() => { track("landing_cta_click", { location: "hero" }); scrollToForm() }}
             className="inline-flex items-center gap-2 text-base font-bold px-8 py-4 rounded-xl transition-all duration-200 font-mono cursor-pointer hover:opacity-90 active:scale-95 shadow-lg"
             style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
           >
