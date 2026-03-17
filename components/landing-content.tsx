@@ -407,7 +407,7 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
               }}
             >
               {/* no badge needed — all three are solutions */}
-              <div className="flex justify-center mb-5" style={{ color: item.color }}>{item.icon}</div>
+              <div className="flex justify-center mb-5" style={{ color: item.color, filter: "drop-shadow(0 0 8px var(--signal))" }}>{item.icon}</div>
               <p className="text-base font-bold mb-2" style={{ color: item.isSolved ? "var(--text-primary)" : "var(--text-muted)" }}>
                 {item.label}
               </p>

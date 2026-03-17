@@ -19,7 +19,7 @@ export function ProfileGearIcon() {
         @keyframes ${pulse}{0%,100%{opacity:0.12;r:17}50%{opacity:0.3;r:20}}
       `}</style>
       {/* Glow behind person */}
-      <circle cx="26" cy="26" r="17" fill="currentColor" style={{ animation: `${pulse} 3s ease-in-out infinite` }} />
+      <circle cx="26" cy="26" r="17" fill="currentColor" style={{ animation: `${pulse} 3s ease-in-out infinite`, opacity: 0.2 }} />
       {/* Head */}
       <circle cx="26" cy="18" r="7" stroke="currentColor" strokeWidth="2" fill="none" />
       {/* Shoulders */}

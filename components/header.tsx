@@ -69,6 +69,10 @@ function HeaderInner() {
       .catch(() => {});
   }, []);
 
+  // Hide trial badge on dashboard pages where TrialBanner component already shows
+  const dashboardPaths = ["/radar", "/opportunities", "/todolist", "/archive", "/advisor", "/control", "/settings"];
+  const isDashboardPage = dashboardPaths.some((p) => pathname.startsWith(p));
+
   const tabCls = (active: boolean) =>
     cn(
       "flex-1 flex flex-col items-center justify-center py-2 transition-colors text-xs",
@@ -125,8 +129,8 @@ function HeaderInner() {
 
         {/* Right side */}
         <div className="flex items-center gap-2 ml-auto">
-          {/* Trial warning (desktop) */}
-          {daysLeft !== null && daysLeft <= 7 && (
+          {/* Trial warning (desktop) — hidden on dashboard pages where TrialBanner already shows */}
+          {daysLeft !== null && daysLeft <= 7 && !isDashboardPage && (
             <a
               href="/expired"
               className={cn(
