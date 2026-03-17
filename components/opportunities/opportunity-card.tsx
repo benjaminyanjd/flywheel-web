@@ -9,6 +9,7 @@ import type { TKey } from "@/lib/i18n";
 import { ACTION_BADGE_STYLES, type Opportunity, type AdvisorState, type SignalSource } from "./types";
 import { SignalSourcesSection } from "./signal-sources";
 import { AdvisorPanel } from "./advisor-panel";
+import { track } from "@/lib/analytics";
 
 interface OpportunityCardProps {
   opp: Opportunity;
@@ -104,7 +105,7 @@ export const OpportunityCard = React.memo(function OpportunityCard({
         )}
 
         {/* Header — clickable to expand/collapse */}
-        <button onClick={() => setIsExpanded(!isExpanded)} className="w-full text-left">
+        <button onClick={() => { if (!isExpanded) track("opp_expand", { opp_id: String(opp.id), category: opp.category || "" }); setIsExpanded(!isExpanded) }} className="w-full text-left">
           <div className="flex items-start justify-between mb-3 min-w-0">
             <div className="flex items-start gap-2 pr-4 min-w-0 flex-wrap">
               <h3 className="font-semibold text-base leading-snug break-words" style={{ color: "var(--text-primary)" }}>
@@ -307,7 +308,7 @@ export const OpportunityCard = React.memo(function OpportunityCard({
             className={`text-xs transition-all rounded-xl btn-press ${opp.action === "todo" ? "border-blue-400 text-blue-500 bg-blue-500/10" : "hover:bg-[var(--border-subtle)]"}`}
             style={opp.action !== "todo" ? { borderColor: "var(--border)", color: "var(--text-secondary)" } : undefined}
             disabled={actionLoading[`${opp.id}-todo`] || actionSuccess[`${opp.id}-todo`]}
-            onClick={() => onBtn(opp.id, "todo")}
+            onClick={() => { track("opp_todo", { opp_id: String(opp.id) }); onBtn(opp.id, "todo") }}
             title={t("opp_todo_title_prefix")}
           >
             {actionLoading[`${opp.id}-todo`] ? (
@@ -323,7 +324,7 @@ export const OpportunityCard = React.memo(function OpportunityCard({
             className={`text-xs transition-all rounded-xl btn-press ${opp.action === "bias" ? "border-orange-400 text-orange-500 bg-orange-500/10" : "hover:bg-[var(--border-subtle)]"}`}
             style={opp.action !== "bias" ? { borderColor: "var(--border)", color: "var(--text-secondary)" } : undefined}
             disabled={actionLoading[`${opp.id}-bias`] || actionSuccess[`${opp.id}-bias`]}
-            onClick={() => onBtn(opp.id, "bias")}
+            onClick={() => { track("opp_bias", { opp_id: String(opp.id), category: opp.category || "" }); onBtn(opp.id, "bias") }}
             title={t("opp_bias_title_prefix")}
           >
             {actionLoading[`${opp.id}-bias`] ? (
@@ -342,7 +343,7 @@ export const OpportunityCard = React.memo(function OpportunityCard({
               color: "var(--bg)",
             }}
             disabled={adv?.loading}
-            onClick={() => onAdvisor(opp)}
+            onClick={() => { track("opp_action", { opp_id: String(opp.id), category: opp.category || "" }); if (!adv?.text) track("opp_view_plan", { opp_id: String(opp.id) }); onAdvisor(opp) }}
             title={t("opp_action_title_prefix")}
           >
             {adv?.loading ? (
