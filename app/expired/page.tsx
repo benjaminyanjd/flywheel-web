@@ -25,6 +25,7 @@ export default async function ExpiredPage() {
     actionedOpps = (db.prepare("SELECT COUNT(*) as c FROM opportunity_actions WHERE action IN ('action','done') AND user_id = ?").get(userId) as { c: number } | undefined)?.c ?? 0;
     // 判斷是否真的過期
     if (sub?.plan === "trial" && sub?.trial_end) {
+      // eslint-disable-next-line react-hooks/purity -- Server Component
       const msLeft = new Date(sub.trial_end).getTime() - Date.now();
       isActuallyExpired = msLeft <= 0;
       daysLeft = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60 * 24)));

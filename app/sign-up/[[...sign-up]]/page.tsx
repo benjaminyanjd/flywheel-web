@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { SignUp } from "@clerk/nextjs";
 import { TopNav } from "@/components/top-nav";
 import { useT } from "@/lib/i18n";
@@ -117,9 +118,9 @@ export default function SignUpPage() {
           appearance={isDark ? clerkDark : clerkLight}
           fallbackRedirectUrl="/onboarding"
         />
-        <a href="/" className="block text-xs mt-3 text-center underline underline-offset-4 transition-colors hover:text-[var(--text-primary)]" style={{ color: "var(--text-muted)" }}>
+        <Link href="/" className="block text-xs mt-3 text-center underline underline-offset-4 transition-colors hover:text-[var(--text-primary)]" style={{ color: "var(--text-muted)" }}>
           {t("auth_invite_tag")}
-        </a>
+        </Link>
       </div>
       </div>
     </div>

@@ -46,8 +46,10 @@ function AnimatedStat({ value, label }: { value: string; label: string }) {
 
   // On mount, reset to "0+suffix" for animatable values so animation is visible
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: mount init for animation
     setMounted(true)
     if (isAnimatable) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: reset for animation
       setDisplayed("0" + suffix)
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps

@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
     return trialEnd;
   });
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks -- not a React Hook, it's a db.transaction function
   const trialEnd = useInvite(code.trim().toUpperCase(), userId);
   if (!trialEnd) {
     logger.warn("invite/validate", "Invalid or used invite code", { userId });

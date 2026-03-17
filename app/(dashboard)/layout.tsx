@@ -41,9 +41,11 @@ export default async function DashboardLayout({
     redirect("/expired");
   }
 
+  /* eslint-disable react-hooks/purity -- Server Component, Date.now() is safe here */
   const daysLeft = sub?.plan === "trial" && sub?.trial_end
     ? Math.ceil((new Date(sub.trial_end).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     : null;
+  /* eslint-enable react-hooks/purity */
 
   return (
     <ToastProvider>

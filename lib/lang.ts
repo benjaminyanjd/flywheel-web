@@ -10,6 +10,7 @@ export function useLang(): [Lang, (l: Lang) => void] {
 
   useEffect(() => {
     const stored = localStorage.getItem(KEY) as Lang | null;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: hydrate from localStorage on mount
     if (stored === "zh" || stored === "en") setLangState(stored);
   }, []);
 

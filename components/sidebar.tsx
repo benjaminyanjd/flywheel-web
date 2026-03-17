@@ -58,6 +58,7 @@ function SidebarInner() {
   const [lang, setLangState] = useState<Lang>("zh");
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: hydrate lang on mount
     setLangState(getLangStored());
     const handler = (e: Event) => setLangState((e as CustomEvent<Lang>).detail);
     window.addEventListener("flywheel-lang-change", handler);
@@ -65,6 +66,7 @@ function SidebarInner() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: sync open state with route
     if (isRadarActive) setRadarOpen(true);
   }, [isRadarActive]);
 

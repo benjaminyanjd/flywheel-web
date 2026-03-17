@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/no-require-imports */
 // 用法: node scripts/gen-invite-codes.js [數量]
 // 例: node scripts/gen-invite-codes.js 20
 const Database = require('better-sqlite3')

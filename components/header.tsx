@@ -33,6 +33,7 @@ function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- standard hydration guard
   useEffect(() => setMounted(true), []);
   if (!mounted) return <div className="w-8 h-8" />;
 
@@ -54,12 +55,14 @@ function HeaderInner() {
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: hydrate lang on mount
     setLangState(getLangStored());
     const handler = (e: Event) => setLangState((e as CustomEvent<Lang>).detail);
     window.addEventListener("flywheel-lang-change", handler);
     return () => window.removeEventListener("flywheel-lang-change", handler);
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- setState in async callback, not synchronous in effect body
   useEffect(() => {
     fetch("/api/user/trial")
       .then((r) => r.json())
@@ -131,7 +134,7 @@ function HeaderInner() {
         <div className="flex items-center gap-2 ml-auto">
           {/* Trial warning (desktop) — hidden on dashboard pages where TrialBanner already shows */}
           {daysLeft !== null && daysLeft <= 7 && !isDashboardPage && (
-            <a
+            <Link
               href="/expired"
               className={cn(
                 "hidden md:flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg transition-colors",
@@ -142,7 +145,7 @@ function HeaderInner() {
             >
               <span>🕐</span>
               <span>{daysLeft} 天試用</span>
-            </a>
+            </Link>
           )}
           <LangToggle className="hidden md:block" />
           <ThemeToggle />

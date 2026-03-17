@@ -13,6 +13,11 @@ function OpportunitiesContent() {
   const h = useOpportunities();
   const [visibleCount, setVisibleCount] = useState(10);
 
+  // Reset visible count when filters change (must be before any early return)
+  useEffect(() => {
+    setVisibleCount(10);
+  }, [h.dateFilter, h.confFilter, h.freshnessFilter]);
+
   if (h.loading) return (
     <div className="flex flex-col h-full p-6 animate-page-enter" style={{ backgroundColor: "var(--bg)" }}>
       <div className="h-7 skeleton-shimmer rounded w-40 mb-4" />
@@ -47,6 +52,7 @@ function OpportunitiesContent() {
       if (new Date(opp.created_at + " UTC").toLocaleDateString("zh-TW") !== today) return false;
     }
     if (h.freshnessFilter !== "all") {
+      // eslint-disable-next-line react-hooks/purity -- Date.now() in filter callback is safe
       const hoursAgo = (Date.now() - new Date(opp.created_at + " UTC").getTime()) / (1000 * 60 * 60);
       if (h.freshnessFilter === "fresh" && hoursAgo > 24) return false;
       if (h.freshnessFilter === "expired" && hoursAgo <= 48) return false;
@@ -60,11 +66,6 @@ function OpportunitiesContent() {
     if (h.confFilter === "low") return pct < 50;
     return true;
   });
-
-  // Reset visible count when filters change
-  useEffect(() => {
-    setVisibleCount(10);
-  }, [h.dateFilter, h.confFilter, h.freshnessFilter]);
 
   const visibleItems = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const http = require('http');
 const crypto = require('crypto');
 const { exec } = require('child_process');
