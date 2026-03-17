@@ -136,6 +136,17 @@ function OpportunitiesContent() {
               t={h.t}
             />
           ))}
+          {hasMore && (
+            <div className="flex justify-center pt-2 pb-4">
+              <button
+                onClick={() => setVisibleCount(prev => prev + 10)}
+                className="text-sm px-5 py-2.5 rounded-xl border transition-all hover:border-[var(--signal)] hover:text-[var(--signal)] btn-press"
+                style={{ borderColor: "var(--border)", color: "var(--text-secondary)", backgroundColor: "var(--bg-card)" }}
+              >
+                載入更多（還有 {filtered.length - visibleCount} 條）
+              </button>
+            </div>
+          )}
           {filtered.length === 0 && h.opportunities.length > 0 && (
             <div className="flex flex-col items-center justify-center py-20 animate-page-enter">
               <div className="w-20 h-20 rounded-full flex items-center justify-center mb-4"
