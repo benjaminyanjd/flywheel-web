@@ -23,7 +23,11 @@ export async function GET(req: NextRequest) {
 
     const db = getDb();
 
-    const opportunities = db
+    // Get user trade methods for routing filter
+    const userSettings = db.prepare("SELECT profit_source FROM user_settings WHERE user_id = ?").get(userId) as { profit_source: string | null } | undefined;
+    const userTradeMethods = (userSettings?.profit_source || "").split(",").filter(Boolean);
+
+    const allOpps = db
       .prepare(
         `SELECT oa.*,
            (SELECT COUNT(*) FROM opportunity_actions oa2
@@ -37,6 +41,43 @@ export async function GET(req: NextRequest) {
          ORDER BY oa.created_at DESC`
       )
       .all(userId);
+
+    // Route filter: match opportunity signal categories to user trade methods
+    const CATEGORY_TRADE_MAP: Record<string, string[]> = {
+      funding_rate: ["contract", "arbitrage"],
+      liquidation: ["contract"],
+      whale_move: ["contract", "spot"],
+      kol_call: ["spot", "meme"],
+      onchain_flow: ["onchain", "meme"],
+      token_launch: ["meme", "alpha"],
+      airdrop_opp: ["airdrop"],
+      listing: ["spot", "alpha"],
+      spread: ["arbitrage"],
+      security: [], // push to all
+      macro: ["contract", "spot"],
+      defi_yield: ["onchain", "arbitrage"],
+    };
+
+    let opportunities = allOpps;
+    if (userTradeMethods.length > 0) {
+      opportunities = allOpps.filter((opp: any) => {
+        // Parse signal_ids and check categories
+        let sids: number[] = [];
+        try { sids = JSON.parse(opp.signal_ids || "[]"); } catch { /* ignore */ }
+        if (!Array.isArray(sids) || sids.length === 0) return true; // no signals = show anyway
+
+        const signals = db.prepare(
+          `SELECT DISTINCT category FROM signals WHERE id IN (${sids.map(() => "?").join(",")})`
+        ).all(...sids) as { category: string }[];
+
+        for (const s of signals) {
+          const targets = CATEGORY_TRADE_MAP[s.category] || [];
+          if (targets.length === 0) return true; // security = everyone
+          if (targets.some(t => userTradeMethods.includes(t))) return true;
+        }
+        return false;
+      });
+    }
 
     return NextResponse.json({ opportunities });
   } catch (err) {
