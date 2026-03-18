@@ -65,7 +65,8 @@ export function Footer() {
       >
         <TelegramIcon />
       </a>
-      {" "}
+      {"  "}
+      <span style={{ display: "inline-block", width: 8 }} />
       <a
         href="https://x.com/SniffingClock"
         target="_blank"
@@ -75,10 +76,6 @@ export function Footer() {
       >
         <XIcon />
       </a>
-      {" · "}
-      <Link href="/sign-in" className="transition-colors hover:text-[var(--text-primary)]">
-        {t.login}
-      </Link>
     </footer>
   );
 }
