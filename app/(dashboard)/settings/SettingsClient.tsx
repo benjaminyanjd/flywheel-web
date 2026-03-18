@@ -212,7 +212,7 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-8 pb-24 md:pb-8 animate-page-enter" style={{ backgroundColor: "var(--bg)" }}>
+    <div className="flex-1 p-4 md:p-8 pb-24 md:pb-8 animate-page-enter" style={{ backgroundColor: "var(--bg)" }}>
       <div className="max-w-2xl mx-auto space-y-6">
         <h1 className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
           {tr("settings_title")}

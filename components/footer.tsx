@@ -39,7 +39,7 @@ export function Footer() {
 
   return (
     <footer
-      className="py-6 text-center text-xs"
+      className="py-6 text-center text-xs mt-auto"
       style={{ borderTop: "1px solid var(--border-subtle)", color: "var(--text-muted)" }}
     >
       &copy; 2026 嗅鐘 Sniffing Clock &middot;{" "}

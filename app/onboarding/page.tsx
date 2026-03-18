@@ -179,7 +179,7 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "var(--bg)" }}>
+    <div className="flex-1 flex flex-col" style={{ backgroundColor: "var(--bg)" }}>
       <TopNav hideCta hideLogin />
       <div className="flex-1 flex items-center justify-center p-4">
       <div className="w-full max-w-md">

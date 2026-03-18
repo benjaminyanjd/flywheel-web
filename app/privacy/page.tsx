@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "var(--bg)", color: "var(--text-primary)" }}>
+    <div className="flex-1 flex flex-col" style={{ backgroundColor: "var(--bg)", color: "var(--text-primary)" }}>
       <TopNav hideCta />
 
       <main className="max-w-2xl mx-auto px-6 py-16 flex-1">
