@@ -394,7 +394,7 @@ export default function ArchivePage() {
                         className="text-xs font-semibold px-3 py-1.5 rounded-xl border transition-all hover:bg-[var(--bg-panel)]"
                         style={{ color: "var(--signal)", borderColor: "var(--signal)" }}
                       >
-                        📊 回報結果
+                        回報結果
                       </button>
                     )}
                     {outcomeOpen.has(item.id) && (

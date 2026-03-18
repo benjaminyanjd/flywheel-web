@@ -232,7 +232,7 @@ export const OpportunityCard = React.memo(function OpportunityCard({
                   let deadlineEl: React.ReactNode = null;
                   if (deadline) {
                     if (deadline === "ongoing") {
-                      deadlineEl = <span className="text-xs px-2 py-0.5 rounded-full border" style={{ color: "var(--text-muted)", borderColor: "var(--border)" }}>🔄 持續有效</span>;
+                      deadlineEl = <span className="text-xs px-2 py-0.5 rounded-full border" style={{ color: "var(--text-muted)", borderColor: "var(--border)" }}>持續有效</span>;
                     } else {
                       const daysLeft = Math.ceil((new Date(deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
                       if (daysLeft < 0) {
@@ -245,7 +245,7 @@ export const OpportunityCard = React.memo(function OpportunityCard({
                   return (
                     <div className="flex items-center gap-2 flex-wrap">
                       {deadlineEl}
-                      {estimatedTime && <span className="text-xs px-2 py-0.5 rounded-full border" style={{ color: "var(--text-muted)", borderColor: "var(--border)" }}>⏱ 預估 {estimatedTime}</span>}
+                      {estimatedTime && <span className="text-xs px-2 py-0.5 rounded-full border" style={{ color: "var(--text-muted)", borderColor: "var(--border)" }}>預估 {estimatedTime}</span>}
                       {(opp.action_count ?? 0) > 0 && <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-500 border border-green-500/30">👥 {opp.action_count} 人已行動</span>}
                     </div>
                   );
