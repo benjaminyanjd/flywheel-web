@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import { PostHogProvider } from "@/components/posthog-provider";
 import { runMigrations } from "@/lib/db";
 import { logger } from "@/lib/logger";
+import { Footer } from "@/components/footer";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -91,7 +92,10 @@ export default function RootLayout({
         >
           <PostHogProvider>
             <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-              {children}
+              <div className="flex flex-col min-h-screen">
+                <div className="flex-1">{children}</div>
+                <Footer />
+              </div>
             </ThemeProvider>
           </PostHogProvider>
         </body>

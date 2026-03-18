@@ -554,15 +554,7 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer className="py-8 text-center text-xs" style={{ borderTop: "1px solid var(--border-subtle)", color: "var(--text-muted)" }}>
-        &copy; 2026 嗅鐘 Sniffing Clock &middot;{" "}
-        <a href="https://t.me/BJMYan" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-[var(--text-primary)]">{t("landing_footer_contact")}</a>
-        {" · "}
-        <Link href="/privacy" className="transition-colors hover:text-[var(--text-primary)]">{t("landing_footer_privacy")}</Link>
-        {" · "}
-        <Link href="/sign-in" className="transition-colors hover:text-[var(--text-primary)]">{t("landing_login")}</Link>
-      </footer>
+      {/* Footer is now in layout.tsx */}
     </div>
   )
 }
