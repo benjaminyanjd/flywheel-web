@@ -11,6 +11,7 @@ import { FlywheelLogo } from "@/components/flywheel-logo";
 import { track } from "@/lib/analytics";
 import { TRADE_ICONS } from "@/components/trade-icons";
 import { CAPITAL_ICONS, GOAL_ICONS } from "@/components/profile-icons";
+import { IconKey, IconTradeStyle, IconRiskTime, IconTelegram } from "@/components/onboarding-icons";
 
 const TOTAL_STEPS = 4;
 
@@ -200,7 +201,7 @@ export default function OnboardingPage() {
         {step === 0 && (
           <Card className="rounded-2xl shadow-sm animate-page-enter" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
             <CardHeader>
-              <CardTitle className="text-xl" style={{ color: "var(--text-primary)" }}>{t("onboard_invite_title")}</CardTitle>
+              <CardTitle className="text-xl inline-flex items-center gap-2" style={{ color: "var(--text-primary)" }}><IconKey />{t("onboard_invite_title")}</CardTitle>
               <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
                 {t("onboard_invite_desc")}
               </p>
@@ -236,7 +237,7 @@ export default function OnboardingPage() {
         {step === 1 && (
           <Card className="rounded-2xl shadow-sm animate-page-enter" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
             <CardHeader>
-              <CardTitle className="text-xl" style={{ color: "var(--text-primary)" }}>{t("onboard_trade_title")}</CardTitle>
+              <CardTitle className="text-xl inline-flex items-center gap-2" style={{ color: "var(--text-primary)" }}><IconTradeStyle />{t("onboard_trade_title")}</CardTitle>
               <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("onboard_trade_desc")}</p>
             </CardHeader>
             <CardContent className="space-y-5 max-h-[70vh] overflow-y-auto">
@@ -322,7 +323,7 @@ export default function OnboardingPage() {
         {step === 2 && (
           <Card className="rounded-2xl shadow-sm animate-page-enter" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
             <CardHeader>
-              <CardTitle className="text-xl" style={{ color: "var(--text-primary)" }}>{t("onboard_risk_time_title")}</CardTitle>
+              <CardTitle className="text-xl inline-flex items-center gap-2" style={{ color: "var(--text-primary)" }}><IconRiskTime />{t("onboard_risk_time_title")}</CardTitle>
               <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("onboard_risk_time_desc")}</p>
             </CardHeader>
             <CardContent className="space-y-5 max-h-[70vh] overflow-y-auto">
@@ -386,7 +387,7 @@ export default function OnboardingPage() {
         {step === 3 && (
           <div className="space-y-4 animate-page-enter">
             <div>
-              <h3 className="text-xl font-semibold mb-1" style={{ color: "var(--text-primary)" }}>{t("onboard_tg_title")}</h3>
+              <h3 className="text-xl font-semibold mb-1 inline-flex items-center gap-2" style={{ color: "var(--text-primary)" }}><IconTelegram />{t("onboard_tg_title")}</h3>
               <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("onboard_tg_desc")}</p>
             </div>
 

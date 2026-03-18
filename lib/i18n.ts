@@ -166,7 +166,7 @@ export const translations = {
     auth_signup_tag2: "7 天免費試用",
 
     // Onboarding
-    onboard_invite_title: "🔑 輸入邀請碼",
+    onboard_invite_title: "輸入邀請碼",
     onboard_invite_desc: "嗅鐘目前僅限受邀用戶使用，請輸入你的邀請碼開始 7 天免費試用",
     onboard_invite_error: "驗證失敗",
     onboard_network_error: "網絡錯誤，請重試",
@@ -195,9 +195,9 @@ export const translations = {
     onboard_cat_title: "📡 選擇關注方向",
     onboard_cat_desc: "嗅鐘將優先為你掃描以下話題的信號",
     onboard_next: "下一步 →",
-    onboard_scan_title: "⏱️ 掃描頻率",
+    onboard_scan_title: "掃描頻率",
     onboard_scan_desc: "嗅鐘多久為你掃描一次新信號？",
-    onboard_tg_title: "📱 綁定 Telegram",
+    onboard_tg_title: "綁定 Telegram",
     onboard_tg_desc: "每天早 8 點，嗅鐘把行動清單推送到你的 Telegram",
     onboard_tg_howto: "如何獲取 Chat ID：",
     onboard_tg_step1_pre: "打開 Telegram，搜索 ",
@@ -730,7 +730,7 @@ export const translations = {
     auth_signup_tag2: "7-day free trial",
 
     // Onboarding
-    onboard_invite_title: "🔑 Enter Invite Code",
+    onboard_invite_title: "Enter Invite Code",
     onboard_invite_desc: "Sniffing Clock is currently invite-only. Enter your invite code to start a 7-day free trial",
     onboard_invite_error: "Validation failed",
     onboard_network_error: "Network error, please retry",
@@ -759,9 +759,9 @@ export const translations = {
     onboard_cat_title: "📡 Choose Your Focus",
     onboard_cat_desc: "Sniffing Clock will prioritize scanning signals for these topics",
     onboard_next: "Next →",
-    onboard_scan_title: "⏱️ Scan Frequency",
+    onboard_scan_title: "Scan Frequency",
     onboard_scan_desc: "How often should Sniffing Clock scan for new signals?",
-    onboard_tg_title: "📱 Connect Telegram",
+    onboard_tg_title: "Connect Telegram",
     onboard_tg_desc: "Daily at 8 AM, Sniffing Clock pushes action list to your Telegram",
     onboard_tg_howto: "How to get your Chat ID:",
     onboard_tg_step1_pre: "Open Telegram, search for ",
