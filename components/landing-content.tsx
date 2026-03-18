@@ -261,7 +261,7 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
         <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs mb-10 border font-mono animate-fade-in-up"
           style={{ borderColor: "var(--signal)", color: "var(--signal)", backgroundColor: "color-mix(in srgb, var(--signal) 5%, transparent)", animationDelay: "0ms", animationFillMode: "both" }}>
           <span className="w-1.5 h-1.5 rounded-full animate-pulse inline-block" style={{ backgroundColor: "var(--signal)" }}/>
-          {t("landing_beta")} · {t("landing_quota")} {quotaTotal} {t("landing_quota_unit")} · {t("landing_applied")}{userCount}{t("landing_applied_unit")}
+          {userCount} {t("landing_social")}
         </div>
 
         {/* pain point */}
