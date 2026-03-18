@@ -57,9 +57,16 @@ export default function WaitlistForm() {
 
   if (submitted) {
     return (
-      <div className="text-center py-6">
+      <div className="text-center py-6 space-y-3">
         <p className="text-lg font-medium" style={{ color: "var(--signal)" }}>
-          ✅ 申請已收到！我們會通過 Telegram 聯繫你
+          ✅ 申請已收到！
+        </p>
+        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+          請前往 Telegram 找{" "}
+          <a href="https://t.me/SniffingClock_bot" target="_blank" rel="noopener noreferrer" className="font-medium underline" style={{ color: "var(--signal)" }}>
+            @SniffingClock_bot
+          </a>
+          {" "}發送 <code className="px-1.5 py-0.5 rounded text-xs" style={{ backgroundColor: "var(--bg-card)" }}>/start</code> 即可領取邀請碼
         </p>
       </div>
     )
