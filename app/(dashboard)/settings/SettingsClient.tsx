@@ -12,6 +12,7 @@ import { CATEGORY_ICONS, CATEGORY_GROUPS } from "@/components/category-icons";
 import { track } from "@/lib/analytics";
 import { TRADE_METHOD_VALUES } from "@/lib/preferences";
 import { TRADE_ICONS } from "@/components/trade-icons";
+import { CAPITAL_ICONS, GOAL_ICONS } from "@/components/profile-icons";
 
 function CheckboxIcon({ checked }: { checked: boolean }) {
   if (checked) {
@@ -571,6 +572,7 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
                   { value: "large", tKey: "capital_large" as const },
                 ]).map(r => {
                   const sel = capitalRange === r.value;
+                  const CIcon = CAPITAL_ICONS[r.value];
                   return (
                     <button
                       key={r.value}
@@ -585,6 +587,7 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
                     >
                       <span className="inline-flex items-center gap-2">
                         <span className="text-base shrink-0">{sel ? "◉" : "○"}</span>
+                        {CIcon && <span className="shrink-0 w-5 h-5">{CIcon()}</span>}
                         {tr(r.tKey)}
                       </span>
                     </button>
@@ -604,6 +607,7 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
                   { value: "learn_explore", tKey: "goal_learn_explore" as const },
                 ]).map(r => {
                   const sel = tradeGoal === r.value;
+                  const GIcon = GOAL_ICONS[r.value];
                   return (
                     <button
                       key={r.value}
@@ -618,6 +622,7 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
                     >
                       <span className="inline-flex items-center gap-2">
                         <span className="text-base shrink-0">{sel ? "◉" : "○"}</span>
+                        {GIcon && <span className="shrink-0 w-5 h-5">{GIcon()}</span>}
                         {tr(r.tKey)}
                       </span>
                     </button>

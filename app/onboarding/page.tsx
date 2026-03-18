@@ -10,6 +10,7 @@ import { deriveFocus, TRADE_METHOD_VALUES } from "@/lib/preferences";
 import { FlywheelLogo } from "@/components/flywheel-logo";
 import { track } from "@/lib/analytics";
 import { TRADE_ICONS } from "@/components/trade-icons";
+import { CAPITAL_ICONS, GOAL_ICONS } from "@/components/profile-icons";
 
 const TOTAL_STEPS = 4;
 
@@ -263,6 +264,7 @@ export default function OnboardingPage() {
                 <div className="space-y-2">
                   {CAPITAL_RANGES.map(r => {
                     const sel = capitalRange === r.value;
+                    const Icon = CAPITAL_ICONS[r.value];
                     return (
                       <button key={r.value} type="button"
                         onClick={() => setCapitalRange(r.value)}
@@ -271,6 +273,7 @@ export default function OnboardingPage() {
                         style={sel ? selectedStyle : unselectedStyle}
                       >
                         <span className="text-base shrink-0">{sel ? "◉" : "○"}</span>
+                        {Icon && <span className="shrink-0 w-6 h-6">{Icon()}</span>}
                         <span>{t(r.tKey)}</span>
                       </button>
                     );
@@ -284,6 +287,7 @@ export default function OnboardingPage() {
                 <div className="space-y-2">
                   {TRADE_GOALS.map(r => {
                     const sel = tradeGoal === r.value;
+                    const Icon = GOAL_ICONS[r.value];
                     return (
                       <button key={r.value} type="button"
                         onClick={() => setTradeGoal(r.value)}
@@ -292,6 +296,7 @@ export default function OnboardingPage() {
                         style={sel ? selectedStyle : unselectedStyle}
                       >
                         <span className="text-base shrink-0">{sel ? "◉" : "○"}</span>
+                        {Icon && <span className="shrink-0 w-6 h-6">{Icon()}</span>}
                         <span>{t(r.tKey)}</span>
                       </button>
                     );

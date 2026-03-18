@@ -545,15 +545,15 @@ export const translations = {
 
     // Capital range + Trade goal
     capital_title: "你的資金量級",
-    capital_tiny: "💵 < $1K（小試牛刀）",
-    capital_small: "💰 $1K – $10K",
-    capital_medium: "💎 $10K – $100K",
-    capital_large: "🏦 $100K+",
+    capital_tiny: "< $1K（小試牛刀）",
+    capital_small: "$1K – $10K",
+    capital_medium: "$10K – $100K",
+    capital_large: "$100K+",
     goal_title: "你的交易目標",
-    goal_grow_fast: "🚀 快速增長（承受高風險換高回報）",
-    goal_steady_income: "📈 穩定收益（每月可預期的回報）",
-    goal_preserve_grow: "🛡 保值增值（跑贏大盤就行）",
-    goal_learn_explore: "📚 學習探索（先搞懂再下重注）",
+    goal_grow_fast: "快速增長（承受高風險換高回報）",
+    goal_steady_income: "穩定收益（每月可預期的回報）",
+    goal_preserve_grow: "保值增值（跑贏大盤就行）",
+    goal_learn_explore: "學習探索（先搞懂再下重注）",
 
     // Welcome page
     welcome_title: "🎯 你的專屬交易畫像",
@@ -1109,15 +1109,15 @@ export const translations = {
 
     // Capital range + Trade goal
     capital_title: "Your Capital Range",
-    capital_tiny: "💵 < $1K (Getting started)",
-    capital_small: "💰 $1K – $10K",
-    capital_medium: "💎 $10K – $100K",
-    capital_large: "🏦 $100K+",
+    capital_tiny: "< $1K (Getting started)",
+    capital_small: "$1K – $10K",
+    capital_medium: "$10K – $100K",
+    capital_large: "$100K+",
     goal_title: "Your Trading Goal",
-    goal_grow_fast: "🚀 Fast Growth (high risk, high reward)",
-    goal_steady_income: "📈 Steady Income (predictable monthly returns)",
-    goal_preserve_grow: "🛡 Preserve & Grow (beat the market)",
-    goal_learn_explore: "📚 Learn & Explore (understand before committing)",
+    goal_grow_fast: "Fast Growth (high risk, high reward)",
+    goal_steady_income: "Steady Income (predictable monthly returns)",
+    goal_preserve_grow: "Preserve & Grow (beat the market)",
+    goal_learn_explore: "Learn & Explore (understand before committing)",
 
     // Welcome page
     welcome_title: "🎯 Your Trading Profile",
