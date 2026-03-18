@@ -16,7 +16,7 @@ export function LangToggle({ className }: { className?: string }) {
       title={lang === "zh" ? "Switch to English" : "切換為中文"}
       style={{ color: "var(--text-secondary)" }}
     >
-      <span className="text-xs font-semibold leading-none select-none" style={{ display: "block", width: 20, height: 20, lineHeight: "20px", textAlign: "center" }}>
+      <span className="font-semibold leading-none select-none" style={{ display: "block", width: 20, height: 20, lineHeight: "20px", textAlign: "center", fontSize: 14 }}>
         {lang === "zh" ? "EN" : "中"}
       </span>
     </button>
