@@ -1,13 +1,25 @@
 export function deriveFocus(profitSource: string[]): string {
+  // All new trading methods map to crypto focus
+  const cryptoMethods = ["contract", "spot", "onchain", "meme", "arbitrage", "airdrop", "alpha"];
+  // Legacy values
+  const legacyCrypto = ["crypto_trading"];
+  const legacyAI = ["ai_content", "saas_tech"];
+  const legacyBroad = ["info_arbitrage", "early_investment"];
+
   const parts = new Set<string>();
-  if (profitSource.includes("crypto_trading")) parts.add("crypto");
-  if (profitSource.includes("ai_content") || profitSource.includes("saas_tech")) parts.add("ai");
-  if (profitSource.includes("info_arbitrage") || profitSource.includes("early_investment")) {
+  if (profitSource.some(v => cryptoMethods.includes(v) || legacyCrypto.includes(v))) parts.add("crypto");
+  if (profitSource.some(v => legacyAI.includes(v))) parts.add("ai");
+  if (profitSource.some(v => legacyBroad.includes(v))) {
     parts.add("crypto"); parts.add("ai"); parts.add("saas"); parts.add("overseas");
   }
   return parts.size > 0 ? Array.from(parts).join(",") : "all";
 }
 
+export const TRADE_METHOD_VALUES = [
+  "contract", "spot", "onchain", "meme", "arbitrage", "airdrop", "alpha",
+] as const;
+
+// Legacy - kept for backward compat
 export const PROFIT_SOURCE_VALUES = [
   "crypto_trading", "ai_content", "info_arbitrage", "saas_tech", "early_investment",
 ] as const;

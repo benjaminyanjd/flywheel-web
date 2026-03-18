@@ -10,6 +10,7 @@ import { useT } from "@/lib/i18n";
 import { useToast } from "@/components/toast";
 import { IconAITech, IconCrypto, IconOnchain, IconCommunity, IconKOL, IconAlpha } from "@/components/icons";
 import { track } from "@/lib/analytics";
+import { TRADE_METHOD_VALUES } from "@/lib/preferences";
 
 function CheckboxIcon({ checked }: { checked: boolean }) {
   if (checked) {
@@ -45,6 +46,9 @@ interface UserSettings {
   user_role: string | null;
   user_focus: string | null;
   opp_type: string | null;
+  profit_source: string | null;
+  risk_level: string | null;
+  time_budget: string | null;
 }
 
 interface Props {
@@ -114,6 +118,83 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories]);
+
+  // Trading preferences state
+  const [tradeMethods, setTradeMethods] = useState<string[]>(() => {
+    const src = initialSettings?.profit_source;
+    return src ? src.split(",").filter(Boolean) : [];
+  });
+  const [riskLevel, setRiskLevel] = useState(initialSettings?.risk_level || "");
+  const [timeBudget, setTimeBudget] = useState(initialSettings?.time_budget || "");
+  const [tradeStatus, setTradeStatus] = useState<"idle" | "saving" | "saved">("idle");
+  const tradeInitRef = useRef(false);
+  const tradeDebounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Auto-save trading preferences on change with 1s debounce
+  useEffect(() => {
+    if (!tradeInitRef.current) {
+      tradeInitRef.current = true;
+      return;
+    }
+    if (tradeDebounceRef.current) clearTimeout(tradeDebounceRef.current);
+    tradeDebounceRef.current = setTimeout(() => {
+      saveTradePref();
+    }, 1000);
+    return () => {
+      if (tradeDebounceRef.current) clearTimeout(tradeDebounceRef.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tradeMethods, riskLevel, timeBudget]);
+
+  async function saveTradePref() {
+    setTradeStatus("saving");
+    try {
+      const res = await fetch("/api/user/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          profit_source: tradeMethods.join(","),
+          risk_level: riskLevel || null,
+          time_budget: timeBudget || null,
+        }),
+      });
+      if (res.ok) {
+        track("settings_trade_save");
+        setTradeStatus("saved");
+        toast(tr("settings_cat_toast_ok"));
+        setTimeout(() => setTradeStatus("idle"), 2000);
+      } else {
+        toast(tr("settings_tg_toast_fail"), "error");
+        setTradeStatus("idle");
+      }
+    } catch {
+      toast(tr("settings_tg_toast_fail"), "error");
+      setTradeStatus("idle");
+    }
+  }
+
+  function toggleTradeMethod(val: string) {
+    setTradeMethods(prev =>
+      prev.includes(val) ? prev.filter(v => v !== val) : [...prev, val]
+    );
+  }
+
+  const TRADE_METHODS = TRADE_METHOD_VALUES.map(v => ({
+    value: v,
+    label: tr(`trade_${v}` as Parameters<typeof tr>[0]),
+  }));
+
+  const RISK_LEVELS = [
+    { value: "conservative", label: tr("risk_conservative") },
+    { value: "balanced", label: tr("risk_balanced") },
+    { value: "aggressive", label: tr("risk_aggressive") },
+  ];
+
+  const TIME_BUDGETS = [
+    { value: "under_1h", label: tr("time_under_1h") },
+    { value: "1_3h", label: tr("time_1_3h") },
+    { value: "unlimited", label: tr("time_unlimited") },
+  ];
 
   function switchLang(l: Lang) {
     localStorage.setItem("flywheel-lang", l);
@@ -353,6 +434,114 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
                   {lang === "zh" ? "❌ Token 無效，請重新確認" : "❌ Invalid token, please check"}
                 </span>
               </p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Trading Preferences */}
+        <Card className="rounded-2xl card-hover" style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-subtle)" }}>
+          <CardHeader>
+            <CardTitle className="text-lg" style={{ color: "var(--text-primary)" }}>
+              {tr("settings_trade_title")}
+            </CardTitle>
+            <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+              {tr("settings_trade_desc")}
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            {/* Trading Methods - multi select */}
+            <div>
+              <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>{tr("onboard_trade_title")}</p>
+              <div className="space-y-2">
+                {TRADE_METHODS.map(m => {
+                  const sel = tradeMethods.includes(m.value);
+                  return (
+                    <button
+                      key={m.value}
+                      onClick={() => toggleTradeMethod(m.value)}
+                      className={`w-full text-left px-4 py-3 rounded-xl border transition-all duration-200 btn-press ${
+                        sel ? "border-2 font-medium shadow-sm" : "hover:bg-[var(--bg-panel)]"
+                      }`}
+                      style={sel
+                        ? { borderColor: "var(--signal)", backgroundColor: "color-mix(in srgb, var(--signal) 10%, transparent)", color: "var(--signal)" }
+                        : { borderColor: "var(--border)", color: "var(--text-secondary)" }
+                      }
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <CheckboxIcon checked={sel} />
+                        {m.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Risk Level - single select */}
+            <div>
+              <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>{tr("onboard_risk_label")}</p>
+              <div className="space-y-2">
+                {RISK_LEVELS.map(r => {
+                  const sel = riskLevel === r.value;
+                  return (
+                    <button
+                      key={r.value}
+                      onClick={() => setRiskLevel(r.value)}
+                      className={`w-full text-left px-4 py-3 rounded-xl border transition-all duration-200 btn-press ${
+                        sel ? "border-2 font-medium shadow-sm" : "hover:bg-[var(--bg-panel)]"
+                      }`}
+                      style={sel
+                        ? { borderColor: "var(--signal)", backgroundColor: "color-mix(in srgb, var(--signal) 10%, transparent)", color: "var(--signal)" }
+                        : { borderColor: "var(--border)", color: "var(--text-secondary)" }
+                      }
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <span className="text-base shrink-0">{sel ? "◉" : "○"}</span>
+                        {r.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Time Budget - single select */}
+            <div>
+              <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>{tr("onboard_time_label")}</p>
+              <div className="space-y-2">
+                {TIME_BUDGETS.map(tb => {
+                  const sel = timeBudget === tb.value;
+                  return (
+                    <button
+                      key={tb.value}
+                      onClick={() => setTimeBudget(tb.value)}
+                      className={`w-full text-left px-4 py-3 rounded-xl border transition-all duration-200 btn-press ${
+                        sel ? "border-2 font-medium shadow-sm" : "hover:bg-[var(--bg-panel)]"
+                      }`}
+                      style={sel
+                        ? { borderColor: "var(--signal)", backgroundColor: "color-mix(in srgb, var(--signal) 10%, transparent)", color: "var(--signal)" }
+                        : { borderColor: "var(--border)", color: "var(--text-secondary)" }
+                      }
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <span className="text-base shrink-0">{sel ? "◉" : "○"}</span>
+                        {tb.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Auto-save status */}
+            {tradeStatus === "saving" && (
+              <p className="text-xs flex items-center gap-1.5 animate-fade-in" style={{ color: "var(--text-muted)" }}>
+                <span className="w-3 h-3 border-2 border-t-[var(--signal)] rounded-full animate-spin" style={{ borderColor: "var(--border)" }} />
+                自動保存中…
+              </p>
+            )}
+            {tradeStatus === "saved" && (
+              <p className="text-xs text-green-600 animate-fade-in">✓ 已保存</p>
             )}
           </CardContent>
         </Card>

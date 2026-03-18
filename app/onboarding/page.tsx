@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TopNav } from "@/components/top-nav";
 import { useT } from "@/lib/i18n";
-import { deriveFocus } from "@/lib/preferences";
+import { deriveFocus, TRADE_METHOD_VALUES } from "@/lib/preferences";
 import { FlywheelLogo } from "@/components/flywheel-logo";
 import { track } from "@/lib/analytics";
+
+const TOTAL_STEPS = 4;
 
 export default function OnboardingPage() {
   const { t } = useT();
@@ -18,38 +20,21 @@ export default function OnboardingPage() {
   const [inviteError, setInviteError] = useState("");
   const [inviteLoading, setInviteLoading] = useState(false);
 
-  // New 5-question state
+  // Step 1: Trading methods (multi-select)
   const [profitSource, setProfitSource] = useState<string[]>([]);
-  const [coreSkills, setCoreSkills] = useState<string[]>([]);
-  const [oppHorizon, setOppHorizon] = useState("");
+
+  // Step 2: Risk + Time
   const [riskLevel, setRiskLevel] = useState("");
   const [timeBudget, setTimeBudget] = useState("");
 
-  const [categories, setCategories] = useState(["kol", "crypto_news", "ai_tech"]);
-  const [scanInterval, setScanInterval] = useState(60);
-  const [saving, setSaving] = useState(false);
+  // Step 3: Telegram
   const [telegramId, setTelegramId] = useState("");
+  const [saving, setSaving] = useState(false);
 
-  const PROFIT_SOURCES = [
-    { value: "crypto_trading", label: t("profit_crypto_trading") },
-    { value: "ai_content", label: t("profit_ai_content") },
-    { value: "info_arbitrage", label: t("profit_info_arbitrage") },
-    { value: "saas_tech", label: t("profit_saas_tech") },
-    { value: "early_investment", label: t("profit_early_investment") },
-  ];
-
-  const CORE_SKILLS = [
-    { value: "trading", label: t("skill_trading") },
-    { value: "content_ops", label: t("skill_content_ops") },
-    { value: "coding", label: t("skill_coding") },
-    { value: "sales_biz", label: t("skill_sales_biz") },
-  ];
-
-  const OPP_HORIZONS = [
-    { value: "short_term", label: t("horizon_short_term") },
-    { value: "mid_term", label: t("horizon_mid_term") },
-    { value: "long_term", label: t("horizon_long_term") },
-  ];
+  const TRADE_METHODS = TRADE_METHOD_VALUES.map(v => ({
+    value: v,
+    label: t(`trade_${v}` as Parameters<typeof t>[0]),
+  }));
 
   const RISK_LEVELS = [
     { value: "conservative", label: t("risk_conservative") },
@@ -62,23 +47,6 @@ export default function OnboardingPage() {
     { value: "1_3h", label: t("time_1_3h") },
     { value: "unlimited", label: t("time_unlimited") },
   ];
-
-  const CATEGORIES = [
-    { value: "kol", label: t("onboard_cat_kol") },
-    { value: "crypto_news", label: t("onboard_cat_crypto") },
-    { value: "onchain", label: t("onboard_cat_onchain") },
-    { value: "ai_tech", label: t("onboard_cat_ai") },
-    { value: "community", label: t("onboard_cat_community") },
-    { value: "alpha", label: t("onboard_cat_alpha") },
-  ];
-
-  const INTERVALS = [
-    { value: 30, label: t("onboard_interval_30") },
-    { value: 60, label: t("onboard_interval_60") },
-    { value: 180, label: t("onboard_interval_180") },
-  ];
-
-
 
   async function validateInvite() {
     setInviteError("");
@@ -107,40 +75,28 @@ export default function OnboardingPage() {
     setList(list.includes(value) ? list.filter(v => v !== value) : [...list, value]);
   }
 
-  function toggleCategory(val: string) {
-    setCategories(prev =>
-      prev.includes(val) ? prev.filter(c => c !== val) : [...prev, val]
-    );
-  }
-
-  const profilePayload = {
-    profit_source: profitSource.join(","),
-    core_skills: coreSkills.join(","),
-    opp_horizon: oppHorizon,
-    risk_level: riskLevel,
-    time_budget: timeBudget,
-    user_focus: deriveFocus(profitSource),
-  };
-
   async function saveProfile() {
     await fetch("/api/user/settings", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(profilePayload),
+      body: JSON.stringify({
+        profit_source: profitSource.join(","),
+        risk_level: riskLevel,
+        time_budget: timeBudget,
+        user_focus: deriveFocus(profitSource),
+      }),
     });
   }
 
   async function finishWithTelegram() {
     setSaving(true);
-    track("onboarding_step_complete", { step: 4 });
+    track("onboarding_step_complete", { step: 3 });
     track("onboarding_complete");
     try {
       await fetch("/api/user/settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          categories,
-          scan_interval: scanInterval,
           telegram_chat_id: telegramId || null,
           notify_channel: telegramId ? "telegram" : "none",
         }),
@@ -153,7 +109,8 @@ export default function OnboardingPage() {
     }
   }
 
-  const step1Complete = profitSource.length > 0 && coreSkills.length > 0 && oppHorizon && riskLevel && timeBudget;
+  const step1Complete = profitSource.length > 0;
+  const step2Complete = !!riskLevel && !!timeBudget;
 
   // Multi-select button class (checkbox style)
   const multiBtnClass = (selected: boolean) =>
@@ -192,13 +149,13 @@ export default function OnboardingPage() {
         {/* Step indicator */}
         <div className="text-center mb-3">
           <span className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>
-            Step {step + 1} / 5
+            Step {step + 1} / {TOTAL_STEPS}
           </span>
         </div>
 
-        {/* Progress bar - 5 steps */}
+        {/* Progress bar */}
         <div className="flex gap-2 mb-6">
-          {[0, 1, 2, 3, 4].map(i => (
+          {Array.from({ length: TOTAL_STEPS }, (_, i) => (
             <div
               key={i}
               className="h-1 flex-1 rounded-full transition-colors"
@@ -219,6 +176,7 @@ export default function OnboardingPage() {
           </button>
         )}
 
+        {/* Step 0: Invite Code */}
         {step === 0 && (
           <Card className="rounded-2xl shadow-sm animate-page-enter" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
             <CardHeader>
@@ -254,77 +212,52 @@ export default function OnboardingPage() {
           </Card>
         )}
 
+        {/* Step 1: Trading Methods (multi-select) */}
         {step === 1 && (
           <Card className="rounded-2xl shadow-sm animate-page-enter" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
             <CardHeader>
-              <CardTitle className="text-xl" style={{ color: "var(--text-primary)" }}>{t("onboard_identity_title")}</CardTitle>
-              <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("onboard_identity_sub")}</p>
+              <CardTitle className="text-xl" style={{ color: "var(--text-primary)" }}>{t("onboard_trade_title")}</CardTitle>
+              <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("onboard_trade_desc")}</p>
+            </CardHeader>
+            <CardContent className="space-y-3 max-h-[70vh] overflow-y-auto">
+              {TRADE_METHODS.map(r => {
+                const sel = profitSource.includes(r.value);
+                return (
+                  <button key={r.value} type="button"
+                    onClick={() => toggleMulti(r.value, profitSource, setProfitSource)}
+                    aria-pressed={sel}
+                    className={multiBtnClass(sel)}
+                    style={sel ? selectedStyle : unselectedStyle}
+                  >
+                    <span className="text-base shrink-0">{sel ? "☑" : "☐"}</span>
+                    <span>{r.label}</span>
+                  </button>
+                );
+              })}
+
+              <div title={!step1Complete ? "請至少選擇一項" : undefined}>
+                <Button
+                  onClick={() => { track("onboarding_step_complete", { step: 1 }); setStep(2); }}
+                  disabled={!step1Complete}
+                  className="w-full rounded-xl mt-2"
+                  style={step1Complete ? { backgroundColor: "var(--signal)", color: "var(--bg)" } : {}}
+                >
+                  {t("onboard_next")}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 2: Risk Preference + Time Budget */}
+        {step === 2 && (
+          <Card className="rounded-2xl shadow-sm animate-page-enter" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
+            <CardHeader>
+              <CardTitle className="text-xl" style={{ color: "var(--text-primary)" }}>{t("onboard_risk_time_title")}</CardTitle>
+              <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("onboard_risk_time_desc")}</p>
             </CardHeader>
             <CardContent className="space-y-5 max-h-[70vh] overflow-y-auto">
-              {/* Q1: Profit Source - multi select */}
-              <div>
-                <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>{t("onboard_profit_label")}</p>
-                <div className="space-y-2">
-                  {PROFIT_SOURCES.map(r => {
-                    const sel = profitSource.includes(r.value);
-                    return (
-                      <button key={r.value} type="button"
-                        onClick={() => toggleMulti(r.value, profitSource, setProfitSource)}
-                        aria-pressed={sel}
-                        className={multiBtnClass(sel)}
-                        style={sel ? selectedStyle : unselectedStyle}
-                      >
-                        <span className="text-base shrink-0">{sel ? "☑" : "☐"}</span>
-                        <span>{r.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Q2: Core Skills - multi select */}
-              <div>
-                <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>{t("onboard_skills_label")}</p>
-                <div className="space-y-2">
-                  {CORE_SKILLS.map(r => {
-                    const sel = coreSkills.includes(r.value);
-                    return (
-                      <button key={r.value} type="button"
-                        onClick={() => toggleMulti(r.value, coreSkills, setCoreSkills)}
-                        aria-pressed={sel}
-                        className={multiBtnClass(sel)}
-                        style={sel ? selectedStyle : unselectedStyle}
-                      >
-                        <span className="text-base shrink-0">{sel ? "☑" : "☐"}</span>
-                        <span>{r.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Q3: Opportunity Horizon - single select */}
-              <div>
-                <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>{t("onboard_horizon_label")}</p>
-                <div className="space-y-2">
-                  {OPP_HORIZONS.map(r => {
-                    const sel = oppHorizon === r.value;
-                    return (
-                      <button key={r.value} type="button"
-                        onClick={() => setOppHorizon(r.value)}
-                        aria-pressed={sel}
-                        className={singleBtnClass(sel)}
-                        style={sel ? selectedStyle : unselectedStyle}
-                      >
-                        <span className="text-base shrink-0">{sel ? "◉" : "○"}</span>
-                        <span>{r.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Q4: Risk Level - single select */}
+              {/* Risk Level */}
               <div>
                 <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>{t("onboard_risk_label")}</p>
                 <div className="space-y-2">
@@ -345,7 +278,7 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              {/* Q5: Time Budget - single select */}
+              {/* Time Budget */}
               <div>
                 <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>{t("onboard_time_label")}</p>
                 <div className="space-y-2">
@@ -366,50 +299,12 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              <div title={!step1Complete ? "請完成所有選項" : undefined}>
+              <div title={!step2Complete ? "請完成所有選項" : undefined}>
                 <Button
-                  onClick={() => { track("onboarding_step_complete", { step: 1 }); setStep(2) }}
-                  disabled={!step1Complete}
+                  onClick={() => { track("onboarding_step_complete", { step: 2 }); setStep(3); }}
+                  disabled={!step2Complete}
                   className="w-full rounded-xl mt-2"
-                  style={step1Complete ? { backgroundColor: "var(--signal)", color: "var(--bg)" } : {}}
-                >
-                  {t("onboard_next")}
-                </Button>
-              </div>
-
-            </CardContent>
-          </Card>
-        )}
-
-        {step === 2 && (
-          <Card className="rounded-2xl shadow-sm animate-page-enter" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
-            <CardHeader>
-              <CardTitle className="text-xl" style={{ color: "var(--text-primary)" }}>{t("onboard_cat_title")}</CardTitle>
-              <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("onboard_cat_desc")}</p>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {CATEGORIES.map(cat => {
-                const sel = categories.includes(cat.value);
-                return (
-                  <button
-                    key={cat.value}
-                    type="button"
-                    onClick={() => toggleCategory(cat.value)}
-                    aria-pressed={sel}
-                    className={multiBtnClass(sel)}
-                    style={sel ? selectedStyle : unselectedStyle}
-                  >
-                    <span className="text-base shrink-0">{sel ? "☑" : "☐"}</span>
-                    <span>{cat.label}</span>
-                  </button>
-                );
-              })}
-              <div title={categories.length === 0 ? "請完成所有選項" : undefined}>
-                <Button
-                  onClick={() => { track("onboarding_step_complete", { step: 2 }); setStep(3) }}
-                  disabled={categories.length === 0}
-                  className="w-full rounded-xl mt-2"
-                  style={categories.length > 0 ? { backgroundColor: "var(--signal)", color: "var(--bg)" } : {}}
+                  style={step2Complete ? { backgroundColor: "var(--signal)", color: "var(--bg)" } : {}}
                 >
                   {t("onboard_next")}
                 </Button>
@@ -418,41 +313,8 @@ export default function OnboardingPage() {
           </Card>
         )}
 
+        {/* Step 3: Telegram */}
         {step === 3 && (
-          <Card className="rounded-2xl shadow-sm animate-page-enter" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
-            <CardHeader>
-              <CardTitle className="text-xl" style={{ color: "var(--text-primary)" }}>{t("onboard_scan_title")}</CardTitle>
-              <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("onboard_scan_desc")}</p>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {INTERVALS.map(opt => {
-                const sel = scanInterval === opt.value;
-                return (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => setScanInterval(opt.value)}
-                    aria-pressed={sel}
-                    className={singleBtnClass(sel)}
-                    style={sel ? selectedStyle : unselectedStyle}
-                  >
-                    <span className="text-base shrink-0">{sel ? "◉" : "○"}</span>
-                    <span>{opt.label}</span>
-                  </button>
-                );
-              })}
-              <Button
-                onClick={() => { track("onboarding_step_complete", { step: 3 }); setStep(4) }}
-                className="w-full rounded-xl mt-2"
-                style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}
-              >
-                {t("onboard_next")}
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
-        {step === 4 && (
           <Card className="rounded-2xl shadow-sm animate-page-enter" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
             <CardHeader>
               <CardTitle className="text-xl" style={{ color: "var(--text-primary)" }}>{t("onboard_tg_title")}</CardTitle>

@@ -514,6 +514,21 @@ export const translations = {
     time_under_1h: "不到 1 小時（碎片時間）",
     time_1_3h: "1–3 小時",
     time_unlimited: "不設限，值就幹",
+
+    // Trading method options (onboarding + settings)
+    trade_contract: "📊 合約交易（永續/交割）",
+    trade_spot: "💰 現貨交易（CEX）",
+    trade_onchain: "⛓️ 鏈上交易（DEX/DeFi）",
+    trade_meme: "🐸 Meme 幣",
+    trade_arbitrage: "⚡ 套利（費率/跨所）",
+    trade_airdrop: "🪂 空投擼毛",
+    trade_alpha: "🔥 Alpha 打新",
+    onboard_trade_title: "你的交易方式",
+    onboard_trade_desc: "選擇你常用的交易方式（可多選）",
+    onboard_risk_time_title: "風險偏好與可用時間",
+    onboard_risk_time_desc: "幫助我們推薦最適合你的機會",
+    settings_trade_title: "交易偏好",
+    settings_trade_desc: "調整你的交易方式、風險偏好和可用時間",
   },
   en: {
     // Sidebar / Nav
@@ -1025,6 +1040,21 @@ export const translations = {
     time_under_1h: "Under 1h (fragmented)",
     time_1_3h: "1–3 hours",
     time_unlimited: "Unlimited",
+
+    // Trading method options (onboarding + settings)
+    trade_contract: "📊 Contracts (Perps/Futures)",
+    trade_spot: "💰 Spot Trading (CEX)",
+    trade_onchain: "⛓️ On-chain (DEX/DeFi)",
+    trade_meme: "🐸 Meme Coins",
+    trade_arbitrage: "⚡ Arbitrage (Funding/Cross-exchange)",
+    trade_airdrop: "🪂 Airdrops & Farming",
+    trade_alpha: "🔥 Alpha / New Listings",
+    onboard_trade_title: "Your Trading Style",
+    onboard_trade_desc: "Select your preferred trading methods (multi-select)",
+    onboard_risk_time_title: "Risk & Time",
+    onboard_risk_time_desc: "Help us recommend the best opportunities for you",
+    settings_trade_title: "Trading Preferences",
+    settings_trade_desc: "Adjust your trading methods, risk preference, and available time",
   },
 } as const;
 
