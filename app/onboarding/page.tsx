@@ -207,6 +207,18 @@ export default function OnboardingPage() {
           ))}
         </div>
 
+        {/* Back button */}
+        {step > 0 && (
+          <button
+            onClick={() => setStep(step - 1)}
+            className="flex items-center gap-1 text-sm mb-4 transition-colors hover:text-[var(--text-primary)]"
+            style={{ color: "var(--text-muted)" }}
+          >
+            <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            上一步
+          </button>
+        )}
+
         {step === 0 && (
           <Card className="rounded-2xl shadow-sm animate-page-enter" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
             <CardHeader>
