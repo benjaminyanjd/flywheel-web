@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Noto_Serif_TC } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
-import { zhTW } from "@clerk/localizations";
+import { ClerkLocalizedProvider } from "@/components/clerk-localized-provider";
 import { ThemeProvider } from "next-themes";
 import { PostHogProvider } from "@/components/posthog-provider";
 import { runMigrations } from "@/lib/db";
@@ -84,7 +83,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider localization={zhTW}>
+    <ClerkLocalizedProvider>
       <html lang="zh-TW" className={`${notoSerifTC.variable}`} suppressHydrationWarning>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
@@ -97,6 +96,6 @@ export default function RootLayout({
           </PostHogProvider>
         </body>
       </html>
-    </ClerkProvider>
+    </ClerkLocalizedProvider>
   );
 }
