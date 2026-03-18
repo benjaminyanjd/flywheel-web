@@ -31,10 +31,19 @@ export function TopNav({ ctaHref = "/", ctaOnClick, hideCta, hideLogin }: TopNav
             {lang === "en" ? "Skip the cognitive burden, take direct action." : "跳過認知負擔，直接行動"}
           </span>
         </Link>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-1">
           {!hideLogin && (
-            <Link href="/sign-in" className="text-sm transition-colors hover:text-[var(--text-primary)]" style={{ color: "var(--text-secondary)" }}>
-              {t("landing_login")}
+            <Link
+              href="/sign-in"
+              className="p-2 hover:bg-[var(--bg-card)] rounded-lg transition-colors"
+              title={lang === "en" ? "Sign in" : "登入"}
+              style={{ color: "var(--text-secondary)" }}
+            >
+              <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4" />
+                <polyline points="10 17 15 12 10 7" />
+                <line x1="15" y1="12" x2="3" y2="12" />
+              </svg>
             </Link>
           )}
           <LangToggle />
