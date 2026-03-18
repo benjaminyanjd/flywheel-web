@@ -11,6 +11,7 @@ import { useToast } from "@/components/toast";
 import { IconAITech, IconCrypto, IconOnchain, IconCommunity, IconKOL, IconAlpha } from "@/components/icons";
 import { track } from "@/lib/analytics";
 import { TRADE_METHOD_VALUES } from "@/lib/preferences";
+import { TRADE_ICONS } from "@/components/trade-icons";
 
 function CheckboxIcon({ checked }: { checked: boolean }) {
   if (checked) {
@@ -469,6 +470,7 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
                     >
                       <span className="inline-flex items-center gap-2">
                         <CheckboxIcon checked={sel} />
+                        <span className="shrink-0 w-5 h-5">{TRADE_ICONS[m.value] ? TRADE_ICONS[m.value]() : null}</span>
                         {m.label}
                       </span>
                     </button>

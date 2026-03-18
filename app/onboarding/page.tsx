@@ -9,6 +9,7 @@ import { useT } from "@/lib/i18n";
 import { deriveFocus, TRADE_METHOD_VALUES } from "@/lib/preferences";
 import { FlywheelLogo } from "@/components/flywheel-logo";
 import { track } from "@/lib/analytics";
+import { TRADE_ICONS } from "@/components/trade-icons";
 
 const TOTAL_STEPS = 4;
 
@@ -229,7 +230,7 @@ export default function OnboardingPage() {
                     className={multiBtnClass(sel)}
                     style={sel ? selectedStyle : unselectedStyle}
                   >
-                    <span className="text-base shrink-0">{sel ? "☑" : "☐"}</span>
+                    <span className="shrink-0 w-6 h-6">{TRADE_ICONS[r.value] ? TRADE_ICONS[r.value]() : null}</span>
                     <span>{r.label}</span>
                   </button>
                 );
