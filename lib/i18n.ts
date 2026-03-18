@@ -542,6 +542,31 @@ export const translations = {
     onboard_risk_time_desc: "幫助我們推薦最適合你的機會",
     settings_trade_title: "交易偏好",
     settings_trade_desc: "調整你的交易方式、風險偏好和可用時間",
+
+    // Capital range + Trade goal
+    capital_title: "你的資金量級",
+    capital_tiny: "💵 < $1K（小試牛刀）",
+    capital_small: "💰 $1K – $10K",
+    capital_medium: "💎 $10K – $100K",
+    capital_large: "🏦 $100K+",
+    goal_title: "你的交易目標",
+    goal_grow_fast: "🚀 快速增長（承受高風險換高回報）",
+    goal_steady_income: "📈 穩定收益（每月可預期的回報）",
+    goal_preserve_grow: "🛡 保值增值（跑贏大盤就行）",
+    goal_learn_explore: "📚 學習探索（先搞懂再下重注）",
+
+    // Welcome page
+    welcome_title: "🎯 你的專屬交易畫像",
+    welcome_profile_title: "你的交易檔案",
+    welcome_generating: "AI 正在為你生成專屬分析...",
+    welcome_cta: "進入控制台 →",
+    welcome_fallback_title: "歡迎加入嗅鐘！",
+    welcome_fallback_desc: "系統已根據你的偏好開始個人化信號篩選，讓我們開始吧。",
+    welcome_label_profit_source: "交易方式",
+    welcome_label_capital_range: "資金量級",
+    welcome_label_trade_goal: "交易目標",
+    welcome_label_risk_level: "風險偏好",
+    welcome_label_time_budget: "時間預算",
   },
   en: {
     // Sidebar / Nav
@@ -1081,6 +1106,31 @@ export const translations = {
     onboard_risk_time_desc: "Help us recommend the best opportunities for you",
     settings_trade_title: "Trading Preferences",
     settings_trade_desc: "Adjust your trading methods, risk preference, and available time",
+
+    // Capital range + Trade goal
+    capital_title: "Your Capital Range",
+    capital_tiny: "💵 < $1K (Getting started)",
+    capital_small: "💰 $1K – $10K",
+    capital_medium: "💎 $10K – $100K",
+    capital_large: "🏦 $100K+",
+    goal_title: "Your Trading Goal",
+    goal_grow_fast: "🚀 Fast Growth (high risk, high reward)",
+    goal_steady_income: "📈 Steady Income (predictable monthly returns)",
+    goal_preserve_grow: "🛡 Preserve & Grow (beat the market)",
+    goal_learn_explore: "📚 Learn & Explore (understand before committing)",
+
+    // Welcome page
+    welcome_title: "🎯 Your Trading Profile",
+    welcome_profile_title: "Your Trading Profile",
+    welcome_generating: "AI is generating your personalized analysis...",
+    welcome_cta: "Enter Dashboard →",
+    welcome_fallback_title: "Welcome to Sniffing Clock!",
+    welcome_fallback_desc: "The system has started personalized signal filtering based on your preferences. Let's get started.",
+    welcome_label_profit_source: "Trading Style",
+    welcome_label_capital_range: "Capital Range",
+    welcome_label_trade_goal: "Trading Goal",
+    welcome_label_risk_level: "Risk Preference",
+    welcome_label_time_budget: "Time Budget",
   },
 } as const;
 

@@ -21,8 +21,10 @@ export default function OnboardingPage() {
   const [inviteError, setInviteError] = useState("");
   const [inviteLoading, setInviteLoading] = useState(false);
 
-  // Step 1: Trading methods (multi-select)
+  // Step 1: Trading methods (multi-select) + Capital Range + Trade Goal
   const [profitSource, setProfitSource] = useState<string[]>([]);
+  const [capitalRange, setCapitalRange] = useState("");
+  const [tradeGoal, setTradeGoal] = useState("");
 
   // Step 2: Risk + Time
   const [riskLevel, setRiskLevel] = useState("");
@@ -36,6 +38,20 @@ export default function OnboardingPage() {
     value: v,
     label: t(`trade_${v}` as Parameters<typeof t>[0]),
   }));
+
+  const CAPITAL_RANGES = [
+    { value: "tiny", tKey: "capital_tiny" as const },
+    { value: "small", tKey: "capital_small" as const },
+    { value: "medium", tKey: "capital_medium" as const },
+    { value: "large", tKey: "capital_large" as const },
+  ];
+
+  const TRADE_GOALS = [
+    { value: "grow_fast", tKey: "goal_grow_fast" as const },
+    { value: "steady_income", tKey: "goal_steady_income" as const },
+    { value: "preserve_grow", tKey: "goal_preserve_grow" as const },
+    { value: "learn_explore", tKey: "goal_learn_explore" as const },
+  ];
 
   const RISK_LEVELS = [
     { value: "conservative", label: t("risk_conservative") },
@@ -84,6 +100,8 @@ export default function OnboardingPage() {
         profit_source: profitSource.join(","),
         risk_level: riskLevel,
         time_budget: timeBudget,
+        capital_range: capitalRange,
+        trade_goal: tradeGoal,
         user_focus: deriveFocus(profitSource),
       }),
     });
@@ -104,13 +122,13 @@ export default function OnboardingPage() {
       });
       if (profitSource.length > 0) await saveProfile();
       fetch("/api/scan", { method: "POST" }).catch(() => {});
-      router.push("/opportunities?welcome=1");
+      router.push("/welcome");
     } catch {
       setSaving(false);
     }
   }
 
-  const step1Complete = profitSource.length > 0;
+  const step1Complete = profitSource.length > 0 && !!capitalRange && !!tradeGoal;
   const step2Complete = !!riskLevel && !!timeBudget;
 
   // Multi-select button class (checkbox style)
@@ -213,30 +231,75 @@ export default function OnboardingPage() {
           </Card>
         )}
 
-        {/* Step 1: Trading Methods (multi-select) */}
+        {/* Step 1: Trading Methods + Capital Range + Trade Goal */}
         {step === 1 && (
           <Card className="rounded-2xl shadow-sm animate-page-enter" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
             <CardHeader>
               <CardTitle className="text-xl" style={{ color: "var(--text-primary)" }}>{t("onboard_trade_title")}</CardTitle>
               <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("onboard_trade_desc")}</p>
             </CardHeader>
-            <CardContent className="space-y-3 max-h-[70vh] overflow-y-auto">
-              {TRADE_METHODS.map(r => {
-                const sel = profitSource.includes(r.value);
-                return (
-                  <button key={r.value} type="button"
-                    onClick={() => toggleMulti(r.value, profitSource, setProfitSource)}
-                    aria-pressed={sel}
-                    className={multiBtnClass(sel)}
-                    style={sel ? selectedStyle : unselectedStyle}
-                  >
-                    <span className="shrink-0 w-6 h-6">{TRADE_ICONS[r.value] ? TRADE_ICONS[r.value]() : null}</span>
-                    <span>{r.label}</span>
-                  </button>
-                );
-              })}
+            <CardContent className="space-y-5 max-h-[70vh] overflow-y-auto">
+              {/* Trading Methods (multi-select) */}
+              <div className="space-y-2">
+                {TRADE_METHODS.map(r => {
+                  const sel = profitSource.includes(r.value);
+                  return (
+                    <button key={r.value} type="button"
+                      onClick={() => toggleMulti(r.value, profitSource, setProfitSource)}
+                      aria-pressed={sel}
+                      className={multiBtnClass(sel)}
+                      style={sel ? selectedStyle : unselectedStyle}
+                    >
+                      <span className="shrink-0 w-6 h-6">{TRADE_ICONS[r.value] ? TRADE_ICONS[r.value]() : null}</span>
+                      <span>{r.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
 
-              <div title={!step1Complete ? "請至少選擇一項" : undefined}>
+              {/* Capital Range (single-select) */}
+              <div>
+                <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>{t("capital_title")}</p>
+                <div className="space-y-2">
+                  {CAPITAL_RANGES.map(r => {
+                    const sel = capitalRange === r.value;
+                    return (
+                      <button key={r.value} type="button"
+                        onClick={() => setCapitalRange(r.value)}
+                        aria-pressed={sel}
+                        className={singleBtnClass(sel)}
+                        style={sel ? selectedStyle : unselectedStyle}
+                      >
+                        <span className="text-base shrink-0">{sel ? "◉" : "○"}</span>
+                        <span>{t(r.tKey)}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Trade Goal (single-select) */}
+              <div>
+                <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>{t("goal_title")}</p>
+                <div className="space-y-2">
+                  {TRADE_GOALS.map(r => {
+                    const sel = tradeGoal === r.value;
+                    return (
+                      <button key={r.value} type="button"
+                        onClick={() => setTradeGoal(r.value)}
+                        aria-pressed={sel}
+                        className={singleBtnClass(sel)}
+                        style={sel ? selectedStyle : unselectedStyle}
+                      >
+                        <span className="text-base shrink-0">{sel ? "◉" : "○"}</span>
+                        <span>{t(r.tKey)}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div title={!step1Complete ? "請完成所有選項" : undefined}>
                 <Button
                   onClick={() => { track("onboarding_step_complete", { step: 1 }); setStep(2); }}
                   disabled={!step1Complete}

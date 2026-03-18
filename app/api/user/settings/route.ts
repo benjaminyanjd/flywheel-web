@@ -133,13 +133,24 @@ export async function PATCH(req: NextRequest) {
     const oppHorizon = typeof body.opp_horizon === "string" ? body.opp_horizon || null : null;
     const riskLevel = typeof body.risk_level === "string" ? body.risk_level || null : null;
     const timeBudget = typeof body.time_budget === "string" ? body.time_budget || null : null;
+    const VALID_CAPITAL = ["tiny", "small", "medium", "large"];
+    const VALID_TRADE_GOAL = ["grow_fast", "steady_income", "preserve_grow", "learn_explore"];
+    const capitalRange =
+      typeof body.capital_range === "string" && VALID_CAPITAL.includes(body.capital_range)
+        ? body.capital_range
+        : null;
+    const tradeGoal =
+      typeof body.trade_goal === "string" && VALID_TRADE_GOAL.includes(body.trade_goal)
+        ? body.trade_goal
+        : null;
 
     const db = getDb();
     db.prepare(`INSERT OR IGNORE INTO user_settings (user_id) VALUES (?)`).run(userId);
     db.prepare(`UPDATE user_settings SET user_role = ?, user_focus = ?, opp_type = ?,
-      profit_source = ?, core_skills = ?, opp_horizon = ?, risk_level = ?, time_budget = ?
+      profit_source = ?, core_skills = ?, opp_horizon = ?, risk_level = ?, time_budget = ?,
+      capital_range = ?, trade_goal = ?
       WHERE user_id = ?`)
-      .run(userRole, userFocus, oppType, profitSource, coreSkills, oppHorizon, riskLevel, timeBudget, userId);
+      .run(userRole, userFocus, oppType, profitSource, coreSkills, oppHorizon, riskLevel, timeBudget, capitalRange, tradeGoal, userId);
 
     logger.info("user/settings/PATCH", "Preferences saved", { userId });
     return NextResponse.json({ success: true });

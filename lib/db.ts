@@ -57,6 +57,8 @@ export function runMigrations(): void {
     'profit_source TEXT DEFAULT NULL', 'core_skills TEXT DEFAULT NULL', 'opp_horizon TEXT DEFAULT NULL',
     'risk_level TEXT DEFAULT NULL', 'time_budget TEXT DEFAULT NULL',
     'opp_dislike TEXT DEFAULT NULL',
+    'capital_range TEXT DEFAULT NULL',
+    'trade_goal TEXT DEFAULT NULL',
   ]) {
     try {
       db.exec(`ALTER TABLE user_settings ADD COLUMN ${col}`);

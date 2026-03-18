@@ -63,4 +63,6 @@ export interface UserSettings {
   risk_level: string | null;
   time_budget: string | null;
   opp_dislike: string | null;
+  capital_range: string | null;
+  trade_goal: string | null;
 }
