@@ -1,8 +1,8 @@
 import { getDb } from "@/lib/db"
 import LandingContent from "@/components/landing-content"
 
-const USER_COUNT_BASE = 45  // base offset for social proof
-const QUOTA_TOTAL = 50      // total quota for this batch
+const USER_COUNT_BASE = 5   // base offset for social proof
+const QUOTA_TOTAL = 100     // total quota for this batch
 
 function getCounts(): { userCount: number; waitlistCount: number } {
   try {
