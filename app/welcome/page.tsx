@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FlywheelLogo } from "@/components/flywheel-logo";
@@ -53,11 +54,13 @@ interface UserSettings {
 export default function WelcomePage() {
   const { t } = useT();
   const router = useRouter();
+  const { user } = useUser();
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [analysis, setAnalysis] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamError, setStreamError] = useState(false);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
+  const [shareStatus, setShareStatus] = useState<"idle" | "copied">("idle");
   const analysisRef = useRef<HTMLDivElement>(null);
   const hasStartedStream = useRef(false);
 
@@ -262,6 +265,40 @@ ${t("welcome_fallback_desc")}
               )}
             </CardContent>
           </Card>
+
+          {/* Share Button */}
+          {!isStreaming && analysis && (
+            <Button
+              onClick={async () => {
+                const shareUrl = `${window.location.origin}/profile/${user?.id || ""}`;
+                const shareData = {
+                  title: "我的交易畫像 | 嗅鐘",
+                  text: "查看我的交易畫像，發現你的交易風格",
+                  url: shareUrl,
+                };
+                if (navigator.share && navigator.canShare?.(shareData)) {
+                  try {
+                    await navigator.share(shareData);
+                  } catch {
+                    // User cancelled
+                  }
+                } else {
+                  await navigator.clipboard.writeText(shareUrl);
+                  setShareStatus("copied");
+                  setTimeout(() => setShareStatus("idle"), 2000);
+                }
+              }}
+              variant="outline"
+              className="w-full rounded-xl text-base py-6"
+              style={{
+                borderColor: "var(--signal)",
+                color: "var(--signal)",
+                backgroundColor: "transparent",
+              }}
+            >
+              {shareStatus === "copied" ? "✅ 已複製鏈接" : "📤 分享你的交易畫像"}
+            </Button>
+          )}
 
           {/* CTA Button */}
           <Button

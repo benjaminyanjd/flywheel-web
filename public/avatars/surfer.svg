@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" fill="#0A0E08" rx="100"/>
+  <!-- Water / data waves -->
+  <path d="M0 140 Q25 125 50 135 Q75 145 100 130 Q125 115 150 130 Q175 145 200 128 L200 200 L0 200Z" fill="#3CB371" opacity="0.15"/>
+  <path d="M0 150 Q30 138 60 148 Q90 158 120 142 Q150 126 180 142 Q195 150 200 145 L200 200 L0 200Z" fill="#3CB371" opacity="0.25"/>
+  <path d="M0 162 Q35 152 65 160 Q95 168 125 155 Q155 142 185 155 Q195 160 200 157 L200 200 L0 200Z" fill="#3CB371" opacity="0.4"/>
+  <!-- Surfboard -->
+  <ellipse cx="100" cy="145" rx="42" ry="6" fill="#FF6B35" transform="rotate(-8 100 145)"/>
+  <line x1="62" y1="148" x2="138" y2="142" stroke="#0A0E08" stroke-width="1" opacity="0.3"/>
+  <!-- Person body -->
+  <circle cx="100" cy="88" r="14" fill="#3CB371"/>
+  <!-- Body -->
+  <rect x="93" y="102" width="14" height="28" rx="4" fill="#3CB371"/>
+  <!-- Arms spread for balance -->
+  <line x1="72" y1="110" x2="93" y2="115" stroke="#3CB371" stroke-width="5" stroke-linecap="round"/>
+  <line x1="107" y1="115" x2="128" y2="108" stroke="#3CB371" stroke-width="5" stroke-linecap="round"/>
+  <!-- Legs -->
+  <line x1="96" y1="130" x2="90" y2="142" stroke="#3CB371" stroke-width="5" stroke-linecap="round"/>
+  <line x1="104" y1="130" x2="110" y2="140" stroke="#3CB371" stroke-width="5" stroke-linecap="round"/>
+  <!-- Data chart lines floating -->
+  <polyline points="30,70 42,60 54,65 66,50" stroke="#FF6B35" stroke-width="2" fill="none" opacity="0.6"/>
+  <circle cx="66" cy="50" r="3" fill="#FF6B35" opacity="0.8"/>
+  <polyline points="134,55 146,62 158,48 170,58" stroke="#3CB371" stroke-width="2" fill="none" opacity="0.5"/>
+  <circle cx="170" cy="58" r="3" fill="#3CB371" opacity="0.7"/>
+  <!-- Small data dots -->
+  <circle cx="45" cy="45" r="2" fill="#FF6B35" opacity="0.4"/>
+  <circle cx="155" cy="40" r="2" fill="#3CB371" opacity="0.4"/>
+  <circle cx="80" cy="35" r="1.5" fill="#FF6B35" opacity="0.3"/>
+</svg>
