@@ -118,9 +118,7 @@ export default function SignUpPage() {
           appearance={isDark ? clerkDark : clerkLight}
           fallbackRedirectUrl="/onboarding"
         />
-        <Link href="/" className="block text-xs mt-3 text-center underline underline-offset-4 transition-colors hover:text-[var(--text-primary)]" style={{ color: "var(--text-muted)" }}>
-          {t("auth_invite_tag")}
-        </Link>
+
       </div>
       </div>
     </div>
