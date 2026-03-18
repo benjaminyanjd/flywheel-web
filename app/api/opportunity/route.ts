@@ -1,16 +1,22 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
 import { spawn } from "child_process";
 import { logger } from "@/lib/logger";
+import { rateLimit, getRateLimitKey } from "@/lib/rate-limit";
 
 const COOLDOWN_SECONDS = 30 * 60; // 30 minutes
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const rlKey = getRateLimitKey(req, userId);
+    const rl = rateLimit(rlKey, { limit: 5, windowSec: 3600, prefix: "opportunity_post" });
+    if (!rl.success) {
+      return NextResponse.json({ error: "請求過於頻繁，請稍後再試" }, { status: 429, headers: { "Retry-After": String(Math.ceil((rl.resetAt - Date.now()) / 1000)) } });
     }
 
     const db = getDb();

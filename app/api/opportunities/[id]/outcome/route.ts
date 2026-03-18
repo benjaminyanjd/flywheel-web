@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getDb } from "@/lib/db";
 import { logger } from "@/lib/logger";
+import { rateLimit, getRateLimitKey } from "@/lib/rate-limit";
 
 export async function POST(
   req: NextRequest,
@@ -9,6 +10,11 @@ export async function POST(
 ) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const rlKey = getRateLimitKey(req, userId);
+  const rl = rateLimit(rlKey, { limit: 20, windowSec: 60, prefix: "opp_outcome_v2" });
+  if (!rl.success) {
+    return NextResponse.json({ error: "請求過於頻繁，請稍後再試" }, { status: 429, headers: { "Retry-After": String(Math.ceil((rl.resetAt - Date.now()) / 1000)) } });
+  }
 
   const { id } = await params;
   try {
