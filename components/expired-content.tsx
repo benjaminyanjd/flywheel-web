@@ -41,7 +41,7 @@ export function ExpiredContent({ isActuallyExpired, daysLeft, totalOpps, actione
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "var(--bg)" }}>
+    <div className="flex-1 flex flex-col" style={{ backgroundColor: "var(--bg)" }}>
       <TopNav hideCta hideLogin />
       <div className="flex-1 flex items-center justify-center p-4">
       <div className="text-center max-w-lg">
