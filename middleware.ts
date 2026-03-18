@@ -8,6 +8,7 @@ const isPublicRoute = createRouteMatcher([
   "/expired",
   "/privacy",
   "/og-image",
+  "/og-image-en",
   "/api/webhooks/(.*)",
   "/api/waitlist",
   "/api/preview-opps",
