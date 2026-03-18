@@ -58,7 +58,7 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-semibold mb-3" style={{ color: "var(--text-primary)" }}>5. 您的權利</h2>
             <p style={{ color: "var(--text-muted)" }}>
               您可以隨時要求刪除帳號及所有相關資料。請聯繫{" "}
-              <a href="https://t.me/BJMYan" target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80" style={{ color: "var(--text-secondary)" }}>
+              <a href="https://t.me/+YPHT-FqxidA5NmU1" target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80" style={{ color: "var(--text-secondary)" }}>
                 @BJMYan
               </a>{" "}
               提出申請。
@@ -69,7 +69,7 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-semibold mb-3" style={{ color: "var(--text-primary)" }}>6. 聯繫我們</h2>
             <p style={{ color: "var(--text-muted)" }}>
               如有隱私相關問題，請透過 Telegram 聯繫：{" "}
-              <a href="https://t.me/BJMYan" target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80" style={{ color: "var(--text-secondary)" }}>
+              <a href="https://t.me/+YPHT-FqxidA5NmU1" target="_blank" rel="noopener noreferrer" className="underline hover:opacity-80" style={{ color: "var(--text-secondary)" }}>
                 @BJMYan
               </a>
             </p>

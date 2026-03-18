@@ -28,7 +28,7 @@ export function Footer() {
     >
       &copy; 2026 嗅鐘 Sniffing Clock &middot;{" "}
       <a
-        href="https://t.me/BJMYan"
+        href="https://t.me/+YPHT-FqxidA5NmU1"
         target="_blank"
         rel="noopener noreferrer"
         className="transition-colors hover:text-[var(--text-primary)]"

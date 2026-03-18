@@ -213,7 +213,7 @@ function SidebarInner() {
         ))}
         {/* Feedback link */}
         <a
-          href="https://t.me/BJMYan"
+          href="https://t.me/+YPHT-FqxidA5NmU1"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 text-gray-500 hover:text-gray-900 hover:bg-gray-50"
