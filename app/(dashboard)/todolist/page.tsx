@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -173,10 +174,10 @@ export default function TodolistPage() {
           </div>
           <p className="text-lg font-semibold mb-1" style={{ color: "var(--text-secondary)" }}>收藏感興趣的機會，稍後行動</p>
           <p className="text-sm text-center max-w-xs" style={{ color: "var(--text-muted)" }}>在機會捕捉頁面點擊「待辦」按鈕，機會就會出現在這裡</p>
-          <a href="/opportunities" className="mt-6 flex items-center gap-2 text-xs px-4 py-2.5 rounded-xl font-semibold transition-all btn-press hover:opacity-90" style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}>
+          <Link href="/opportunities" className="mt-6 flex items-center gap-2 text-xs px-4 py-2.5 rounded-xl font-semibold transition-all btn-press hover:opacity-90" style={{ backgroundColor: "var(--signal)", color: "var(--bg)" }}>
             <OpportunityIcon size={14} />
             {t("todo_title") === "待辦清單" ? "去看機會" : "View Opportunities"} →
-          </a>
+          </Link>
         </div>
       ) : (
         <ScrollArea className="flex-1">

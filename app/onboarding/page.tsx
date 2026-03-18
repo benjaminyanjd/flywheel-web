@@ -234,7 +234,7 @@ export default function OnboardingPage() {
               </Button>
               <p className="text-center text-xs" style={{ color: "var(--text-muted)" }}>
                 {t("onboard_no_code")}
-                <a href="https://sniffingclock.club/#waitlist-form" className="hover:underline ml-1" style={{ color: "var(--text-secondary)" }}>
+                <a href="https://sniffingclock.club/#waitlist-form" target="_blank" rel="noopener noreferrer" className="hover:underline ml-1" style={{ color: "var(--text-secondary)" }}>
                   {t("onboard_apply")}
                 </a>
               </p>

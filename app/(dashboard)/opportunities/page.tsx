@@ -1,6 +1,7 @@
 "use client";
 
 import React, { Suspense, useState, useEffect } from "react";
+import Link from "next/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FlywheelLogo } from "@/components/flywheel-logo";
 import { OpportunityIcon } from "@/components/icons";
@@ -80,9 +81,9 @@ function OpportunitiesContent() {
             <p className="text-sm mt-1" style={{ color: "var(--text-secondary)" }}>
               {h.t("opp_welcome_desc")}<br />
               {h.lang === "zh" ? "記得去 " : "Go to "}
-              <a href="/settings" style={{ color: "var(--signal-amber)" }} className="underline">
+              <Link href="/settings" style={{ color: "var(--signal-amber)" }} className="underline">
                 {h.lang === "zh" ? "設置頁面" : "Settings"}
-              </a>
+              </Link>
               {h.lang === "zh" ? " 綁定 Telegram，才能收到每日推送。" : " to bind Telegram for daily push."}
             </p>
           </div>

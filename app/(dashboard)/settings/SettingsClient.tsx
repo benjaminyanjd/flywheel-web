@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -270,7 +271,7 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
         {!hasTelegram && (
           <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 flex items-center justify-between mb-2 animate-fade-in">
             <span className="text-amber-700 text-sm">尚未綁定 Telegram，無法收到機會推送</span>
-            <a href="#telegram" className="text-amber-600 hover:underline text-sm font-medium shrink-0 ml-4">立即綁定 →</a>
+            <Link href="#telegram" className="text-amber-600 hover:underline text-sm font-medium shrink-0 ml-4">立即綁定 →</Link>
           </div>
         )}
 

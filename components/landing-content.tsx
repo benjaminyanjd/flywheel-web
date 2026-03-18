@@ -557,7 +557,7 @@ export default function LandingContent({ userCount, waitlistCount, quotaTotal }:
       {/* ── Footer ── */}
       <footer className="py-8 text-center text-xs" style={{ borderTop: "1px solid var(--border-subtle)", color: "var(--text-muted)" }}>
         &copy; 2026 嗅鐘 Sniffing Clock &middot;{" "}
-        <a href="https://t.me/BJMYan" className="transition-colors hover:text-[var(--text-primary)]">{t("landing_footer_contact")}</a>
+        <a href="https://t.me/BJMYan" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-[var(--text-primary)]">{t("landing_footer_contact")}</a>
         {" · "}
         <Link href="/privacy" className="transition-colors hover:text-[var(--text-primary)]">{t("landing_footer_privacy")}</Link>
         {" · "}
