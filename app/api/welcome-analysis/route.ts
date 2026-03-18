@@ -59,7 +59,8 @@ ${signalText}
 5. 本週建議關注（基於今日信號，2-3條具體行動）
 6. 嗅鐘會為你做的事（2-3條）
 
-語氣：專業但不冰冷，像一個懂行的朋友在給建議。用繁體中文。`;
+語氣：專業但不冰冷，像一個懂行的朋友在給建議。用繁體中文。
+重要：不要使用任何 emoji 表情符號，全部用文字表達。`;
 
     // Call claude-proxy with streaming
     const response = await fetch("http://localhost:3456/v1/chat/completions", {

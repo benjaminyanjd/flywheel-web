@@ -167,12 +167,12 @@ export default function WelcomePage() {
 
 ${t("welcome_fallback_desc")}
 
-### 🎯 為你量身定制
+### 為你量身定制
 - 信號將根據你的交易方式和風險偏好進行過濾
 - 每日推送匹配你資金量級的機會
 - 行動清單會考慮你的時間預算
 
-### 📊 接下來
+### 接下來
 1. 前往信號雷達查看最新信號
 2. 綁定 Telegram 接收即時推送
 3. 開始你的第一筆交易`;
@@ -296,7 +296,7 @@ ${t("welcome_fallback_desc")}
                 backgroundColor: "transparent",
               }}
             >
-              {shareStatus === "copied" ? "✅ 已複製鏈接" : "📤 分享你的交易畫像"}
+              {shareStatus === "copied" ? "✅ 已複製鏈接" : "分享你的交易畫像"}
             </Button>
           )}
 
