@@ -384,36 +384,38 @@ export default function OnboardingPage() {
 
         {/* Step 3: Telegram */}
         {step === 3 && (
-          <Card className="rounded-2xl shadow-sm animate-page-enter" style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}>
-            <CardHeader>
-              <CardTitle className="text-xl" style={{ color: "var(--text-primary)" }}>{t("onboard_tg_title")}</CardTitle>
+          <div className="space-y-4 animate-page-enter">
+            <div>
+              <h3 className="text-xl font-semibold mb-1" style={{ color: "var(--text-primary)" }}>{t("onboard_tg_title")}</h3>
               <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{t("onboard_tg_desc")}</p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="rounded-xl p-4 text-sm space-y-2" style={{ backgroundColor: "var(--bg-panel)" }}>
-                <p className="font-medium" style={{ color: "var(--text-secondary)" }}>{t("onboard_tg_howto")}</p>
-                <ol className="space-y-1 list-decimal list-inside" style={{ color: "var(--text-secondary)" }}>
-                  <li>{t("onboard_tg_step1_pre")} <span className="font-mono" style={{ color: "var(--text-primary)" }}>@userinfobot</span></li>
-                  <li>{t("onboard_tg_step2")}</li>
-                  <li>{t("onboard_tg_step3_pre")} <span className="font-mono" style={{ color: "var(--text-primary)" }}>Id:</span> {t("onboard_tg_step3_post")}</li>
-                </ol>
-              </div>
-              <Input
-                value={telegramId}
-                onChange={e => setTelegramId(e.target.value)}
-                placeholder={t("onboard_tg_example")}
-                className="input-focus-ring rounded-xl font-mono"
-              />
-              <Button
-                onClick={finishWithTelegram}
-                disabled={saving || !telegramId}
-                className="w-full rounded-xl"
-                style={!saving && telegramId ? { backgroundColor: "var(--signal)", color: "var(--bg)" } : {}}
-              >
-                {saving ? t("onboard_tg_saving") : t("onboard_tg_done")}
-              </Button>
-            </CardContent>
-          </Card>
+            </div>
+
+            <div className="rounded-xl p-4 text-sm space-y-3 border" style={{ borderColor: "var(--border)", backgroundColor: "color-mix(in srgb, var(--signal) 5%, transparent)" }}>
+              <p className="font-medium" style={{ color: "var(--text-primary)" }}>{t("onboard_tg_howto")}</p>
+              <ol className="space-y-2 list-decimal list-inside" style={{ color: "var(--text-secondary)" }}>
+                <li>{t("onboard_tg_step1_pre")} <a href="https://t.me/userinfobot" target="_blank" rel="noopener noreferrer" className="font-mono underline" style={{ color: "var(--signal)" }}>@userinfobot</a></li>
+                <li>{t("onboard_tg_step2")}</li>
+                <li>{t("onboard_tg_step3_pre")} <span className="font-mono font-medium" style={{ color: "var(--text-primary)" }}>Id:</span> {t("onboard_tg_step3_post")}</li>
+              </ol>
+            </div>
+
+            <Input
+              value={telegramId}
+              onChange={e => setTelegramId(e.target.value)}
+              placeholder={t("onboard_tg_example")}
+              className="input-focus-ring rounded-xl font-mono"
+              style={{ borderColor: "var(--border)", backgroundColor: "var(--bg)" }}
+            />
+
+            <Button
+              onClick={finishWithTelegram}
+              disabled={saving || !telegramId}
+              className="w-full rounded-xl"
+              style={!saving && telegramId ? { backgroundColor: "var(--signal)", color: "var(--bg)" } : {}}
+            >
+              {saving ? t("onboard_tg_saving") : t("onboard_tg_done")}
+            </Button>
+          </div>
         )}
       </div>
       </div>
