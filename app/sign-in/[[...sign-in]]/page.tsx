@@ -89,7 +89,7 @@ export default function SignInPage() {
       }} />
 
       {/* Left: Product intro */}
-      <div className="hidden md:flex flex-col justify-between w-[420px] min-h-[540px] p-6 relative z-10">
+      <div className="hidden md:flex flex-col justify-center w-[420px] p-6 relative z-10">
         <div>
           {/* Main headline */}
           <h2 className="text-4xl font-bold mb-4 leading-tight" style={{ color: "var(--text-primary)" }}>
