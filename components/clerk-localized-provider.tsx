@@ -17,10 +17,27 @@ export function ClerkLocalizedProvider({ children }: { children: React.ReactNode
     return () => window.removeEventListener("flywheel-lang-change", handler);
   }, []);
 
+  const localization = lang === "zh"
+    ? zhTW
+    : {
+        signIn: {
+          start: {
+            title: "Sign in to Sniffing Clock",
+            subtitle: "Welcome back! Please sign in to continue",
+          },
+        },
+        signUp: {
+          start: {
+            title: "Sign up for Sniffing Clock",
+            subtitle: "Create your account to get started",
+          },
+        },
+      };
+
   return (
     <ClerkProvider
       key={lang}
-      localization={lang === "zh" ? zhTW : undefined}
+      localization={localization}
     >
       {children}
     </ClerkProvider>
