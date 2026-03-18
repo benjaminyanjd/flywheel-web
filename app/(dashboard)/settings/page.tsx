@@ -24,6 +24,8 @@ export default async function SettingsPage() {
     opp_horizon: string | null;
     risk_level: string | null;
     time_budget: string | null;
+    capital_range: string | null;
+    trade_goal: string | null;
   }
   const settings = db.prepare("SELECT * FROM user_settings WHERE user_id = ?").get(userId) as UserSettings | null;
 

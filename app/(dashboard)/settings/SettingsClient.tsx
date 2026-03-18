@@ -69,6 +69,8 @@ interface UserSettings {
   profit_source: string | null;
   risk_level: string | null;
   time_budget: string | null;
+  capital_range: string | null;
+  trade_goal: string | null;
 }
 
 interface Props {
@@ -146,6 +148,8 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
   });
   const [riskLevel, setRiskLevel] = useState(initialSettings?.risk_level || "");
   const [timeBudget, setTimeBudget] = useState(initialSettings?.time_budget || "");
+  const [capitalRange, setCapitalRange] = useState(initialSettings?.capital_range || "");
+  const [tradeGoal, setTradeGoal] = useState(initialSettings?.trade_goal || "");
   const [tradeStatus, setTradeStatus] = useState<"idle" | "saving" | "saved">("idle");
   const tradeInitRef = useRef(false);
   const tradeDebounceRef = useRef<NodeJS.Timeout | null>(null);
@@ -164,7 +168,7 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
       if (tradeDebounceRef.current) clearTimeout(tradeDebounceRef.current);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tradeMethods, riskLevel, timeBudget]);
+  }, [tradeMethods, riskLevel, timeBudget, capitalRange, tradeGoal]);
 
   async function saveTradePref() {
     setTradeStatus("saving");
@@ -176,6 +180,8 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
           profit_source: tradeMethods.join(","),
           risk_level: riskLevel || null,
           time_budget: timeBudget || null,
+          capital_range: capitalRange || null,
+          trade_goal: tradeGoal || null,
         }),
       });
       if (res.ok) {
@@ -547,6 +553,72 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
                       <span className="inline-flex items-center gap-2">
                         <span className="text-base shrink-0">{sel ? "◉" : "○"}</span>
                         {tb.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Capital Range - single select */}
+            <div>
+              <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>{tr("capital_title")}</p>
+              <div className="space-y-2">
+                {([
+                  { value: "tiny", tKey: "capital_tiny" as const },
+                  { value: "small", tKey: "capital_small" as const },
+                  { value: "medium", tKey: "capital_medium" as const },
+                  { value: "large", tKey: "capital_large" as const },
+                ]).map(r => {
+                  const sel = capitalRange === r.value;
+                  return (
+                    <button
+                      key={r.value}
+                      onClick={() => setCapitalRange(r.value)}
+                      className={`w-full text-left px-4 py-3 rounded-xl border transition-all duration-200 btn-press ${
+                        sel ? "border-2 font-medium shadow-sm" : "hover:bg-[var(--bg-panel)]"
+                      }`}
+                      style={sel
+                        ? { borderColor: "var(--signal)", backgroundColor: "color-mix(in srgb, var(--signal) 10%, transparent)", color: "var(--signal)" }
+                        : { borderColor: "var(--border)", color: "var(--text-secondary)" }
+                      }
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <span className="text-base shrink-0">{sel ? "◉" : "○"}</span>
+                        {tr(r.tKey)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Trade Goal - single select */}
+            <div>
+              <p className="text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>{tr("goal_title")}</p>
+              <div className="space-y-2">
+                {([
+                  { value: "grow_fast", tKey: "goal_grow_fast" as const },
+                  { value: "steady_income", tKey: "goal_steady_income" as const },
+                  { value: "preserve_grow", tKey: "goal_preserve_grow" as const },
+                  { value: "learn_explore", tKey: "goal_learn_explore" as const },
+                ]).map(r => {
+                  const sel = tradeGoal === r.value;
+                  return (
+                    <button
+                      key={r.value}
+                      onClick={() => setTradeGoal(r.value)}
+                      className={`w-full text-left px-4 py-3 rounded-xl border transition-all duration-200 btn-press ${
+                        sel ? "border-2 font-medium shadow-sm" : "hover:bg-[var(--bg-panel)]"
+                      }`}
+                      style={sel
+                        ? { borderColor: "var(--signal)", backgroundColor: "color-mix(in srgb, var(--signal) 10%, transparent)", color: "var(--signal)" }
+                        : { borderColor: "var(--border)", color: "var(--text-secondary)" }
+                      }
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <span className="text-base shrink-0">{sel ? "◉" : "○"}</span>
+                        {tr(r.tKey)}
                       </span>
                     </button>
                   );
