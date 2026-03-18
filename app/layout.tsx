@@ -27,10 +27,10 @@ const notoSerifTC = Noto_Serif_TC({
 
 export const metadata: Metadata = {
   title: {
-    default: "嗅鐘 — 你的 AI 市場情報助理",
+    default: "嗅鐘 — 跳過認知負擔，直接行動",
     template: "%s | 嗅鐘",
   },
-  description: "嗅鐘 AI 從 280+ 信號源即時掃描，根據你的背景個人化過濾，直接推送可執行行動方案到 Telegram。7 天免費試用。",
+  description: "AI 個人化過濾全網信號，直接告訴你為什麼是現在、第一步怎麼做。280+ 信號源即時掃描，機會窗口開著就推。7 天免費試用。",
   authors: [{ name: "嗅鐘" }],
   metadataBase: new URL("https://sniffingclock.club"),
   alternates: {
@@ -45,21 +45,21 @@ export const metadata: Metadata = {
     locale: "zh_TW",
     url: "https://sniffingclock.club",
     siteName: "嗅鐘",
-    title: "嗅鐘 — 你的 AI 市場情報助理",
-    description: "嗅鐘 AI 從 280+ 信號源即時掃描，根據你的背景個人化過濾，直接推送可執行行動方案到 Telegram。7 天免費試用。",
+    title: "嗅鐘 — 跳過認知負擔，直接行動",
+    description: "AI 個人化過濾全網信號，直接告訴你為什麼是現在、第一步怎麼做。280+ 信號源即時掃描，機會窗口開著就推。7 天免費試用。",
     images: [
       {
         url: "/og-image",
         width: 1200,
         height: 630,
-        alt: "嗅鐘 — AI 市場情報助理",
+        alt: "嗅鐘 — 跳過認知負擔，直接行動",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "嗅鐘 — 你的 AI 市場情報助理",
-    description: "嗅鐘 AI 從 280+ 信號源即時掃描，根據你的背景個人化過濾，直接推送可執行行動方案到 Telegram。7 天免費試用。",
+    title: "嗅鐘 — 跳過認知負擔，直接行動",
+    description: "AI 個人化過濾全網信號，直接告訴你為什麼是現在、第一步怎麼做。280+ 信號源即時掃描，機會窗口開著就推。7 天免費試用。",
     images: ["/og-image"],
   },
   robots: {

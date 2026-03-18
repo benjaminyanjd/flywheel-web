@@ -9,110 +9,162 @@ export async function GET() {
         style={{
           width: "1200px",
           height: "630px",
-          background: "linear-gradient(135deg, #020617 0%, #0f172a 60%, #1e293b 100%)",
+          background: "#0A0E08",
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
           justifyContent: "center",
-          padding: "80px",
+          padding: "72px 88px",
           fontFamily: "sans-serif",
           position: "relative",
         }}
       >
-        {/* Decorative amber glow */}
+        {/* Decorative green glow */}
         <div
           style={{
             position: "absolute",
-            top: "-100px",
-            right: "-100px",
-            width: "500px",
-            height: "500px",
-            background: "radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%)",
-            borderRadius: "50%",
+            top: "-200px",
+            right: "-150px",
+            width: "600px",
+            height: "800px",
+            background: "radial-gradient(ellipse, rgba(60,179,113,0.06) 0%, transparent 65%)",
           }}
         />
 
         {/* Logo + Brand */}
         <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "40px" }}>
-          <div
-            style={{
-              width: "52px",
-              height: "52px",
-              background: "rgba(245,158,11,0.15)",
-              border: "2px solid rgba(245,158,11,0.4)",
-              borderRadius: "12px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "28px",
-            }}
+          {/* Radar clock icon */}
+          <svg
+            width="52"
+            height="52"
+            viewBox="0 0 60 60"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            ⚙️
+            <circle cx="30" cy="30" r="27" stroke="#3CB371" strokeWidth="2" fill="none"/>
+            <circle cx="30" cy="30" r="20" stroke="#3CB371" strokeWidth="1" opacity="0.3" fill="none"/>
+            <circle cx="30" cy="30" r="12" stroke="#3CB371" strokeWidth="1" opacity="0.2" fill="none"/>
+            <line x1="30" y1="30" x2="30" y2="8" stroke="#3CB371" strokeWidth="1.5" opacity="0.5"/>
+            <line x1="30" y1="30" x2="48" y2="22" stroke="#3CB371" strokeWidth="2"/>
+            <circle cx="30" cy="30" r="3" fill="#3CB371"/>
+            <circle cx="44" cy="16" r="2.5" fill="#FF6B35" opacity="0.9"/>
+            <circle cx="22" cy="14" r="2" fill="#FF6B35" opacity="0.55"/>
+          </svg>
+          <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+            <span style={{ fontSize: "26px", fontWeight: "700", color: "#3CB371", letterSpacing: "2px" }}>
+              嗅鐘
+            </span>
+            <span style={{ fontSize: "13px", color: "rgba(250,250,247,0.35)", letterSpacing: "4px" }}>
+              SNIFFING CLOCK
+            </span>
           </div>
-          <span style={{ fontSize: "28px", fontWeight: "700", color: "#f1f5f9" }}>
-            嗅鐘
-          </span>
         </div>
 
-        {/* Main headline */}
+        {/* Slogan */}
         <div
           style={{
-            fontSize: "64px",
-            fontWeight: "900",
-            lineHeight: "1.1",
-            color: "#f1f5f9",
-            marginBottom: "24px",
-            maxWidth: "900px",
+            fontSize: "52px",
+            fontWeight: "700",
+            lineHeight: "1.3",
+            marginBottom: "20px",
             display: "flex",
             flexWrap: "wrap",
-            alignItems: "baseline",
-            gap: "12px",
+            gap: "0",
           }}
         >
-          <span>你的 AI</span>
-          <span style={{ color: "#fbbf24" }}>市場情報助理</span>
+          <span style={{ color: "#FF6B35" }}>跳過認知負擔</span>
+          <span style={{ color: "#FAFAF7" }}>，</span>
+          <span style={{ color: "#3CB371" }}>直接行動</span>
         </div>
 
-        {/* Sub-text */}
+        {/* Subtitle */}
         <div
           style={{
-            fontSize: "26px",
-            color: "#94a3b8",
-            lineHeight: "1.5",
-            maxWidth: "800px",
-            marginBottom: "48px",
+            fontSize: "22px",
+            color: "rgba(250,250,247,0.55)",
+            lineHeight: "1.6",
+            marginBottom: "44px",
           }}
         >
-          每天早上 8 點，把全球信號提煉成可執行行動清單，直達 Telegram
+          AI 個人化過濾全網信號，直接告訴你為什麼是現在、第一步怎麼做
         </div>
 
-        {/* Tags */}
-        <div style={{ display: "flex", gap: "12px" }}>
-          {["● 高置信信號", "◈ 即時掃描", "▶ Telegram 推送"].map((tag) => (
-            <div
-              key={tag}
-              style={{
-                background: "rgba(245,158,11,0.12)",
-                border: "1px solid rgba(245,158,11,0.3)",
-                borderRadius: "24px",
-                padding: "8px 20px",
-                fontSize: "18px",
-                color: "#fbbf24",
-              }}
-            >
-              {tag}
-            </div>
-          ))}
+        {/* Pills */}
+        <div style={{ display: "flex", gap: "14px" }}>
+          <div
+            style={{
+              background: "rgba(239,68,68,0.1)",
+              border: "1px solid rgba(239,68,68,0.2)",
+              borderRadius: "24px",
+              padding: "8px 22px",
+              fontSize: "16px",
+              color: "#f87171",
+              display: "flex",
+              alignItems: "center",
+              gap: "7px",
+            }}
+          >
+            <div style={{ width: "9px", height: "9px", borderRadius: "50%", background: "#ef4444" }} />
+            置信度評分
+          </div>
+          <div
+            style={{
+              background: "rgba(60,179,113,0.1)",
+              border: "1px solid rgba(60,179,113,0.2)",
+              borderRadius: "24px",
+              padding: "8px 22px",
+              fontSize: "16px",
+              color: "#3CB371",
+              display: "flex",
+              alignItems: "center",
+              gap: "7px",
+            }}
+          >
+            <div style={{ width: "9px", height: "9px", borderRadius: "50%", background: "#3CB371" }} />
+            即時推送
+          </div>
+          <div
+            style={{
+              background: "rgba(255,107,53,0.1)",
+              border: "1px solid rgba(255,107,53,0.2)",
+              borderRadius: "24px",
+              padding: "8px 22px",
+              fontSize: "16px",
+              color: "#FF6B35",
+              display: "flex",
+              alignItems: "center",
+              gap: "7px",
+            }}
+          >
+            <div style={{ width: "9px", height: "9px", borderRadius: "50%", background: "#FF6B35" }} />
+            個人化過濾
+          </div>
+          <div
+            style={{
+              background: "rgba(96,165,250,0.1)",
+              border: "1px solid rgba(96,165,250,0.2)",
+              borderRadius: "24px",
+              padding: "8px 22px",
+              fontSize: "16px",
+              color: "#60a5fa",
+              display: "flex",
+              alignItems: "center",
+              gap: "7px",
+            }}
+          >
+            <div style={{ width: "9px", height: "9px", borderRadius: "50%", background: "#60a5fa" }} />
+            行動清單
+          </div>
         </div>
 
         {/* Domain */}
         <div
           style={{
             position: "absolute",
-            bottom: "48px",
-            right: "80px",
-            fontSize: "20px",
-            color: "#475569",
+            bottom: "36px",
+            right: "56px",
+            fontSize: "16px",
+            color: "rgba(250,250,247,0.25)",
           }}
         >
           sniffingclock.club
