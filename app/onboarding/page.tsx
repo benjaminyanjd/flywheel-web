@@ -78,13 +78,7 @@ export default function OnboardingPage() {
     { value: 180, label: t("onboard_interval_180") },
   ];
 
-  const STEP_TITLES = [
-    t("onboard_invite_title"),
-    t("onboard_identity_title"),
-    t("onboard_cat_title"),
-    t("onboard_scan_title"),
-    t("onboard_tg_title"),
-  ];
+
 
   async function validateInvite() {
     setInviteError("");
@@ -134,22 +128,6 @@ export default function OnboardingPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(profilePayload),
     });
-  }
-
-  async function finish() {
-    setSaving(true);
-    try {
-      await fetch("/api/user/settings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ categories, scan_interval: scanInterval }),
-      });
-      if (profitSource.length > 0) await saveProfile();
-      fetch("/api/scan", { method: "POST" }).catch(() => {});
-      router.push("/opportunities?welcome=1");
-    } catch {
-      setSaving(false);
-    }
   }
 
   async function finishWithTelegram() {
