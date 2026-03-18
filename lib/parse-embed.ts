@@ -6,6 +6,7 @@ export interface EmbedData {
   confidence: number;
   deadline?: string;
   estimated_time?: string;
+  category?: string;
 }
 
 export function parseEmbed(raw: string): EmbedData | null {
@@ -19,6 +20,7 @@ export function parseEmbed(raw: string): EmbedData | null {
       confidence: typeof d.confidence === "number" ? d.confidence : 0,
       deadline: typeof d.deadline === "string" ? d.deadline : undefined,
       estimated_time: typeof d.estimated_time === "string" ? d.estimated_time : undefined,
+      category: typeof d.category === "string" ? d.category : undefined,
     };
   } catch {
     return null;

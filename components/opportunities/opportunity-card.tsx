@@ -10,6 +10,7 @@ import { ACTION_BADGE_STYLES, type Opportunity, type AdvisorState, type SignalSo
 import { SignalSourcesSection } from "./signal-sources";
 import { AdvisorPanel } from "./advisor-panel";
 import { track } from "@/lib/analytics";
+import { CATEGORY_ICONS, getCategoryBadgeColor, LEGACY_CATEGORY_MAP } from "@/components/category-icons";
 
 interface OpportunityCardProps {
   opp: Opportunity;
@@ -111,6 +112,25 @@ export const OpportunityCard = React.memo(function OpportunityCard({
               <h3 className="font-semibold text-base leading-snug break-words" style={{ color: "var(--text-primary)" }}>
                 {displayTitle}
               </h3>
+              {/* Category badge */}
+              {(() => {
+                const rawCat = rawEmbed?.category ?? "";
+                const cat = LEGACY_CATEGORY_MAP[rawCat] ?? rawCat;
+                const i18nKey = `cat_${cat}` as TKey;
+                const label = t(i18nKey);
+                const colors = getCategoryBadgeColor(cat);
+                const IconComp = CATEGORY_ICONS[cat];
+                if (!cat) return null;
+                return (
+                  <span
+                    className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full shrink-0 self-center border"
+                    style={{ backgroundColor: colors.bg, color: colors.text, borderColor: colors.border }}
+                  >
+                    {IconComp && <IconComp size={12} />}
+                    {label}
+                  </span>
+                );
+              })()}
               {confBadgeLabel && (
                 <span
                   className="text-xs font-medium px-2 py-0.5 rounded-full shrink-0 self-center"

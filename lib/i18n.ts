@@ -264,13 +264,26 @@ export const translations = {
     radar_view_original: "查看原文",
     radar_translate_done: "翻譯完成",
 
-    // Category labels
-    cat_ai_tech: "AI 科技",
-    cat_crypto_news: "加密新聞",
+    // Category labels — 12 new categories
+    cat_funding_rate: "資金費率",
+    cat_liquidation: "爆倉清算",
+    cat_whale_move: "鯨魚動向",
+    cat_kol_call: "KOL 喊單",
+    cat_onchain_flow: "鏈上資金",
+    cat_token_launch: "新幣發射",
+    cat_airdrop_opp: "空投機會",
+    cat_listing: "上幣公告",
+    cat_spread: "套利價差",
+    cat_security: "安全預警",
+    cat_macro: "宏觀政策",
+    cat_defi_yield: "DeFi 收益",
+    // Legacy fallbacks (old 6 categories → mapped to new names)
+    cat_ai_tech: "宏觀政策",
+    cat_crypto_news: "上幣公告",
     cat_onchain: "鏈上資金",
-    cat_community: "社區情報",
-    cat_kol: "KOL 動態",
-    cat_alpha: "Alpha",
+    cat_community: "安全預警",
+    cat_kol: "KOL 喊單",
+    cat_alpha: "套利價差",
 
     // Opportunities
     opp_title: "機會捕捉",
@@ -790,13 +803,26 @@ export const translations = {
     radar_view_original: "View original",
     radar_translate_done: "Translation complete",
 
-    // Category labels
-    cat_ai_tech: "AI Tech",
-    cat_crypto_news: "Crypto News",
-    cat_onchain: "On-chain",
-    cat_community: "Community",
-    cat_kol: "KOL",
-    cat_alpha: "Alpha",
+    // Category labels — 12 new categories
+    cat_funding_rate: "Funding Rate",
+    cat_liquidation: "Liquidation",
+    cat_whale_move: "Whale Moves",
+    cat_kol_call: "KOL Calls",
+    cat_onchain_flow: "On-chain Flow",
+    cat_token_launch: "Token Launch",
+    cat_airdrop_opp: "Airdrop",
+    cat_listing: "New Listing",
+    cat_spread: "Arbitrage Spread",
+    cat_security: "Security Alert",
+    cat_macro: "Macro & Policy",
+    cat_defi_yield: "DeFi Yield",
+    // Legacy fallbacks (old 6 categories → mapped to new names)
+    cat_ai_tech: "Macro & Policy",
+    cat_crypto_news: "New Listing",
+    cat_onchain: "On-chain Flow",
+    cat_community: "Security Alert",
+    cat_kol: "KOL Calls",
+    cat_alpha: "Arbitrage Spread",
 
     // Opportunities
     opp_title: "Opportunities",

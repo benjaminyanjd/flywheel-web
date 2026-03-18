@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { getLangStored, type Lang } from "@/lib/lang";
 import { useT } from "@/lib/i18n";
 import { useToast } from "@/components/toast";
-import { IconAITech, IconCrypto, IconOnchain, IconCommunity, IconKOL, IconAlpha } from "@/components/icons";
+import { CATEGORY_ICONS, CATEGORY_GROUPS } from "@/components/category-icons";
 import { track } from "@/lib/analytics";
 import { TRADE_METHOD_VALUES } from "@/lib/preferences";
 import { TRADE_ICONS } from "@/components/trade-icons";
@@ -29,14 +29,33 @@ function CheckboxIcon({ checked }: { checked: boolean }) {
   );
 }
 
-const CATEGORIES: { value: string; zh: string; en: string; icon: React.ReactNode }[] = [
-  { value: "kol", zh: "KOL 動態", en: "KOL", icon: <IconKOL /> },
-  { value: "crypto_news", zh: "加密新聞", en: "Crypto News", icon: <IconCrypto /> },
-  { value: "onchain", zh: "鏈上資金", en: "On-chain", icon: <IconOnchain /> },
-  { value: "ai_tech", zh: "AI 科技", en: "AI & Tech", icon: <IconAITech /> },
-  { value: "community", zh: "社區情報", en: "Community", icon: <IconCommunity /> },
-  { value: "alpha", zh: "Alpha", en: "Alpha", icon: <IconAlpha /> },
-];
+// Build flat CATEGORIES from grouped structure
+const CATEGORIES: { value: string; zh: string; en: string; icon: React.ReactNode; group: string }[] = CATEGORY_GROUPS.flatMap((group) =>
+  group.categories.map((cat) => {
+    const labels: Record<string, { zh: string; en: string }> = {
+      funding_rate:  { zh: "資金費率", en: "Funding Rate" },
+      liquidation:   { zh: "爆倉清算", en: "Liquidation" },
+      whale_move:    { zh: "鯨魚動向", en: "Whale Moves" },
+      kol_call:      { zh: "KOL 喊單", en: "KOL Calls" },
+      onchain_flow:  { zh: "鏈上資金", en: "On-chain Flow" },
+      token_launch:  { zh: "新幣發射", en: "Token Launch" },
+      airdrop_opp:   { zh: "空投機會", en: "Airdrop" },
+      listing:       { zh: "上幣公告", en: "New Listing" },
+      spread:        { zh: "套利價差", en: "Arbitrage Spread" },
+      security:      { zh: "安全預警", en: "Security Alert" },
+      macro:         { zh: "宏觀政策", en: "Macro & Policy" },
+      defi_yield:    { zh: "DeFi 收益", en: "DeFi Yield" },
+    };
+    const IconComp = CATEGORY_ICONS[cat];
+    return {
+      value: cat,
+      zh: labels[cat]?.zh ?? cat,
+      en: labels[cat]?.en ?? cat,
+      icon: IconComp ? React.createElement(IconComp, { size: 16 }) : null,
+      group: group.key,
+    };
+  })
+);
 
 interface UserSettings {
   categories: string | null;
@@ -95,7 +114,7 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
     try {
       return JSON.parse(initialSettings?.categories || "[]");
     } catch {
-      return ["kol", "crypto_news", "onchain", "ai_tech", "community", "alpha"];
+      return ["funding_rate", "liquidation", "whale_move", "kol_call", "onchain_flow", "token_launch", "airdrop_opp", "listing", "spread", "security", "macro", "defi_yield"];
     }
   });
   const [catStatus, setCatStatus] = useState<"idle" | "saving" | "saved">("idle");
@@ -558,27 +577,36 @@ export default function SettingsClient({ initialSettings, hasTelegram }: Props) 
               {tr("settings_cat_desc")}
             </p>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.value}
-                onClick={() => toggleCategory(cat.value)}
-                className={`w-full text-left px-4 py-3 rounded-xl border transition-all duration-200 btn-press ${
-                  categories.includes(cat.value)
-                    ? "border-2 font-medium shadow-sm"
-                    : "hover:bg-[var(--bg-panel)]"
-                }`}
-                style={categories.includes(cat.value)
-                  ? { borderColor: "var(--signal)", backgroundColor: "color-mix(in srgb, var(--signal) 10%, transparent)", color: "var(--signal)" }
-                  : { borderColor: "var(--border)", color: "var(--text-secondary)" }
-                }
-              >
-                <span className="inline-flex items-center gap-2">
-                  <CheckboxIcon checked={categories.includes(cat.value)} />
-                  {cat.icon}
-                  {lang === "zh" ? cat.zh : cat.en}
-                </span>
-              </button>
+          <CardContent className="space-y-4">
+            {CATEGORY_GROUPS.map((group) => (
+              <div key={group.key}>
+                <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "var(--text-muted)" }}>
+                  {lang === "zh" ? group.zh : group.en}
+                </p>
+                <div className="space-y-2">
+                  {CATEGORIES.filter((cat) => cat.group === group.key).map((cat) => (
+                    <button
+                      key={cat.value}
+                      onClick={() => toggleCategory(cat.value)}
+                      className={`w-full text-left px-4 py-3 rounded-xl border transition-all duration-200 btn-press ${
+                        categories.includes(cat.value)
+                          ? "border-2 font-medium shadow-sm"
+                          : "hover:bg-[var(--bg-panel)]"
+                      }`}
+                      style={categories.includes(cat.value)
+                        ? { borderColor: "var(--signal)", backgroundColor: "color-mix(in srgb, var(--signal) 10%, transparent)", color: "var(--signal)" }
+                        : { borderColor: "var(--border)", color: "var(--text-secondary)" }
+                      }
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <CheckboxIcon checked={categories.includes(cat.value)} />
+                        {cat.icon}
+                        {lang === "zh" ? cat.zh : cat.en}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             ))}
             {/* IX24: auto-save status indicator */}
             {catStatus === "saving" && (

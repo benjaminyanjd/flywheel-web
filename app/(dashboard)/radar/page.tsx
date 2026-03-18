@@ -9,6 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { FlywheelLogo } from "@/components/flywheel-logo";
 import { useToast } from "@/components/toast";
 import { track } from "@/lib/analytics";
+import { CATEGORY_ICONS, CATEGORY_GROUPS, LEGACY_CATEGORY_MAP, getCategoryBadgeColor } from "@/components/category-icons";
 
 interface Signal {
   id: number;
@@ -139,23 +140,36 @@ function heatHighlightClass(score: number, isBookmarked: boolean): string {
 }
 
 const CATEGORY_LABELS: Record<string, { zh: string; en: string }> = {
-  kol:          { zh: "KOL 動態",  en: "KOL" },
-  crypto_news:  { zh: "加密新聞",  en: "Crypto News" },
-  onchain:      { zh: "鏈上資金",  en: "On-chain" },
-  ai_tech:      { zh: "AI 科技",   en: "AI & Tech" },
-  community:    { zh: "社區情報",  en: "Community" },
-  alpha:        { zh: "Alpha",     en: "Alpha" },
+  funding_rate:  { zh: "資金費率",  en: "Funding Rate" },
+  liquidation:   { zh: "爆倉清算",  en: "Liquidation" },
+  whale_move:    { zh: "鯨魚動向",  en: "Whale Moves" },
+  kol_call:      { zh: "KOL 喊單",  en: "KOL Calls" },
+  onchain_flow:  { zh: "鏈上資金",  en: "On-chain Flow" },
+  token_launch:  { zh: "新幣發射",  en: "Token Launch" },
+  airdrop_opp:   { zh: "空投機會",  en: "Airdrop" },
+  listing:       { zh: "上幣公告",  en: "New Listing" },
+  spread:        { zh: "套利價差",  en: "Arbitrage Spread" },
+  security:      { zh: "安全預警",  en: "Security Alert" },
+  macro:         { zh: "宏觀政策",  en: "Macro & Policy" },
+  defi_yield:    { zh: "DeFi 收益", en: "DeFi Yield" },
+  // Legacy fallbacks
+  kol:           { zh: "KOL 喊單",  en: "KOL Calls" },
+  crypto_news:   { zh: "上幣公告",  en: "New Listing" },
+  onchain:       { zh: "鏈上資金",  en: "On-chain Flow" },
+  ai_tech:       { zh: "宏觀政策",  en: "Macro & Policy" },
+  community:     { zh: "安全預警",  en: "Security Alert" },
+  alpha:         { zh: "套利價差",  en: "Arbitrage Spread" },
 };
 
 // Map user_focus values to signal categories
 const FOCUS_TO_CATEGORY: Record<string, string[]> = {
-  ai: ["ai_tech"],
-  crypto: ["crypto_news", "onchain"],
-  saas: ["ai_tech"],
-  overseas: ["community"],
+  ai: ["macro", "token_launch"],
+  crypto: ["listing", "onchain_flow", "funding_rate"],
+  saas: ["macro", "defi_yield"],
+  overseas: ["security", "macro"],
 };
 
-// Category tab icons — 16x16, stroke style, currentColor
+// "All" tab icon
 function IconAll() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -167,74 +181,16 @@ function IconAll() {
   );
 }
 
-function IconAITech() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="3"/>
-      <path d="M12 3v3M12 18v3M3 12h3M18 12h3"/>
-      <path d="M5.64 5.64l2.12 2.12M16.24 16.24l2.12 2.12M16.24 7.76l2.12-2.12M5.64 18.36l2.12-2.12"/>
-    </svg>
-  );
-}
-
-function IconCrypto() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-      <path d="M2 17l10 5 10-5"/>
-      <path d="M2 12l10 5 10-5"/>
-    </svg>
-  );
-}
-
-function IconOnchain() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="1" y="5" width="6" height="6" rx="1"/>
-      <rect x="9" y="13" width="6" height="6" rx="1"/>
-      <rect x="17" y="5" width="6" height="6" rx="1"/>
-      <path d="M7 8h10M15 8l-6 8"/>
-    </svg>
-  );
-}
-
-function IconCommunity() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-      <path d="M8 9h8M8 13h4"/>
-    </svg>
-  );
-}
-
-function IconKOL() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-      <circle cx="9" cy="7" r="4"/>
-      <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
-    </svg>
-  );
-}
-
-function IconAlpha() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
-      <polyline points="16 7 22 7 22 13"/>
-    </svg>
-  );
-}
-
-const RADAR_CATEGORIES_LIST: { value: string; zh: string; en: string; icon: React.ReactNode }[] = [
-  { value: "all",          zh: "全部",      en: "All",          icon: <IconAll /> },
-  { value: "kol",          zh: "KOL 動態",  en: "KOL",          icon: <IconKOL /> },
-  { value: "crypto_news",  zh: "加密新聞",  en: "Crypto News",  icon: <IconCrypto /> },
-  { value: "onchain",      zh: "鏈上資金",  en: "On-chain",     icon: <IconOnchain /> },
-  { value: "ai_tech",      zh: "AI 科技",   en: "AI & Tech",    icon: <IconAITech /> },
-  { value: "community",    zh: "社區情報",  en: "Community",    icon: <IconCommunity /> },
-  { value: "alpha",        zh: "Alpha",     en: "Alpha",        icon: <IconAlpha /> },
-];
+// Build grouped radar category list from CATEGORY_GROUPS
+const RADAR_CATEGORIES_GROUPED = CATEGORY_GROUPS.map((group) => ({
+  ...group,
+  items: group.categories.map((cat) => ({
+    value: cat,
+    zh: CATEGORY_LABELS[cat]?.zh ?? cat,
+    en: CATEGORY_LABELS[cat]?.en ?? cat,
+    icon: CATEGORY_ICONS[cat] ? React.createElement(CATEGORY_ICONS[cat]!, { size: 14 }) : null,
+  })),
+}));
 
 function RadarContent() {
   const searchParams = useSearchParams();
@@ -477,29 +433,54 @@ function RadarContent() {
 
   return (
     <div className="flex flex-col h-full p-6 animate-page-enter" style={{ backgroundColor: "var(--bg)" }}>
-      {/* Category horizontal tabs */}
-      <div className="flex items-center gap-1 mb-4 overflow-x-auto pb-1" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
-        {RADAR_CATEGORIES_LIST.map((cat) => {
-          const isActive = activeCategory === cat.value;
-          return (
-            <button
-              key={cat.value}
-              type="button"
-              onClick={() => { track("signal_filter", { category: cat.value }); router.push(cat.value === "all" ? "/radar" : `/radar?category=${cat.value}`) }}
-              className={`relative flex items-center gap-1.5 px-3 py-1.5 text-sm whitespace-nowrap transition-all duration-200 ${
-                isActive
-                  ? "font-semibold text-[var(--text-primary)]"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-              }`}
-            >
-              <span className="leading-none" style={{ color: isActive ? "var(--signal)" : "var(--text-muted)" }}>{cat.icon}</span>
-              <span>{lang === "zh" ? cat.zh : cat.en}</span>
-              {isActive && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full" style={{ backgroundColor: "var(--signal)" }} />
-              )}
-            </button>
-          );
-        })}
+      {/* Category grouped tabs */}
+      <div className="flex items-center gap-0 mb-4 overflow-x-auto pb-1 flex-wrap" style={{ borderBottom: "1px solid var(--border-subtle)" }}>
+        {/* "All" tab */}
+        <button
+          type="button"
+          onClick={() => { track("signal_filter", { category: "all" }); router.push("/radar"); }}
+          className={`relative flex items-center gap-1.5 px-3 py-1.5 text-sm whitespace-nowrap transition-all duration-200 ${
+            activeCategory === "all"
+              ? "font-semibold text-[var(--text-primary)]"
+              : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+          }`}
+        >
+          <span className="leading-none" style={{ color: activeCategory === "all" ? "var(--signal)" : "var(--text-muted)" }}><IconAll /></span>
+          <span>{lang === "zh" ? "全部" : "All"}</span>
+          {activeCategory === "all" && (
+            <span className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full" style={{ backgroundColor: "var(--signal)" }} />
+          )}
+        </button>
+        {RADAR_CATEGORIES_GROUPED.map((group, gi) => (
+          <React.Fragment key={group.key}>
+            {/* Group separator */}
+            <span className="mx-1 h-4 w-px shrink-0" style={{ backgroundColor: "var(--border)" }} />
+            <span className="text-[10px] uppercase tracking-wider px-1 shrink-0" style={{ color: "var(--text-muted)" }}>
+              {lang === "zh" ? group.zh : group.en}
+            </span>
+            {group.items.map((cat) => {
+              const isActive = activeCategory === cat.value;
+              return (
+                <button
+                  key={cat.value}
+                  type="button"
+                  onClick={() => { track("signal_filter", { category: cat.value }); router.push(`/radar?category=${cat.value}`); }}
+                  className={`relative flex items-center gap-1.5 px-2.5 py-1.5 text-sm whitespace-nowrap transition-all duration-200 ${
+                    isActive
+                      ? "font-semibold text-[var(--text-primary)]"
+                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  }`}
+                >
+                  <span className="leading-none" style={{ color: isActive ? "var(--signal)" : "var(--text-muted)" }}>{cat.icon}</span>
+                  <span>{lang === "zh" ? cat.zh : cat.en}</span>
+                  {isActive && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full" style={{ backgroundColor: "var(--signal)" }} />
+                  )}
+                </button>
+              );
+            })}
+          </React.Fragment>
+        ))}
       </div>
 
       {/* Header row: title + count */}
