@@ -82,6 +82,7 @@ export default function SignInPage() {
   return (
     <div className="flex-1 flex flex-col" style={{ backgroundColor: "var(--bg)" }}>
       <TopNav hideCta hideLogin />
+      <div style={{ height: "57px", flexShrink: 0 }} />
       <div className="flex-1 flex items-center justify-center p-6 gap-6">
       {/* Scanline overlay (dark mode) */}
       <div className="pointer-events-none fixed inset-0 z-0" style={{
