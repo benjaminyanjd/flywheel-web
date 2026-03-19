@@ -7,618 +7,443 @@ interface AvatarProps {
   className?: string;
 }
 
-// ── Surfer: 流动波浪曲线 + 动态箭头，表达"顺势而为" ──────────────
+// ── Surfer / Jesse Livermore: 1920s投機之王，油頭背梳、尖下巴、趨勢線背景 ──
 export function SurferAvatar({ size = 200, className = "" }: AvatarProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <radialGradient id="surfer-bg" cx="50%" cy="55%" r="55%">
-          <stop offset="0%" stopColor="var(--signal)" stopOpacity="0.22"/>
-          <stop offset="50%" stopColor="var(--signal)" stopOpacity="0.08"/>
+        <radialGradient id="surfer-bg" cx="50%" cy="45%" r="55%">
+          <stop offset="0%" stopColor="var(--signal)" stopOpacity="0.2"/>
           <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.02"/>
         </radialGradient>
-        <linearGradient id="surfer-wave1" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="var(--signal-light)" stopOpacity="0.1"/>
-          <stop offset="30%" stopColor="var(--signal-light)" stopOpacity="0.4"/>
-          <stop offset="60%" stopColor="var(--signal-light)" stopOpacity="0.6"/>
-          <stop offset="100%" stopColor="var(--signal-light)" stopOpacity="0.08"/>
+        <linearGradient id="surfer-face" x1="30%" y1="0%" x2="70%" y2="100%">
+          <stop offset="0%" stopColor="var(--signal-light)" stopOpacity="0.7"/>
+          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.4"/>
         </linearGradient>
-        <linearGradient id="surfer-wave2" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="var(--signal)" stopOpacity="0.15"/>
-          <stop offset="35%" stopColor="var(--signal)" stopOpacity="0.6"/>
-          <stop offset="65%" stopColor="var(--signal-light)" stopOpacity="0.8"/>
-          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.1"/>
+        <linearGradient id="surfer-hair" x1="50%" y1="0%" x2="50%" y2="100%">
+          <stop offset="0%" stopColor="var(--signal)" stopOpacity="0.9"/>
+          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.5"/>
         </linearGradient>
-        <linearGradient id="surfer-wave-fill" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="var(--signal)" stopOpacity="0.15"/>
-          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.02"/>
-        </linearGradient>
-        <linearGradient id="surfer-arrow" x1="0%" y1="100%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="var(--signal-amber)" stopOpacity="0.7"/>
-          <stop offset="50%" stopColor="var(--signal-amber-light)"/>
-          <stop offset="100%" stopColor="var(--signal-amber-light)" stopOpacity="0.9"/>
-        </linearGradient>
-        <filter id="surfer-glow">
-          <feGaussianBlur stdDeviation="3.5" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <filter id="surfer-shadow">
-          <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="var(--signal)" floodOpacity="0.2"/>
-        </filter>
-        <filter id="surfer-texture" x="0%" y="0%" width="100%" height="100%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="3" stitchTiles="stitch" result="noise"/>
-          <feColorMatrix type="saturate" values="0" in="noise" result="gray"/>
-          <feBlend in="SourceGraphic" in2="gray" mode="soft-light"/>
-        </filter>
+        <filter id="surfer-glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="surfer-shadow"><feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="var(--signal)" floodOpacity="0.2"/></filter>
       </defs>
 
-      {/* Outer boundary */}
       <circle cx="100" cy="100" r="96" fill="url(#surfer-bg)" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2"/>
-      <circle cx="100" cy="100" r="93" stroke="var(--signal-light)" strokeWidth="0.5" strokeOpacity="0.08" strokeDasharray="2 6"/>
 
-      {/* Deep background wave fill — layered for depth */}
-      <path d="M20 130 Q50 110 80 125 Q110 140 140 120 Q165 103 180 112 L180 175 L20 175 Z"
-        fill="url(#surfer-wave-fill)" filter="url(#surfer-texture)"/>
+      {/* Background trend line */}
+      <path d="M25 155 L55 140 L80 148 L110 120 L140 130 L175 85" stroke="var(--signal)" strokeWidth="1.5" strokeLinecap="round" fill="none" strokeOpacity="0.15" strokeDasharray="4 3"/>
 
-      {/* Wave 3 — back (faint) */}
-      <path d="M20 138 Q45 122 75 133 Q105 144 135 128 Q158 115 180 122"
-        stroke="var(--signal-light)" strokeWidth="1.5" strokeLinecap="round" fill="none" strokeOpacity="0.2"/>
+      {/* Shoulders/suit */}
+      <path d="M52 170 Q60 148 78 140 L100 135 L122 140 Q140 148 148 170" fill="var(--signal)" fillOpacity="0.35"/>
+      <path d="M52 170 Q60 148 78 140 L100 135 L122 140 Q140 148 148 170" fill="none" stroke="var(--signal-light)" strokeWidth="0.75" strokeOpacity="0.3"/>
+      {/* Suit lapel lines */}
+      <path d="M92 140 L96 158" stroke="var(--signal-light)" strokeWidth="0.75" strokeOpacity="0.3"/>
+      <path d="M108 140 L104 158" stroke="var(--signal-light)" strokeWidth="0.75" strokeOpacity="0.3"/>
+      {/* Tie */}
+      <path d="M97 138 L100 142 L103 138 L101 162 L100 164 L99 162 Z" fill="var(--signal-amber)" fillOpacity="0.5"/>
 
-      {/* Wave 2 — mid */}
-      <path d="M20 118 Q48 100 82 114 Q114 128 148 108 Q166 97 180 104"
-        stroke="url(#surfer-wave1)" strokeWidth="2.5" strokeLinecap="round" fill="none" filter="url(#surfer-shadow)"/>
+      {/* Neck */}
+      <rect x="92" y="126" width="16" height="14" rx="3" fill="url(#surfer-face)"/>
 
-      {/* Wave 1 — front, bold with glow */}
-      <path d="M20 102 Q52 82 88 98 Q120 113 156 90 Q170 81 180 86"
-        stroke="url(#surfer-wave2)" strokeWidth="3.5" strokeLinecap="round" fill="none" filter="url(#surfer-glow)"/>
+      {/* Head — oval */}
+      <ellipse cx="100" cy="95" rx="30" ry="36" fill="url(#surfer-face)" filter="url(#surfer-shadow)"/>
 
-      {/* Wave crest sparkle — gem-like */}
-      <circle cx="88" cy="98" r="5" fill="var(--signal-light)" fillOpacity="0.15" filter="url(#surfer-glow)"/>
-      <circle cx="88" cy="98" r="3" fill="var(--signal-light)" fillOpacity="0.85"/>
-      <ellipse cx="87" cy="96" rx="1.5" ry="1" fill="white" fillOpacity="0.5"/>
-      <circle cx="156" cy="90" r="2.5" fill="var(--signal-light)" fillOpacity="0.7"/>
-      <ellipse cx="155" cy="89" rx="1" ry="0.6" fill="white" fillOpacity="0.4"/>
+      {/* Slicked-back hair — Livermore's signature */}
+      <path d="M70 90 Q72 52 100 48 Q128 52 130 90 Q128 70 100 65 Q72 70 70 90 Z" fill="url(#surfer-hair)"/>
+      {/* Hair highlight */}
+      <path d="M82 60 Q100 54 118 60" stroke="var(--signal-light)" strokeWidth="0.75" strokeOpacity="0.4" fill="none"/>
 
-      {/* Trend arrow — diagonal upward with shadow */}
-      <path d="M38 152 L72 118 L100 132 L140 88"
-        stroke="url(#surfer-arrow)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none" filter="url(#surfer-glow)"/>
-      {/* Arrow head — refined */}
-      <path d="M132 82 L148 84 L140 98" fill="url(#surfer-arrow)" filter="url(#surfer-shadow)"/>
-      <path d="M134 85 L144 86 L139 94" fill="var(--signal-amber-light)" fillOpacity="0.5"/>
+      {/* Eyes */}
+      <ellipse cx="87" cy="92" rx="5" ry="3" fill="var(--signal)" fillOpacity="0.7"/>
+      <ellipse cx="113" cy="92" rx="5" ry="3" fill="var(--signal)" fillOpacity="0.7"/>
+      <circle cx="88" cy="91.5" r="1.5" fill="var(--signal-light)" fillOpacity="0.9"/>
+      <circle cx="114" cy="91.5" r="1.5" fill="var(--signal-light)" fillOpacity="0.9"/>
 
-      {/* Small momentum arrows */}
-      <path d="M55 75 L65 65 L75 72" stroke="var(--signal-amber)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" strokeOpacity="0.5"/>
-      <path d="M70 62 L78 53 L86 60" stroke="var(--signal-amber-light)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" strokeOpacity="0.3"/>
+      {/* Eyebrows — sharp, confident */}
+      <path d="M80 86 Q87 83 94 85" stroke="var(--signal)" strokeWidth="1.5" strokeLinecap="round" fill="none" strokeOpacity="0.6"/>
+      <path d="M106 85 Q113 83 120 86" stroke="var(--signal)" strokeWidth="1.5" strokeLinecap="round" fill="none" strokeOpacity="0.6"/>
 
-      {/* Speed rings — more elegant */}
-      <ellipse cx="88" cy="98" rx="14" ry="6" stroke="var(--signal-light)" strokeWidth="0.75" fill="none" strokeOpacity="0.25" strokeDasharray="3 3"/>
-      <ellipse cx="88" cy="98" rx="22" ry="9" stroke="var(--signal)" strokeWidth="0.5" fill="none" strokeOpacity="0.12" strokeDasharray="2 5"/>
+      {/* Nose */}
+      <path d="M100 94 L98 106 Q100 108 102 106 L100 94" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.3" fill="none"/>
 
-      {/* Ambient particles */}
-      <circle cx="45" cy="65" r="1.2" fill="var(--signal-light)" fillOpacity="0.35"/>
-      <circle cx="165" cy="72" r="1" fill="var(--signal-light)" fillOpacity="0.25"/>
-      <circle cx="120" cy="55" r="0.8" fill="var(--signal-amber-light)" fillOpacity="0.3"/>
+      {/* Mouth — slight confident smile */}
+      <path d="M90 114 Q100 119 110 114" stroke="var(--signal)" strokeWidth="1.2" strokeLinecap="round" fill="none" strokeOpacity="0.4"/>
+
+      {/* Jaw definition */}
+      <path d="M72 100 Q70 118 100 130 Q130 118 128 100" stroke="var(--signal)" strokeWidth="0.5" strokeOpacity="0.15" fill="none"/>
+
+      {/* Ear hints */}
+      <ellipse cx="69" cy="95" rx="4" ry="7" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
+      <ellipse cx="131" cy="95" rx="4" ry="7" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
     </svg>
   );
 }
 
-// ── Sniper: 精准十字准星 + 同心圆 + 锐利线条，表达"精确瞄准" ──────
+// ── Sniper / George Soros: 年長智者、禿頂、大框眼鏡、深邃目光 ──────
 export function SniperAvatar({ size = 200, className = "" }: AvatarProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <radialGradient id="sniper-bg" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="var(--signal-amber)" stopOpacity="0.18"/>
-          <stop offset="40%" stopColor="var(--signal)" stopOpacity="0.08"/>
+        <radialGradient id="sniper-bg" cx="50%" cy="45%" r="55%">
+          <stop offset="0%" stopColor="var(--signal-amber)" stopOpacity="0.15"/>
           <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.02"/>
         </radialGradient>
-        <radialGradient id="sniper-center" cx="40%" cy="40%" r="50%">
-          <stop offset="0%" stopColor="white" stopOpacity="0.9"/>
-          <stop offset="30%" stopColor="var(--signal-amber-light)" stopOpacity="0.8"/>
-          <stop offset="100%" stopColor="var(--signal-amber)"/>
-        </radialGradient>
-        <linearGradient id="sniper-line-h" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="var(--signal)" stopOpacity="0.08"/>
-          <stop offset="40%" stopColor="var(--signal)" stopOpacity="0.7"/>
-          <stop offset="48%" stopColor="var(--signal-light)" stopOpacity="0.3"/>
-          <stop offset="50%" stopColor="var(--signal-amber)" stopOpacity="0.0"/>
-          <stop offset="52%" stopColor="var(--signal-light)" stopOpacity="0.3"/>
-          <stop offset="60%" stopColor="var(--signal)" stopOpacity="0.7"/>
-          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.08"/>
+        <linearGradient id="sniper-face" x1="30%" y1="0%" x2="70%" y2="100%">
+          <stop offset="0%" stopColor="var(--signal-amber-light)" stopOpacity="0.6"/>
+          <stop offset="100%" stopColor="var(--signal-amber)" stopOpacity="0.35"/>
         </linearGradient>
-        <linearGradient id="sniper-line-v" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="var(--signal)" stopOpacity="0.08"/>
-          <stop offset="40%" stopColor="var(--signal)" stopOpacity="0.7"/>
-          <stop offset="48%" stopColor="var(--signal-light)" stopOpacity="0.3"/>
-          <stop offset="50%" stopColor="var(--signal-amber)" stopOpacity="0.0"/>
-          <stop offset="52%" stopColor="var(--signal-light)" stopOpacity="0.3"/>
-          <stop offset="60%" stopColor="var(--signal)" stopOpacity="0.7"/>
-          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.08"/>
-        </linearGradient>
-        <radialGradient id="sniper-ring-glow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="var(--signal-amber)" stopOpacity="0.12"/>
-          <stop offset="100%" stopColor="var(--signal-amber)" stopOpacity="0"/>
-        </radialGradient>
-        <filter id="sniper-glow">
-          <feGaussianBlur stdDeviation="3" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <filter id="sniper-shadow">
-          <feDropShadow dx="0" dy="1" stdDeviation="3" floodColor="var(--signal-amber)" floodOpacity="0.2"/>
-        </filter>
+        <filter id="sniper-glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="sniper-shadow"><feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="var(--signal-amber)" floodOpacity="0.15"/></filter>
       </defs>
 
-      {/* Outer boundary — double ring */}
-      <circle cx="100" cy="100" r="96" fill="url(#sniper-bg)" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2"/>
-      <circle cx="100" cy="100" r="93" stroke="var(--signal-light)" strokeWidth="0.5" strokeOpacity="0.08" strokeDasharray="2 6"/>
+      <circle cx="100" cy="100" r="96" fill="url(#sniper-bg)" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2"/>
 
-      {/* Ambient glow behind rings */}
-      <circle cx="100" cy="100" r="50" fill="url(#sniper-ring-glow)"/>
+      {/* Background crosshair hint */}
+      <line x1="100" y1="10" x2="100" y2="190" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.08"/>
+      <line x1="10" y1="100" x2="190" y2="100" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.08"/>
 
-      {/* Concentric rings — progressive refinement */}
-      <circle cx="100" cy="100" r="78" stroke="var(--signal)" strokeWidth="0.6" strokeOpacity="0.15" strokeDasharray="6 4"/>
-      <circle cx="100" cy="100" r="62" stroke="var(--signal)" strokeWidth="0.8" strokeOpacity="0.25" strokeDasharray="4 3"/>
-      <circle cx="100" cy="100" r="46" stroke="var(--signal)" strokeWidth="1.2" strokeOpacity="0.4"/>
-      <circle cx="100" cy="100" r="30" stroke="var(--signal-light)" strokeWidth="1.5" strokeOpacity="0.55" filter="url(#sniper-shadow)"/>
-      <circle cx="100" cy="100" r="16" stroke="var(--signal-amber)" strokeWidth="2" strokeOpacity="0.85" filter="url(#sniper-glow)"/>
+      {/* Shoulders/suit */}
+      <path d="M48 175 Q58 150 78 142 L100 136 L122 142 Q142 150 152 175" fill="var(--signal-amber)" fillOpacity="0.25"/>
+      <path d="M48 175 Q58 150 78 142 L100 136 L122 142 Q142 150 152 175" fill="none" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.25"/>
+      {/* Tie */}
+      <path d="M97 140 L100 145 L103 140 L101 164 L100 166 L99 164 Z" fill="var(--signal-amber)" fillOpacity="0.4"/>
 
-      {/* Crosshair horizontal */}
-      <line x1="18" y1="100" x2="182" y2="100" stroke="url(#sniper-line-h)" strokeWidth="1.2"/>
-      {/* Crosshair vertical */}
-      <line x1="100" y1="18" x2="100" y2="182" stroke="url(#sniper-line-v)" strokeWidth="1.2"/>
+      {/* Neck */}
+      <rect x="92" y="126" width="16" height="14" rx="3" fill="url(#sniper-face)"/>
 
-      {/* Tick marks — refined */}
-      <line x1="100" y1="34" x2="100" y2="42" stroke="var(--signal)" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.5"/>
-      <line x1="100" y1="158" x2="100" y2="166" stroke="var(--signal)" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.5"/>
-      <line x1="34" y1="100" x2="42" y2="100" stroke="var(--signal)" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.5"/>
-      <line x1="158" y1="100" x2="166" y2="100" stroke="var(--signal)" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.5"/>
-      {/* Secondary ticks */}
-      <line x1="100" y1="52" x2="100" y2="56" stroke="var(--signal)" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.3"/>
-      <line x1="100" y1="144" x2="100" y2="148" stroke="var(--signal)" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.3"/>
-      <line x1="52" y1="100" x2="56" y2="100" stroke="var(--signal)" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.3"/>
-      <line x1="144" y1="100" x2="148" y2="100" stroke="var(--signal)" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.3"/>
+      {/* Head — slightly longer */}
+      <ellipse cx="100" cy="92" rx="32" ry="38" fill="url(#sniper-face)" filter="url(#sniper-shadow)"/>
 
-      {/* Center dot — gem-like with specular */}
-      <circle cx="100" cy="100" r="6" fill="url(#sniper-center)" filter="url(#sniper-glow)"/>
-      <circle cx="100" cy="100" r="3" fill="white" fillOpacity="0.85"/>
-      <ellipse cx="98" cy="98" rx="1.5" ry="1" fill="white" fillOpacity="0.6"/>
+      {/* Bald top with side hair */}
+      <path d="M68 95 Q68 72 72 65 Q68 60 70 52 Q80 45 100 43 Q120 45 130 52 Q132 60 128 65 Q132 72 132 95" fill="none" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.15"/>
+      {/* Side hair — sparse */}
+      <path d="M68 88 Q65 82 67 72 Q69 65 72 62" stroke="var(--signal-amber)" strokeWidth="2.5" strokeLinecap="round" fill="none" strokeOpacity="0.4"/>
+      <path d="M132 88 Q135 82 133 72 Q131 65 128 62" stroke="var(--signal-amber)" strokeWidth="2.5" strokeLinecap="round" fill="none" strokeOpacity="0.4"/>
 
-      {/* Diagonal precision lines */}
-      <path d="M34 34 L52 52" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.25" strokeDasharray="2 2"/>
-      <path d="M166 34 L148 52" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.25" strokeDasharray="2 2"/>
-      <path d="M34 166 L52 148" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.25" strokeDasharray="2 2"/>
-      <path d="M166 166 L148 148" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.25" strokeDasharray="2 2"/>
+      {/* Large glasses — Soros' signature */}
+      <rect x="76" y="85" width="20" height="16" rx="3" stroke="var(--signal-amber)" strokeWidth="1.5" strokeOpacity="0.7" fill="var(--signal-amber)" fillOpacity="0.08"/>
+      <rect x="104" y="85" width="20" height="16" rx="3" stroke="var(--signal-amber)" strokeWidth="1.5" strokeOpacity="0.7" fill="var(--signal-amber)" fillOpacity="0.08"/>
+      {/* Bridge */}
+      <path d="M96 91 Q100 88 104 91" stroke="var(--signal-amber)" strokeWidth="1.2" strokeOpacity="0.6" fill="none"/>
+      {/* Temples */}
+      <line x1="76" y1="90" x2="68" y2="88" stroke="var(--signal-amber)" strokeWidth="1" strokeOpacity="0.5"/>
+      <line x1="124" y1="90" x2="132" y2="88" stroke="var(--signal-amber)" strokeWidth="1" strokeOpacity="0.5"/>
 
-      {/* Corner brackets — with shadow */}
-      <path d="M22 22 L22 38 L38 38" stroke="var(--signal-amber)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" strokeOpacity="0.7" filter="url(#sniper-shadow)"/>
-      <path d="M178 22 L178 38 L162 38" stroke="var(--signal-amber)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" strokeOpacity="0.7" filter="url(#sniper-shadow)"/>
-      <path d="M22 178 L22 162 L38 162" stroke="var(--signal-amber)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" strokeOpacity="0.7" filter="url(#sniper-shadow)"/>
-      <path d="M178 178 L178 162 L162 162" stroke="var(--signal-amber)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" strokeOpacity="0.7" filter="url(#sniper-shadow)"/>
+      {/* Eyes behind glasses */}
+      <ellipse cx="86" cy="93" rx="4" ry="2.5" fill="var(--signal-amber)" fillOpacity="0.6"/>
+      <ellipse cx="114" cy="93" rx="4" ry="2.5" fill="var(--signal-amber)" fillOpacity="0.6"/>
+      <circle cx="87" cy="92.5" r="1.2" fill="var(--signal-amber-light)" fillOpacity="0.9"/>
+      <circle cx="115" cy="92.5" r="1.2" fill="var(--signal-amber-light)" fillOpacity="0.9"/>
+
+      {/* Eyebrows — heavy, wise */}
+      <path d="M78 83 Q86 79 96 82" stroke="var(--signal-amber)" strokeWidth="1.8" strokeLinecap="round" fill="none" strokeOpacity="0.5"/>
+      <path d="M104 82 Q114 79 122 83" stroke="var(--signal-amber)" strokeWidth="1.8" strokeLinecap="round" fill="none" strokeOpacity="0.5"/>
+
+      {/* Nose — prominent */}
+      <path d="M100 96 L97 108 Q100 111 103 108 L100 96" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.3" fill="none"/>
+
+      {/* Mouth — thin, determined */}
+      <path d="M90 118 Q100 121 110 118" stroke="var(--signal-amber)" strokeWidth="1" strokeLinecap="round" fill="none" strokeOpacity="0.35"/>
+
+      {/* Wrinkle lines — age/wisdom */}
+      <path d="M75 108 Q73 112 75 116" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.15" fill="none"/>
+      <path d="M125 108 Q127 112 125 116" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.15" fill="none"/>
+
+      {/* Ear hints */}
+      <ellipse cx="67" cy="93" rx="4" ry="8" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
+      <ellipse cx="133" cy="93" rx="4" ry="8" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
     </svg>
   );
 }
 
-// ── Turtle: 六边形盾牌 + 稳固几何堆叠，表达"稳健防御" ──────────────
+// ── Turtle / Benjamin Graham: 圓臉、圓框眼鏡、和善微笑、學者氣質 ──────
 export function TurtleAvatar({ size = 200, className = "" }: AvatarProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
       <defs>
-        {/* Background gradient — deeper, more layered */}
-        <radialGradient id="turtle-bg" cx="50%" cy="40%" r="55%">
-          <stop offset="0%" stopColor="var(--signal)" stopOpacity="0.22"/>
-          <stop offset="50%" stopColor="var(--signal)" stopOpacity="0.08"/>
+        <radialGradient id="turtle-bg" cx="50%" cy="45%" r="55%">
+          <stop offset="0%" stopColor="var(--signal)" stopOpacity="0.18"/>
           <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.02"/>
         </radialGradient>
-
-        {/* Main shield — metallic gradient with multiple stops */}
-        <linearGradient id="turtle-shield" x1="30%" y1="0%" x2="70%" y2="100%">
-          <stop offset="0%" stopColor="var(--signal-light)" stopOpacity="0.6"/>
-          <stop offset="35%" stopColor="var(--signal)" stopOpacity="0.4"/>
-          <stop offset="50%" stopColor="var(--signal-light)" stopOpacity="0.55"/>
-          <stop offset="75%" stopColor="var(--signal)" stopOpacity="0.3"/>
-          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.15"/>
+        <linearGradient id="turtle-face" x1="30%" y1="0%" x2="70%" y2="100%">
+          <stop offset="0%" stopColor="var(--signal-light)" stopOpacity="0.65"/>
+          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.35"/>
         </linearGradient>
-
-        {/* Inner hex — glass-like */}
-        <linearGradient id="turtle-hex-fill" x1="20%" y1="0%" x2="80%" y2="100%">
-          <stop offset="0%" stopColor="var(--signal-light)" stopOpacity="0.45"/>
-          <stop offset="40%" stopColor="var(--signal)" stopOpacity="0.2"/>
-          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.08"/>
-        </linearGradient>
-
-        {/* Core hex — rich gradient */}
-        <linearGradient id="turtle-core" x1="30%" y1="10%" x2="70%" y2="90%">
-          <stop offset="0%" stopColor="var(--signal-light)" stopOpacity="0.5"/>
-          <stop offset="50%" stopColor="var(--signal)" stopOpacity="0.35"/>
-          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.2"/>
-        </linearGradient>
-
-        {/* Center gem gradient */}
-        <radialGradient id="turtle-gem" cx="45%" cy="40%" r="50%">
-          <stop offset="0%" stopColor="var(--signal-light)" stopOpacity="0.95"/>
-          <stop offset="40%" stopColor="var(--signal-light)" stopOpacity="0.7"/>
-          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.4"/>
-        </radialGradient>
-
-        {/* Micro noise texture */}
-        <filter id="turtle-texture" x="0%" y="0%" width="100%" height="100%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noise"/>
-          <feColorMatrix type="saturate" values="0" in="noise" result="gray"/>
-          <feBlend in="SourceGraphic" in2="gray" mode="soft-light"/>
-        </filter>
-
-        {/* Drop shadow for depth */}
-        <filter id="turtle-shadow" x="-10%" y="-10%" width="120%" height="130%">
-          <feDropShadow dx="0" dy="3" stdDeviation="6" floodColor="var(--signal)" floodOpacity="0.25"/>
-        </filter>
-
-        {/* Soft glow */}
-        <filter id="turtle-glow">
-          <feGaussianBlur stdDeviation="4" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-
-        {/* Bright inner glow */}
-        <filter id="turtle-inner-glow">
-          <feGaussianBlur stdDeviation="2.5" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
+        <filter id="turtle-shadow"><feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="var(--signal)" floodOpacity="0.2"/></filter>
       </defs>
 
-      {/* Outer boundary with subtle double-ring */}
       <circle cx="100" cy="100" r="96" fill="url(#turtle-bg)" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2"/>
-      <circle cx="100" cy="100" r="93" stroke="var(--signal-light)" strokeWidth="0.5" strokeOpacity="0.1" strokeDasharray="2 6"/>
 
-      {/* Large center hexagon — main shield with shadow + texture */}
-      <polygon points="100,28 152,58 152,118 100,148 48,118 48,58"
-        fill="url(#turtle-shield)" filter="url(#turtle-shadow)"/>
-      <polygon points="100,28 152,58 152,118 100,148 48,118 48,58"
-        fill="none" stroke="var(--signal-light)" strokeWidth="1.5" strokeOpacity="0.5"/>
-      {/* Outer hex highlight edge (top half brighter) */}
-      <path d="M100,28 L152,58 L152,88" stroke="var(--signal-light)" strokeWidth="1" strokeOpacity="0.35" fill="none"/>
-      <path d="M100,28 L48,58 L48,88" stroke="var(--signal-light)" strokeWidth="1" strokeOpacity="0.25" fill="none"/>
+      {/* Background book/shield hint */}
+      <rect x="72" y="165" width="56" height="6" rx="2" fill="var(--signal)" fillOpacity="0.1"/>
+      <rect x="78" y="173" width="44" height="4" rx="1.5" fill="var(--signal)" fillOpacity="0.07"/>
 
-      {/* Inner hexagon ring — glass effect */}
-      <polygon points="100,46 138,68 138,112 100,134 62,112 62,68"
-        fill="url(#turtle-hex-fill)" filter="url(#turtle-texture)"/>
-      <polygon points="100,46 138,68 138,112 100,134 62,112 62,68"
-        fill="none" stroke="var(--signal-light)" strokeWidth="1" strokeOpacity="0.45"/>
-      {/* Specular highlight on inner hex — top edge */}
-      <path d="M100,46 L138,68" stroke="white" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
+      {/* Shoulders/suit — professorial */}
+      <path d="M46 178 Q56 152 76 143 L100 137 L124 143 Q144 152 154 178" fill="var(--signal)" fillOpacity="0.3"/>
+      <path d="M46 178 Q56 152 76 143 L100 137 L124 143 Q144 152 154 178" fill="none" stroke="var(--signal-light)" strokeWidth="0.75" strokeOpacity="0.25"/>
+      {/* Bow tie */}
+      <path d="M92 142 L100 146 L108 142 L100 140 Z" fill="var(--signal)" fillOpacity="0.5"/>
 
-      {/* Core hexagon — richer fill */}
-      <polygon points="100,62 124,76 124,104 100,118 76,104 76,76"
-        fill="url(#turtle-core)" filter="url(#turtle-inner-glow)"/>
-      <polygon points="100,62 124,76 124,104 100,118 76,104 76,76"
-        fill="none" stroke="var(--signal-light)" strokeWidth="1.5" strokeOpacity="0.7"/>
+      {/* Neck */}
+      <rect x="93" y="126" width="14" height="14" rx="3" fill="url(#turtle-face)"/>
 
-      {/* Center gem — radial with highlight */}
-      <polygon points="100,74 112,90 100,106 88,90"
-        fill="url(#turtle-gem)" filter="url(#turtle-glow)"/>
-      <polygon points="100,80 107,90 100,100 93,90"
-        fill="var(--signal-light)" fillOpacity="0.85"/>
-      {/* Gem specular spot */}
-      <ellipse cx="97" cy="84" rx="4" ry="2.5" fill="white" fillOpacity="0.45"/>
+      {/* Head — rounder, friendlier */}
+      <ellipse cx="100" cy="92" rx="33" ry="37" fill="url(#turtle-face)" filter="url(#turtle-shadow)"/>
 
-      {/* Corner accent hexagons — with subtle gradient */}
-      <polygon points="100,162 112,169 112,183 100,190 88,183 88,169"
-        fill="var(--signal)" fillOpacity="0.12" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.25"/>
-      <polygon points="40,128 52,135 52,149 40,156 28,149 28,135"
-        fill="var(--signal)" fillOpacity="0.08" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2"/>
-      <polygon points="160,128 172,135 172,149 160,156 148,149 148,135"
-        fill="var(--signal)" fillOpacity="0.08" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2"/>
+      {/* Hair — thin, receding */}
+      <path d="M67 88 Q67 60 80 50 Q90 45 100 44 Q110 45 120 50 Q133 60 133 88" fill="none" stroke="var(--signal)" strokeWidth="2" strokeOpacity="0.35"/>
+      <path d="M70 85 Q68 65 78 54" stroke="var(--signal)" strokeWidth="3" strokeLinecap="round" fill="none" strokeOpacity="0.3"/>
+      <path d="M130 85 Q132 65 122 54" stroke="var(--signal)" strokeWidth="3" strokeLinecap="round" fill="none" strokeOpacity="0.3"/>
 
-      {/* Top accent node — gem-like */}
-      <polygon points="100,14 108,18 108,26 100,30 92,26 92,18"
-        fill="var(--signal-amber)" fillOpacity="0.5" stroke="var(--signal-amber)" strokeWidth="1" strokeOpacity="0.6"/>
-      <ellipse cx="100" cy="20" rx="3" ry="1.5" fill="white" fillOpacity="0.3"/>
+      {/* Round glasses — Graham's signature */}
+      <circle cx="85" cy="92" r="12" stroke="var(--signal)" strokeWidth="1.5" strokeOpacity="0.6" fill="var(--signal)" fillOpacity="0.06"/>
+      <circle cx="115" cy="92" r="12" stroke="var(--signal)" strokeWidth="1.5" strokeOpacity="0.6" fill="var(--signal)" fillOpacity="0.06"/>
+      {/* Bridge */}
+      <path d="M97 90 Q100 87 103 90" stroke="var(--signal)" strokeWidth="1.2" strokeOpacity="0.5" fill="none"/>
+      {/* Temples */}
+      <line x1="73" y1="89" x2="66" y2="87" stroke="var(--signal)" strokeWidth="1" strokeOpacity="0.4"/>
+      <line x1="127" y1="89" x2="134" y2="87" stroke="var(--signal)" strokeWidth="1" strokeOpacity="0.4"/>
 
-      {/* Structural lines — thinner, more elegant */}
-      <line x1="100" y1="62" x2="48" y2="58" stroke="var(--signal-light)" strokeWidth="0.5" strokeOpacity="0.15" strokeDasharray="2 4"/>
-      <line x1="100" y1="62" x2="152" y2="58" stroke="var(--signal-light)" strokeWidth="0.5" strokeOpacity="0.15" strokeDasharray="2 4"/>
-      <line x1="100" y1="118" x2="48" y2="118" stroke="var(--signal-light)" strokeWidth="0.5" strokeOpacity="0.15" strokeDasharray="2 4"/>
-      <line x1="100" y1="118" x2="152" y2="118" stroke="var(--signal-light)" strokeWidth="0.5" strokeOpacity="0.15" strokeDasharray="2 4"/>
+      {/* Eyes — warm, kind */}
+      <ellipse cx="85" cy="92" rx="4" ry="2.5" fill="var(--signal)" fillOpacity="0.6"/>
+      <ellipse cx="115" cy="92" rx="4" ry="2.5" fill="var(--signal)" fillOpacity="0.6"/>
+      <circle cx="86" cy="91.5" r="1.2" fill="var(--signal-light)" fillOpacity="0.85"/>
+      <circle cx="116" cy="91.5" r="1.2" fill="var(--signal-light)" fillOpacity="0.85"/>
 
-      {/* Subtle hex grid pattern in background */}
-      <polygon points="68,38 78,44 78,52 68,56 58,52 58,44"
-        fill="none" stroke="var(--signal)" strokeWidth="0.4" strokeOpacity="0.1"/>
-      <polygon points="132,38 142,44 142,52 132,56 122,52 122,44"
-        fill="none" stroke="var(--signal)" strokeWidth="0.4" strokeOpacity="0.1"/>
-      <polygon points="38,86 48,92 48,100 38,104 28,100 28,92"
-        fill="none" stroke="var(--signal)" strokeWidth="0.4" strokeOpacity="0.08"/>
-      <polygon points="162,86 172,92 172,100 162,104 152,100 152,92"
-        fill="none" stroke="var(--signal)" strokeWidth="0.4" strokeOpacity="0.08"/>
+      {/* Eyebrows — gentle, arched */}
+      <path d="M76 82 Q85 79 96 81" stroke="var(--signal)" strokeWidth="1.5" strokeLinecap="round" fill="none" strokeOpacity="0.4"/>
+      <path d="M104 81 Q115 79 124 82" stroke="var(--signal)" strokeWidth="1.5" strokeLinecap="round" fill="none" strokeOpacity="0.4"/>
+
+      {/* Nose */}
+      <path d="M100 96 L98 107 Q100 110 102 107 L100 96" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.25" fill="none"/>
+
+      {/* Mouth — warm smile */}
+      <path d="M88 116 Q95 122 100 122 Q105 122 112 116" stroke="var(--signal)" strokeWidth="1.2" strokeLinecap="round" fill="none" strokeOpacity="0.35"/>
+
+      {/* Laugh lines */}
+      <path d="M74 105 Q72 112 74 118" stroke="var(--signal)" strokeWidth="0.5" strokeOpacity="0.12" fill="none"/>
+      <path d="M126 105 Q128 112 126 118" stroke="var(--signal)" strokeWidth="0.5" strokeOpacity="0.12" fill="none"/>
+
+      {/* Ears */}
+      <ellipse cx="66" cy="93" rx="4" ry="8" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
+      <ellipse cx="134" cy="93" rx="4" ry="8" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
     </svg>
   );
 }
 
-// ── Rocket: 向上三角/菱形 + 发射轨迹 + 粒子效果，表达"快速上升" ─────
+// ── Rocket / Michael Burry: 短髮、一隻眼睛有義眼（左眼較小）、嚴肅、獨行者 ──
 export function RocketAvatar({ size = 200, className = "" }: AvatarProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <radialGradient id="rocket-bg" cx="50%" cy="40%" r="60%">
-          <stop offset="0%" stopColor="var(--signal-amber)" stopOpacity="0.22"/>
-          <stop offset="50%" stopColor="var(--signal)" stopOpacity="0.06"/>
+        <radialGradient id="rocket-bg" cx="50%" cy="45%" r="55%">
+          <stop offset="0%" stopColor="var(--signal-amber)" stopOpacity="0.18"/>
           <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.02"/>
         </radialGradient>
-        <linearGradient id="rocket-body" x1="30%" y1="0%" x2="70%" y2="100%">
-          <stop offset="0%" stopColor="var(--signal-amber-light)" stopOpacity="0.95"/>
-          <stop offset="30%" stopColor="var(--signal-amber-light)"/>
-          <stop offset="60%" stopColor="var(--signal-amber)" stopOpacity="0.85"/>
-          <stop offset="100%" stopColor="var(--signal-amber)" stopOpacity="0.5"/>
+        <linearGradient id="rocket-face" x1="30%" y1="0%" x2="70%" y2="100%">
+          <stop offset="0%" stopColor="var(--signal-amber-light)" stopOpacity="0.65"/>
+          <stop offset="100%" stopColor="var(--signal-amber)" stopOpacity="0.35"/>
         </linearGradient>
-        <linearGradient id="rocket-body-highlight" x1="40%" y1="0%" x2="60%" y2="100%">
-          <stop offset="0%" stopColor="white" stopOpacity="0.2"/>
-          <stop offset="40%" stopColor="white" stopOpacity="0.05"/>
-          <stop offset="100%" stopColor="white" stopOpacity="0"/>
-        </linearGradient>
-        <linearGradient id="rocket-trail" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="var(--signal-amber)" stopOpacity="0.9"/>
-          <stop offset="50%" stopColor="var(--signal-amber)" stopOpacity="0.4"/>
-          <stop offset="100%" stopColor="var(--signal-amber)" stopOpacity="0"/>
-        </linearGradient>
-        <linearGradient id="rocket-fin" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="var(--signal-amber)" stopOpacity="0.7"/>
-          <stop offset="100%" stopColor="var(--signal-amber)" stopOpacity="0.3"/>
-        </linearGradient>
-        <linearGradient id="rocket-chart" x1="0%" y1="100%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="var(--signal-light)" stopOpacity="0.2"/>
-          <stop offset="50%" stopColor="var(--signal-light)" stopOpacity="0.6"/>
-          <stop offset="100%" stopColor="var(--signal-light)" stopOpacity="0.8"/>
-        </linearGradient>
-        <filter id="rocket-glow">
-          <feGaussianBlur stdDeviation="5" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <filter id="rocket-shadow">
-          <feDropShadow dx="0" dy="3" stdDeviation="5" floodColor="var(--signal-amber)" floodOpacity="0.3"/>
-        </filter>
-        <filter id="rocket-glow-sm">
-          <feGaussianBlur stdDeviation="2" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
+        <filter id="rocket-shadow"><feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="var(--signal-amber)" floodOpacity="0.2"/></filter>
       </defs>
 
-      {/* Outer boundary */}
       <circle cx="100" cy="100" r="96" fill="url(#rocket-bg)" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2"/>
-      <circle cx="100" cy="100" r="93" stroke="var(--signal-amber-light)" strokeWidth="0.5" strokeOpacity="0.08" strokeDasharray="2 6"/>
 
-      {/* Background chart line */}
-      <path d="M30 160 L58 138 L80 148 L110 118 L135 126 L170 90"
-        stroke="url(#rocket-chart)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" strokeDasharray="4 2"/>
+      {/* Background chart crash line */}
+      <path d="M30 80 L55 78 L75 82 L90 75 L105 120 L120 155 L145 160 L170 158" stroke="var(--signal-amber)" strokeWidth="1" strokeLinecap="round" fill="none" strokeOpacity="0.1" strokeDasharray="3 3"/>
 
-      {/* Exhaust trail — layered for depth */}
-      <path d="M100 155 Q90 172 85 186 L100 176 L115 186 Q110 172 100 155 Z"
-        fill="url(#rocket-trail)" filter="url(#rocket-glow)"/>
-      <path d="M100 150 Q93 164 88 176 L100 168 L112 176 Q107 164 100 150 Z"
-        fill="var(--signal-amber-light)" fillOpacity="0.5"/>
-      <path d="M100 146 L96 158 L100 154 L104 158 Z"
-        fill="white" fillOpacity="0.45"/>
+      {/* Shoulders — casual, hoodie-like */}
+      <path d="M48 178 Q56 150 76 142 L100 136 L124 142 Q144 150 152 178" fill="var(--signal-amber)" fillOpacity="0.2"/>
+      {/* T-shirt neckline */}
+      <path d="M86 140 Q100 148 114 140" stroke="var(--signal-amber)" strokeWidth="1" strokeOpacity="0.3" fill="none"/>
 
-      {/* Main rocket body — with shadow */}
-      <polygon points="100,30 130,90 100,118 70,90"
-        fill="url(#rocket-body)" filter="url(#rocket-shadow)"/>
-      {/* Body highlight overlay */}
-      <polygon points="100,30 130,90 100,118 70,90"
-        fill="url(#rocket-body-highlight)"/>
-      {/* Body edge highlight */}
-      <path d="M100,30 L70,90" stroke="var(--signal-amber-light)" strokeWidth="0.75" strokeOpacity="0.4" fill="none"/>
+      {/* Neck */}
+      <rect x="92" y="126" width="16" height="14" rx="3" fill="url(#rocket-face)"/>
 
-      {/* Inner diamond highlight */}
-      <polygon points="100,46 118,86 100,104 82,86"
-        fill="var(--signal-amber-light)" fillOpacity="0.25"/>
-      <polygon points="100,58 112,84 100,96 88,84"
-        fill="white" fillOpacity="0.1"/>
-      {/* Specular */}
-      <ellipse cx="95" cy="65" rx="6" ry="3" fill="white" fillOpacity="0.15"/>
+      {/* Head */}
+      <ellipse cx="100" cy="92" rx="31" ry="37" fill="url(#rocket-face)" filter="url(#rocket-shadow)"/>
 
-      {/* Side fins — with gradient */}
-      <polygon points="70,90 50,112 76,112" fill="url(#rocket-fin)"/>
-      <polygon points="130,90 150,112 124,112" fill="url(#rocket-fin)"/>
-      {/* Fin edge highlights */}
-      <path d="M70,90 L50,112" stroke="var(--signal-amber-light)" strokeWidth="0.5" strokeOpacity="0.3" fill="none"/>
-      <path d="M130,90 L150,112" stroke="var(--signal-amber-light)" strokeWidth="0.5" strokeOpacity="0.3" fill="none"/>
+      {/* Short cropped hair */}
+      <path d="M69 85 Q69 55 85 48 Q95 44 100 43 Q105 44 115 48 Q131 55 131 85" fill="var(--signal-amber)" fillOpacity="0.3"/>
+      <path d="M72 82 Q72 58 88 50 Q100 46 112 50 Q128 58 128 82" fill="var(--signal-amber)" fillOpacity="0.15"/>
 
-      {/* Speed rings */}
-      <ellipse cx="100" cy="90" rx="22" ry="8" stroke="var(--signal-amber-light)" strokeWidth="0.75" fill="none" strokeOpacity="0.25" strokeDasharray="3 3"/>
-      <ellipse cx="100" cy="90" rx="36" ry="14" stroke="var(--signal-amber)" strokeWidth="0.5" fill="none" strokeOpacity="0.15" strokeDasharray="2 4"/>
+      {/* Left eye — glass eye, slightly smaller/different */}
+      <ellipse cx="86" cy="92" rx="4.5" ry="3" fill="var(--signal-amber)" fillOpacity="0.5"/>
+      <circle cx="86" cy="92" r="1.5" fill="var(--signal-amber)" fillOpacity="0.7"/>
 
-      {/* Particle dots — varied opacity */}
-      <circle cx="52" cy="72" r="2" fill="var(--signal-amber-light)" fillOpacity="0.6" filter="url(#rocket-glow-sm)"/>
-      <circle cx="44" cy="90" r="1.2" fill="var(--signal-amber)" fillOpacity="0.4"/>
-      <circle cx="148" cy="68" r="1.8" fill="var(--signal-amber-light)" fillOpacity="0.55" filter="url(#rocket-glow-sm)"/>
-      <circle cx="158" cy="85" r="1.2" fill="var(--signal-amber)" fillOpacity="0.4"/>
-      <circle cx="165" cy="54" r="1" fill="var(--signal-amber-light)" fillOpacity="0.3"/>
-      <circle cx="38" cy="55" r="1" fill="var(--signal-amber)" fillOpacity="0.3"/>
-      <circle cx="68" cy="45" r="0.8" fill="var(--signal-light)" fillOpacity="0.4"/>
-      <circle cx="132" cy="42" r="0.8" fill="var(--signal-light)" fillOpacity="0.4"/>
+      {/* Right eye — normal, intense */}
+      <ellipse cx="114" cy="92" rx="5" ry="3" fill="var(--signal-amber)" fillOpacity="0.65"/>
+      <circle cx="115" cy="91.5" r="1.5" fill="var(--signal-amber-light)" fillOpacity="0.9"/>
+
+      {/* Eyebrows — furrowed, intense */}
+      <path d="M78 84 Q86 80 94 83" stroke="var(--signal-amber)" strokeWidth="2" strokeLinecap="round" fill="none" strokeOpacity="0.5"/>
+      <path d="M106 83 Q114 80 122 84" stroke="var(--signal-amber)" strokeWidth="2" strokeLinecap="round" fill="none" strokeOpacity="0.5"/>
+
+      {/* Nose */}
+      <path d="M100 95 L98 107 Q100 110 102 107 L100 95" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.3" fill="none"/>
+
+      {/* Mouth — firm, determined */}
+      <path d="M90 116 L110 116" stroke="var(--signal-amber)" strokeWidth="1.2" strokeLinecap="round" strokeOpacity="0.35"/>
+
+      {/* Stubble hint */}
+      <path d="M82 120 Q100 128 118 120" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.1" fill="none" strokeDasharray="1 2"/>
+
+      {/* Ears */}
+      <ellipse cx="68" cy="93" rx="4" ry="7" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
+      <ellipse cx="132" cy="93" rx="4" ry="7" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
     </svg>
   );
 }
 
-// ── Whale: 大面积圆形 + 深度波纹 + 重力感，表达"大资金量级" ──────────
+// ── Whale / J.P. Morgan: 大鼻子、八字鬍、威嚴、高帽紳士 ──────────
 export function WhaleAvatar({ size = 200, className = "" }: AvatarProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <radialGradient id="whale-bg" cx="50%" cy="55%" r="55%">
-          <stop offset="0%" stopColor="var(--signal)" stopOpacity="0.24"/>
-          <stop offset="50%" stopColor="var(--signal)" stopOpacity="0.08"/>
+        <radialGradient id="whale-bg" cx="50%" cy="45%" r="55%">
+          <stop offset="0%" stopColor="var(--signal)" stopOpacity="0.2"/>
           <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.02"/>
         </radialGradient>
-        <radialGradient id="whale-core" cx="42%" cy="40%" r="50%">
-          <stop offset="0%" stopColor="var(--signal-light)" stopOpacity="0.7"/>
-          <stop offset="35%" stopColor="var(--signal-light)" stopOpacity="0.5"/>
-          <stop offset="70%" stopColor="var(--signal)" stopOpacity="0.4"/>
-          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.15"/>
-        </radialGradient>
-        <radialGradient id="whale-mid" cx="50%" cy="48%" r="50%">
-          <stop offset="0%" stopColor="var(--signal)" stopOpacity="0.35"/>
-          <stop offset="60%" stopColor="var(--signal)" stopOpacity="0.15"/>
-          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.03"/>
-        </radialGradient>
-        <linearGradient id="whale-bar" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="var(--signal)" stopOpacity="0.5"/>
-          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.15"/>
+        <linearGradient id="whale-face" x1="30%" y1="0%" x2="70%" y2="100%">
+          <stop offset="0%" stopColor="var(--signal-light)" stopOpacity="0.6"/>
+          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.35"/>
         </linearGradient>
-        <filter id="whale-glow">
-          <feGaussianBlur stdDeviation="6" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <filter id="whale-shadow">
-          <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="var(--signal)" floodOpacity="0.2"/>
-        </filter>
-        <filter id="whale-glow-sm">
-          <feGaussianBlur stdDeviation="2.5" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
+        <linearGradient id="whale-hat" x1="50%" y1="0%" x2="50%" y2="100%">
+          <stop offset="0%" stopColor="var(--signal)" stopOpacity="0.7"/>
+          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.4"/>
+        </linearGradient>
+        <filter id="whale-shadow"><feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="var(--signal)" floodOpacity="0.2"/></filter>
       </defs>
 
-      {/* Outer boundary */}
       <circle cx="100" cy="100" r="96" fill="url(#whale-bg)" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2"/>
-      <circle cx="100" cy="100" r="93" stroke="var(--signal-light)" strokeWidth="0.5" strokeOpacity="0.08" strokeDasharray="2 6"/>
 
-      {/* Depth ripple rings — progressive */}
-      <circle cx="100" cy="110" r="84" stroke="var(--signal)" strokeWidth="0.6" strokeOpacity="0.08" strokeDasharray="8 5"/>
-      <circle cx="100" cy="108" r="70" stroke="var(--signal)" strokeWidth="0.8" strokeOpacity="0.14" strokeDasharray="6 4"/>
-      <circle cx="100" cy="106" r="56" stroke="var(--signal)" strokeWidth="1" strokeOpacity="0.22" strokeDasharray="4 3"/>
-      <circle cx="100" cy="104" r="42" stroke="var(--signal-light)" strokeWidth="1.2" strokeOpacity="0.32" filter="url(#whale-glow-sm)"/>
-      <circle cx="100" cy="102" r="28" stroke="var(--signal-light)" strokeWidth="1.5" strokeOpacity="0.45" filter="url(#whale-glow-sm)"/>
+      {/* Shoulders — formal suit, wide */}
+      <path d="M38 180 Q50 152 72 143 L100 136 L128 143 Q150 152 162 180" fill="var(--signal)" fillOpacity="0.35"/>
+      <path d="M38 180 Q50 152 72 143 L100 136 L128 143 Q150 152 162 180" fill="none" stroke="var(--signal-light)" strokeWidth="0.75" strokeOpacity="0.25"/>
+      {/* Suit lapels */}
+      <path d="M88 142 L93 165" stroke="var(--signal-light)" strokeWidth="0.75" strokeOpacity="0.3"/>
+      <path d="M112 142 L107 165" stroke="var(--signal-light)" strokeWidth="0.75" strokeOpacity="0.3"/>
+      {/* Tie */}
+      <path d="M96 140 L100 145 L104 140 L102 166 L100 168 L98 166 Z" fill="var(--signal)" fillOpacity="0.5"/>
 
-      {/* Main mass circle — with shadow */}
-      <circle cx="100" cy="100" r="52" fill="url(#whale-mid)" filter="url(#whale-shadow)"/>
+      {/* Neck — thick, powerful */}
+      <rect x="90" y="124" width="20" height="16" rx="4" fill="url(#whale-face)"/>
 
-      {/* Core bright circle — gem-like */}
-      <circle cx="100" cy="98" r="34" fill="url(#whale-core)" filter="url(#whale-glow)"/>
+      {/* Head — broad, imposing */}
+      <ellipse cx="100" cy="92" rx="34" ry="38" fill="url(#whale-face)" filter="url(#whale-shadow)"/>
 
-      {/* Inner highlight — specular */}
-      <circle cx="100" cy="95" r="20" fill="var(--signal-light)" fillOpacity="0.15"/>
-      <ellipse cx="90" cy="86" rx="10" ry="6" fill="var(--signal-light)" fillOpacity="0.2"/>
-      <ellipse cx="88" cy="84" rx="5" ry="3" fill="white" fillOpacity="0.2"/>
+      {/* Top hat */}
+      <rect x="78" y="28" width="44" height="35" rx="4" fill="url(#whale-hat)"/>
+      <rect x="78" y="28" width="44" height="35" rx="4" fill="none" stroke="var(--signal-light)" strokeWidth="0.75" strokeOpacity="0.3"/>
+      {/* Hat brim */}
+      <ellipse cx="100" cy="63" rx="38" ry="6" fill="url(#whale-hat)"/>
+      <ellipse cx="100" cy="63" rx="38" ry="6" fill="none" stroke="var(--signal-light)" strokeWidth="0.75" strokeOpacity="0.25"/>
+      {/* Hat band */}
+      <rect x="80" y="55" width="40" height="4" fill="var(--signal-amber)" fillOpacity="0.3"/>
 
-      {/* Capital weight indicator — gradient bars */}
-      <rect x="64" y="158" width="72" height="6" rx="3" fill="url(#whale-bar)"/>
-      <rect x="72" y="168" width="56" height="4" rx="2" fill="url(#whale-bar)" opacity="0.7"/>
-      <rect x="82" y="176" width="36" height="3" rx="1.5" fill="url(#whale-bar)" opacity="0.4"/>
+      {/* Eyes — piercing, commanding */}
+      <ellipse cx="86" cy="90" rx="5" ry="3" fill="var(--signal)" fillOpacity="0.65"/>
+      <ellipse cx="114" cy="90" rx="5" ry="3" fill="var(--signal)" fillOpacity="0.65"/>
+      <circle cx="87" cy="89.5" r="1.5" fill="var(--signal-light)" fillOpacity="0.85"/>
+      <circle cx="115" cy="89.5" r="1.5" fill="var(--signal-light)" fillOpacity="0.85"/>
 
-      {/* Volume bars — flanking with gradient */}
-      <rect x="28" y="125" width="10" height="30" rx="2" fill="url(#whale-bar)" opacity="0.5"/>
-      <rect x="42" y="115" width="10" height="40" rx="2" fill="url(#whale-bar)" opacity="0.65"/>
-      <rect x="148" y="118" width="10" height="37" rx="2" fill="url(#whale-bar)" opacity="0.6"/>
-      <rect x="162" y="128" width="10" height="27" rx="2" fill="url(#whale-bar)" opacity="0.45"/>
-      {/* Bar top highlights */}
-      <rect x="42" y="115" width="10" height="2" rx="1" fill="var(--signal-light)" fillOpacity="0.3"/>
-      <rect x="148" y="118" width="10" height="2" rx="1" fill="var(--signal-light)" fillOpacity="0.25"/>
+      {/* Eyebrows — heavy, authoritative */}
+      <path d="M78 83 Q86 78 95 82" stroke="var(--signal)" strokeWidth="2.5" strokeLinecap="round" fill="none" strokeOpacity="0.5"/>
+      <path d="M105 82 Q114 78 122 83" stroke="var(--signal)" strokeWidth="2.5" strokeLinecap="round" fill="none" strokeOpacity="0.5"/>
 
-      {/* Gravity drop lines — refined */}
-      <line x1="100" y1="155" x2="100" y2="170" stroke="var(--signal-light)" strokeWidth="1" strokeLinecap="round" strokeOpacity="0.3"/>
-      <line x1="78" y1="148" x2="74" y2="158" stroke="var(--signal-light)" strokeWidth="0.75" strokeLinecap="round" strokeOpacity="0.2"/>
-      <line x1="122" y1="148" x2="126" y2="158" stroke="var(--signal-light)" strokeWidth="0.75" strokeLinecap="round" strokeOpacity="0.2"/>
+      {/* Nose — large, prominent (Morgan's famous nose) */}
+      <path d="M100 93 Q97 100 95 108 Q98 112 100 113 Q102 112 105 108 Q103 100 100 93" fill="var(--signal)" fillOpacity="0.15" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.3"/>
+
+      {/* Handlebar mustache — Morgan's signature */}
+      <path d="M85 115 Q90 112 100 113 Q110 112 115 115" stroke="var(--signal)" strokeWidth="2.5" strokeLinecap="round" fill="none" strokeOpacity="0.5"/>
+      <path d="M85 115 Q80 118 76 116" stroke="var(--signal)" strokeWidth="2" strokeLinecap="round" fill="none" strokeOpacity="0.4"/>
+      <path d="M115 115 Q120 118 124 116" stroke="var(--signal)" strokeWidth="2" strokeLinecap="round" fill="none" strokeOpacity="0.4"/>
+
+      {/* Mouth under mustache */}
+      <path d="M92 120 Q100 123 108 120" stroke="var(--signal)" strokeWidth="0.75" strokeLinecap="round" fill="none" strokeOpacity="0.2"/>
+
+      {/* Jowls — heavy face */}
+      <path d="M70 100 Q68 115 75 125" stroke="var(--signal)" strokeWidth="0.5" strokeOpacity="0.12" fill="none"/>
+      <path d="M130 100 Q132 115 125 125" stroke="var(--signal)" strokeWidth="0.5" strokeOpacity="0.12" fill="none"/>
+
+      {/* Ears */}
+      <ellipse cx="65" cy="92" rx="5" ry="9" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
+      <ellipse cx="135" cy="92" rx="5" ry="9" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
     </svg>
   );
 }
 
-// ── Ninja: 锐角星形/手里剑 + 速度线 + 闪电，表达"快进快出" ──────────
+// ── Ninja / Jim Simons: 光頭/禿頂、鬍子、數學家氣質、神秘微笑 ──────
 export function NinjaAvatar({ size = 200, className = "" }: AvatarProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 200 200" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <radialGradient id="ninja-bg" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="var(--signal-amber)" stopOpacity="0.15"/>
-          <stop offset="50%" stopColor="var(--signal)" stopOpacity="0.05"/>
+        <radialGradient id="ninja-bg" cx="50%" cy="45%" r="55%">
+          <stop offset="0%" stopColor="var(--signal-amber)" stopOpacity="0.12"/>
           <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.02"/>
         </radialGradient>
-        <linearGradient id="ninja-star1" x1="20%" y1="0%" x2="80%" y2="100%">
-          <stop offset="0%" stopColor="var(--signal-light)" stopOpacity="0.85"/>
-          <stop offset="40%" stopColor="var(--signal-light)" stopOpacity="0.6"/>
-          <stop offset="70%" stopColor="var(--signal)" stopOpacity="0.5"/>
-          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.3"/>
-        </linearGradient>
-        <linearGradient id="ninja-star2" x1="80%" y1="0%" x2="20%" y2="100%">
-          <stop offset="0%" stopColor="var(--signal-amber-light)" stopOpacity="0.7"/>
-          <stop offset="50%" stopColor="var(--signal-amber)" stopOpacity="0.5"/>
-          <stop offset="100%" stopColor="var(--signal-amber)" stopOpacity="0.25"/>
-        </linearGradient>
-        <linearGradient id="ninja-lightning" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="var(--signal-amber-light)" stopOpacity="0.95"/>
-          <stop offset="60%" stopColor="var(--signal-amber)" stopOpacity="0.7"/>
+        <linearGradient id="ninja-face" x1="30%" y1="0%" x2="70%" y2="100%">
+          <stop offset="0%" stopColor="var(--signal-amber-light)" stopOpacity="0.6"/>
           <stop offset="100%" stopColor="var(--signal-amber)" stopOpacity="0.3"/>
         </linearGradient>
-        <linearGradient id="ninja-speed" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="var(--signal)" stopOpacity="0"/>
-          <stop offset="50%" stopColor="var(--signal)" stopOpacity="0.5"/>
-          <stop offset="100%" stopColor="var(--signal)" stopOpacity="0.08"/>
-        </linearGradient>
-        <filter id="ninja-glow">
-          <feGaussianBlur stdDeviation="4.5" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <filter id="ninja-shadow">
-          <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="var(--signal)" floodOpacity="0.2"/>
-        </filter>
-        <filter id="ninja-glow-sm">
-          <feGaussianBlur stdDeviation="2.5" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
+        <filter id="ninja-shadow"><feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="var(--signal)" floodOpacity="0.15"/></filter>
       </defs>
 
-      {/* Outer boundary */}
       <circle cx="100" cy="100" r="96" fill="url(#ninja-bg)" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2"/>
-      <circle cx="100" cy="100" r="93" stroke="var(--signal-light)" strokeWidth="0.5" strokeOpacity="0.08" strokeDasharray="2 6"/>
 
-      {/* Speed lines — gradient streaks */}
-      <line x1="18" y1="78" x2="58" y2="78" stroke="url(#ninja-speed)" strokeWidth="1.5" strokeLinecap="round"/>
-      <line x1="18" y1="88" x2="48" y2="88" stroke="url(#ninja-speed)" strokeWidth="1.2" strokeLinecap="round"/>
-      <line x1="18" y1="98" x2="52" y2="98" stroke="url(#ninja-speed)" strokeWidth="0.8" strokeLinecap="round"/>
-      <line x1="142" y1="100" x2="182" y2="100" stroke="url(#ninja-speed)" strokeWidth="1.5" strokeLinecap="round"/>
-      <line x1="148" y1="112" x2="182" y2="112" stroke="url(#ninja-speed)" strokeWidth="1.2" strokeLinecap="round"/>
-      <line x1="152" y1="122" x2="182" y2="122" stroke="url(#ninja-speed)" strokeWidth="0.8" strokeLinecap="round"/>
+      {/* Background — subtle math/algorithm pattern */}
+      <text x="30" y="40" fontSize="8" fill="var(--signal)" fillOpacity="0.06" fontFamily="monospace">∑∫∂π</text>
+      <text x="145" y="170" fontSize="8" fill="var(--signal)" fillOpacity="0.06" fontFamily="monospace">αβγδ</text>
+      <text x="25" y="165" fontSize="7" fill="var(--signal)" fillOpacity="0.04" fontFamily="monospace">f(x)=</text>
+      <text x="150" y="42" fontSize="7" fill="var(--signal)" fillOpacity="0.04" fontFamily="monospace">∇²ψ</text>
 
-      {/* Outer ring */}
-      <circle cx="100" cy="100" r="68" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.12" strokeDasharray="3 4"/>
+      {/* Shoulders — casual blazer */}
+      <path d="M46 178 Q56 152 76 143 L100 137 L124 143 Q144 152 154 178" fill="var(--signal-amber)" fillOpacity="0.2"/>
+      <path d="M46 178 Q56 152 76 143 L100 137 L124 143 Q144 152 154 178" fill="none" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2"/>
+      {/* Open collar shirt */}
+      <path d="M90 140 Q100 148 110 140" stroke="var(--signal-amber)" strokeWidth="1" strokeOpacity="0.3" fill="none"/>
 
-      {/* Main 8-pointed shuriken star — with shadow */}
-      <path d="
-        M100 30 L110 88 L158 78 L112 100
-        L158 122 L110 112 L100 170
-        L90 112 L42 122 L88 100
-        L42 78 L90 88 Z
-      " fill="url(#ninja-star1)" filter="url(#ninja-shadow)"/>
-      {/* Star edge highlight */}
-      <path d="M100 30 L110 88 L158 78" stroke="var(--signal-light)" strokeWidth="0.5" strokeOpacity="0.3" fill="none"/>
+      {/* Neck */}
+      <rect x="92" y="126" width="16" height="14" rx="3" fill="url(#ninja-face)"/>
 
-      {/* Second star — rotated 45° */}
-      <path d="
-        M100 42 L108 86 L148 68 L108 96
-        L148 130 L108 114 L100 158
-        L92 114 L52 130 L92 96
-        L52 68 L92 86 Z
-      " fill="url(#ninja-star2)"/>
+      {/* Head */}
+      <ellipse cx="100" cy="90" rx="33" ry="38" fill="url(#ninja-face)" filter="url(#ninja-shadow)"/>
 
-      {/* Inner bright core — gem-like */}
-      <circle cx="100" cy="100" r="18" fill="var(--signal-light)" fillOpacity="0.4" filter="url(#ninja-glow)"/>
-      <circle cx="100" cy="100" r="10" fill="var(--signal-light)" fillOpacity="0.75"/>
-      <circle cx="100" cy="100" r="5" fill="white" fillOpacity="0.65"/>
-      {/* Specular */}
-      <ellipse cx="97" cy="97" rx="3" ry="2" fill="white" fillOpacity="0.4"/>
+      {/* Bald/very thin hair top */}
+      <path d="M67 85 Q67 55 82 48 Q92 44 100 43 Q108 44 118 48 Q133 55 133 85" fill="none" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.12"/>
 
-      {/* Lightning bolt — left side with glow */}
-      <path d="M60 46 L50 72 L62 70 L48 98"
-        stroke="url(#ninja-lightning)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-        fill="none" filter="url(#ninja-glow-sm)"/>
+      {/* Eyes — intelligent, observing */}
+      <ellipse cx="86" cy="88" rx="5" ry="3" fill="var(--signal-amber)" fillOpacity="0.6"/>
+      <ellipse cx="114" cy="88" rx="5" ry="3" fill="var(--signal-amber)" fillOpacity="0.6"/>
+      <circle cx="87" cy="87.5" r="1.5" fill="var(--signal-amber-light)" fillOpacity="0.85"/>
+      <circle cx="115" cy="87.5" r="1.5" fill="var(--signal-amber-light)" fillOpacity="0.85"/>
 
-      {/* Lightning bolt — right side */}
-      <path d="M148 58 L140 78 L150 76 L138 100"
-        stroke="var(--signal-amber)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
-        fill="none" strokeOpacity="0.5" filter="url(#ninja-glow-sm)"/>
+      {/* Eyebrows — relaxed, thoughtful */}
+      <path d="M78 82 Q86 79 95 81" stroke="var(--signal-amber)" strokeWidth="1.5" strokeLinecap="round" fill="none" strokeOpacity="0.4"/>
+      <path d="M105 81 Q114 79 122 82" stroke="var(--signal-amber)" strokeWidth="1.5" strokeLinecap="round" fill="none" strokeOpacity="0.4"/>
 
-      {/* Accent diamonds — with gem highlight */}
-      <polygon points="100,22 104,30 100,38 96,30" fill="var(--signal-light)" fillOpacity="0.75"/>
-      <ellipse cx="100" cy="28" rx="1.5" ry="1" fill="white" fillOpacity="0.4"/>
-      <polygon points="100,162 104,170 100,178 96,170" fill="var(--signal-light)" fillOpacity="0.5"/>
-      <polygon points="22,100 30,104 38,100 30,96" fill="var(--signal-amber)" fillOpacity="0.6"/>
-      <polygon points="162,100 170,104 178,100 170,96" fill="var(--signal-amber)" fillOpacity="0.5"/>
+      {/* Nose */}
+      <path d="M100 92 L98 104 Q100 107 102 104 L100 92" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.25" fill="none"/>
+
+      {/* Full beard — Simons' signature */}
+      <path d="M72 102 Q72 108 74 115 Q78 126 90 130 Q100 133 110 130 Q122 126 126 115 Q128 108 128 102" fill="var(--signal-amber)" fillOpacity="0.2" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.25"/>
+      {/* Beard texture lines */}
+      <path d="M80 110 Q82 118 88 125" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.15" fill="none"/>
+      <path d="M90 108 Q92 118 96 126" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.12" fill="none"/>
+      <path d="M100 107 Q100 118 100 128" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.15" fill="none"/>
+      <path d="M110 108 Q108 118 104 126" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.12" fill="none"/>
+      <path d="M120 110 Q118 118 112 125" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.15" fill="none"/>
+
+      {/* Mouth — mysterious smile, visible through beard */}
+      <path d="M90 112 Q100 117 110 112" stroke="var(--signal-amber)" strokeWidth="1" strokeLinecap="round" fill="none" strokeOpacity="0.3"/>
+
+      {/* Forehead wrinkles — wisdom */}
+      <path d="M82 72 Q100 69 118 72" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.1" fill="none"/>
+      <path d="M84 76 Q100 73 116 76" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.08" fill="none"/>
+
+      {/* Ears */}
+      <ellipse cx="66" cy="90" rx="4" ry="8" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
+      <ellipse cx="134" cy="90" rx="4" ry="8" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
     </svg>
   );
 }
