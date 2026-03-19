@@ -28,7 +28,7 @@ export function SurferAvatar({ size = 200, className = "" }: AvatarProps) {
         <filter id="surfer-shadow"><feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="var(--signal)" floodOpacity="0.2"/></filter>
       </defs>
 
-      <circle cx="100" cy="100" r="96" fill="url(#surfer-bg)" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2"/>
+      <circle cx="100" cy="100" r="96" fill="url(#surfer-bg)" stroke="none"/>
 
       {/* Background trend line */}
       <path d="M25 155 L55 140 L80 148 L110 120 L140 130 L175 85" stroke="var(--signal)" strokeWidth="1.5" strokeLinecap="round" fill="none" strokeOpacity="0.15" strokeDasharray="4 3"/>
@@ -73,8 +73,8 @@ export function SurferAvatar({ size = 200, className = "" }: AvatarProps) {
       <path d="M72 100 Q70 118 100 130 Q130 118 128 100" stroke="var(--signal)" strokeWidth="0.5" strokeOpacity="0.15" fill="none"/>
 
       {/* Ear hints */}
-      <ellipse cx="69" cy="95" rx="4" ry="7" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
-      <ellipse cx="131" cy="95" rx="4" ry="7" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
+      <ellipse cx="69" cy="95" rx="4" ry="7" stroke="none" fill="none"/>
+      <ellipse cx="131" cy="95" rx="4" ry="7" stroke="none" fill="none"/>
     </svg>
   );
 }
@@ -96,7 +96,7 @@ export function SniperAvatar({ size = 200, className = "" }: AvatarProps) {
         <filter id="sniper-shadow"><feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="var(--signal-amber)" floodOpacity="0.15"/></filter>
       </defs>
 
-      <circle cx="100" cy="100" r="96" fill="url(#sniper-bg)" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2"/>
+      <circle cx="100" cy="100" r="96" fill="url(#sniper-bg)" stroke="none"/>
 
       {/* Background crosshair hint */}
       <line x1="100" y1="10" x2="100" y2="190" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.08"/>
@@ -150,8 +150,8 @@ export function SniperAvatar({ size = 200, className = "" }: AvatarProps) {
       <path d="M125 108 Q127 112 125 116" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.15" fill="none"/>
 
       {/* Ear hints */}
-      <ellipse cx="67" cy="93" rx="4" ry="8" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
-      <ellipse cx="133" cy="93" rx="4" ry="8" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
+      <ellipse cx="67" cy="93" rx="4" ry="8" stroke="none" fill="none"/>
+      <ellipse cx="133" cy="93" rx="4" ry="8" stroke="none" fill="none"/>
     </svg>
   );
 }
@@ -172,7 +172,7 @@ export function TurtleAvatar({ size = 200, className = "" }: AvatarProps) {
         <filter id="turtle-shadow"><feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="var(--signal)" floodOpacity="0.2"/></filter>
       </defs>
 
-      <circle cx="100" cy="100" r="96" fill="url(#turtle-bg)" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2"/>
+      <circle cx="100" cy="100" r="96" fill="url(#turtle-bg)" stroke="none"/>
 
       {/* Background book/shield hint */}
       <rect x="72" y="165" width="56" height="6" rx="2" fill="var(--signal)" fillOpacity="0.1"/>
@@ -225,8 +225,8 @@ export function TurtleAvatar({ size = 200, className = "" }: AvatarProps) {
       <path d="M126 105 Q128 112 126 118" stroke="var(--signal)" strokeWidth="0.5" strokeOpacity="0.12" fill="none"/>
 
       {/* Ears */}
-      <ellipse cx="66" cy="93" rx="4" ry="8" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
-      <ellipse cx="134" cy="93" rx="4" ry="8" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
+      <ellipse cx="66" cy="93" rx="4" ry="8" stroke="none" fill="none"/>
+      <ellipse cx="134" cy="93" rx="4" ry="8" stroke="none" fill="none"/>
     </svg>
   );
 }
@@ -247,7 +247,7 @@ export function RocketAvatar({ size = 200, className = "" }: AvatarProps) {
         <filter id="rocket-shadow"><feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="var(--signal-amber)" floodOpacity="0.2"/></filter>
       </defs>
 
-      <circle cx="100" cy="100" r="96" fill="url(#rocket-bg)" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2"/>
+      <circle cx="100" cy="100" r="96" fill="url(#rocket-bg)" stroke="none"/>
 
       {/* Background chart crash line */}
       <path d="M30 80 L55 78 L75 82 L90 75 L105 120 L120 155 L145 160 L170 158" stroke="var(--signal-amber)" strokeWidth="1" strokeLinecap="round" fill="none" strokeOpacity="0.1" strokeDasharray="3 3"/>
@@ -289,8 +289,8 @@ export function RocketAvatar({ size = 200, className = "" }: AvatarProps) {
       <path d="M82 120 Q100 128 118 120" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.1" fill="none" strokeDasharray="1 2"/>
 
       {/* Ears */}
-      <ellipse cx="68" cy="93" rx="4" ry="7" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
-      <ellipse cx="132" cy="93" rx="4" ry="7" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
+      <ellipse cx="68" cy="93" rx="4" ry="7" stroke="none" fill="none"/>
+      <ellipse cx="132" cy="93" rx="4" ry="7" stroke="none" fill="none"/>
     </svg>
   );
 }
@@ -315,7 +315,7 @@ export function WhaleAvatar({ size = 200, className = "" }: AvatarProps) {
         <filter id="whale-shadow"><feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="var(--signal)" floodOpacity="0.2"/></filter>
       </defs>
 
-      <circle cx="100" cy="100" r="96" fill="url(#whale-bg)" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2"/>
+      <circle cx="100" cy="100" r="96" fill="url(#whale-bg)" stroke="none"/>
 
       {/* Shoulders — formal suit, wide */}
       <path d="M38 180 Q50 152 72 143 L100 136 L128 143 Q150 152 162 180" fill="var(--signal)" fillOpacity="0.35"/>
@@ -367,8 +367,8 @@ export function WhaleAvatar({ size = 200, className = "" }: AvatarProps) {
       <path d="M130 100 Q132 115 125 125" stroke="var(--signal)" strokeWidth="0.5" strokeOpacity="0.12" fill="none"/>
 
       {/* Ears */}
-      <ellipse cx="65" cy="92" rx="5" ry="9" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
-      <ellipse cx="135" cy="92" rx="5" ry="9" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
+      <ellipse cx="65" cy="92" rx="5" ry="9" stroke="none" fill="none"/>
+      <ellipse cx="135" cy="92" rx="5" ry="9" stroke="none" fill="none"/>
     </svg>
   );
 }
@@ -389,7 +389,7 @@ export function NinjaAvatar({ size = 200, className = "" }: AvatarProps) {
         <filter id="ninja-shadow"><feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="var(--signal)" floodOpacity="0.15"/></filter>
       </defs>
 
-      <circle cx="100" cy="100" r="96" fill="url(#ninja-bg)" stroke="var(--signal)" strokeWidth="0.75" strokeOpacity="0.2"/>
+      <circle cx="100" cy="100" r="96" fill="url(#ninja-bg)" stroke="none"/>
 
       {/* Background — subtle math/algorithm pattern */}
       <text x="30" y="40" fontSize="8" fill="var(--signal)" fillOpacity="0.06" fontFamily="monospace">∑∫∂π</text>
@@ -399,7 +399,7 @@ export function NinjaAvatar({ size = 200, className = "" }: AvatarProps) {
 
       {/* Shoulders — casual blazer */}
       <path d="M46 178 Q56 152 76 143 L100 137 L124 143 Q144 152 154 178" fill="var(--signal-amber)" fillOpacity="0.2"/>
-      <path d="M46 178 Q56 152 76 143 L100 137 L124 143 Q144 152 154 178" fill="none" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2"/>
+      <path d="M46 178 Q56 152 76 143 L100 137 L124 143 Q144 152 154 178" fill="none" stroke="none"/>
       {/* Open collar shirt */}
       <path d="M90 140 Q100 148 110 140" stroke="var(--signal-amber)" strokeWidth="1" strokeOpacity="0.3" fill="none"/>
 
@@ -442,8 +442,8 @@ export function NinjaAvatar({ size = 200, className = "" }: AvatarProps) {
       <path d="M84 76 Q100 73 116 76" stroke="var(--signal-amber)" strokeWidth="0.5" strokeOpacity="0.08" fill="none"/>
 
       {/* Ears */}
-      <ellipse cx="66" cy="90" rx="4" ry="8" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
-      <ellipse cx="134" cy="90" rx="4" ry="8" stroke="var(--signal-amber)" strokeWidth="0.75" strokeOpacity="0.2" fill="none"/>
+      <ellipse cx="66" cy="90" rx="4" ry="8" stroke="none" fill="none"/>
+      <ellipse cx="134" cy="90" rx="4" ry="8" stroke="none" fill="none"/>
     </svg>
   );
 }

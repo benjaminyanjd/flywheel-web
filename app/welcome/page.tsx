@@ -758,7 +758,7 @@ export default function WelcomePage() {
                       {/* Historical figure — larger */}
                       {avatarMeta?.figure && (
                         <p className="text-sm mt-1 mb-4" style={{ color: "var(--text-muted)", opacity: 0.8, fontStyle: "italic" }}>
-                          如同 {avatarMeta.figure}——{avatarMeta.figureDesc}
+                          {avatarMeta.figure}——{avatarMeta.figureDesc}
                         </p>
                       )}
 
