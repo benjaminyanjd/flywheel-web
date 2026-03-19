@@ -384,13 +384,15 @@ export default function WelcomePage() {
                 </p>
               )}
 
-              {/* Page title */}
-              <h1
-                className="text-xl font-bold mt-4"
-                style={{ color: "var(--text-primary)", opacity: 0, animation: "fade-up 0.5s ease-out 0.3s forwards" }}
-              >
-                {t("welcome_title")}
-              </h1>
+              {/* Page title - hidden when empty */}
+              {t("welcome_title") && (
+                <h1
+                  className="text-xl font-bold mt-4"
+                  style={{ color: "var(--text-primary)", opacity: 0, animation: "fade-up 0.5s ease-out 0.3s forwards" }}
+                >
+                  {t("welcome_title")}
+                </h1>
+              )}
             </CardContent>
           </Card>
 
