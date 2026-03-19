@@ -116,6 +116,33 @@ function parseAnalysis(markdown: string): ParsedAnalysis {
 }
 
 // ── Profile tags ──────────────────────────────────────────────────
+const ICONIC_TRADES: Record<string, { title: string; desc: string }[]> = {
+  surfer: [
+    { title: "1907 年聯合太平洋鐵路", desc: "Livermore 順勢做空，在恐慌中獲利 100 萬美元，奠定「投機之王」地位" },
+    { title: "1929 年華爾街崩盤", desc: "提前佈局空頭，在史上最大股災中獲利超 1 億美元（現值約 17 億）" },
+  ],
+  sniper: [
+    { title: "1992 年狙擊英鎊", desc: "Soros 以 100 億美元做空英鎊，迫使英國退出 ERM，一天獲利 10 億美元" },
+    { title: "1997 年亞洲金融風暴", desc: "精準押注泰銖、馬來西亞林吉特貶值，在亞洲貨幣危機中大幅獲利" },
+  ],
+  turtle: [
+    { title: "1949 年《聰明的投資者》", desc: "Graham 提出安全邊際理論，培養出巴菲特等一代價值投資大師" },
+    { title: "GEICO 保險公司", desc: "Graham 以低於清算價值買入 50% 股份，最終回報超 200 倍，成為價值投資經典案例" },
+  ],
+  rocket: [
+    { title: "2005–2008 做空次貸", desc: "Burry 提前兩年預見次貸危機，頂住基金贖回壓力，最終獲利 7.5 億美元" },
+    { title: "2021 年做空特斯拉", desc: "在市場狂熱時逆勢建倉，堅持獨立判斷，被稱為「大空頭」原型人物" },
+  ],
+  whale: [
+    { title: "1907 年金融救市", desc: "Morgan 以個人資本穩定美國金融體系，單槍匹馬阻止全國銀行擠兌潮" },
+    { title: "美國鋼鐵公司", desc: "1901 年促成史上首個十億美元企業合併，創建 U.S. Steel，重塑工業格局" },
+  ],
+  ninja: [
+    { title: "文藝復興大獎章基金", desc: "Simons 的 Medallion Fund 1988–2018 年均回報 66%，扣費後仍達 39%，史上最佳紀錄" },
+    { title: "量化革命", desc: "用數學模型取代人類直覺，證明市場可被算法持續戰勝，改變了整個金融業" },
+  ],
+};
+
 const PROFILE_FIELD_KEYS: { key: keyof UserSettings; tKey: TKey; icon: string }[] = [
   { key: "profit_source", tKey: "welcome_label_profit_source", icon: "⚡" },
   { key: "capital_range", tKey: "welcome_label_capital_range", icon: "💰" },
@@ -854,20 +881,29 @@ export default function WelcomePage() {
                   </>
                 )}
 
-                {/* ── Raw sections ── */}
-                {parsed?.rawSections && parsed.rawSections.length > 0 && parsed.rawSections.map((sec, i) => (
-                  <React.Fragment key={i}>
+                {/* ── Iconic trade / historical reference ── */}
+                {avatarMeta?.figure && ICONIC_TRADES[avatarStyle] && (
+                  <>
                     <div className="mx-5" style={{ borderTop: "1px solid var(--border-subtle)" }} />
                     <CardContent className="py-4 px-5">
                       <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "var(--text-muted)" }}>
-                        {sec.title}
+                        📜 經典戰役
                       </p>
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "var(--text-secondary)" }}>
-                        {sec.content}
-                      </p>
+                      <div className="space-y-2">
+                        {ICONIC_TRADES[avatarStyle].map((trade, i) => (
+                          <div key={i} className="flex items-start gap-2 text-sm">
+                            <span className="shrink-0 mt-0.5" style={{ color: "var(--signal-amber)" }}>▸</span>
+                            <div>
+                              <span className="font-medium" style={{ color: "var(--text-primary)" }}>{trade.title}</span>
+                              <span className="mx-1" style={{ color: "var(--text-muted)" }}>—</span>
+                              <span style={{ color: "var(--text-secondary)" }}>{trade.desc}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </CardContent>
-                  </React.Fragment>
-                ))}
+                  </>
+                )}
               </Card>
 
               {/* ── Action buttons ── */}
