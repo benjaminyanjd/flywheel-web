@@ -62,10 +62,20 @@ ${signalText}
 語氣：專業但不冰冷，像一個懂行的朋友在給建議。用繁體中文。
 重要：不要使用任何 emoji 表情符號，全部用文字表達。`;
 
-    // Call claude-proxy with streaming
-    const response = await fetch("http://localhost:3456/v1/chat/completions", {
+    // Call Anthropic API directly with streaming
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      logger.error("welcome-analysis", "ANTHROPIC_API_KEY not set");
+      return NextResponse.json({ error: "AI service unavailable" }, { status: 502 });
+    }
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+      },
       body: JSON.stringify({
         model: "claude-3-5-haiku-latest",
         messages: [{ role: "user", content: prompt }],
@@ -75,7 +85,7 @@ ${signalText}
     });
 
     if (!response.ok || !response.body) {
-      logger.error("welcome-analysis", "Claude proxy request failed", { status: response.status });
+      logger.error("welcome-analysis", "Anthropic API request failed", { status: response.status });
       return NextResponse.json({ error: "AI service unavailable" }, { status: 502 });
     }
 
@@ -102,20 +112,19 @@ ${signalText}
 
             for (const line of lines) {
               const trimmed = line.trim();
-              if (!trimmed || trimmed === "data: [DONE]") {
-                if (trimmed === "data: [DONE]") {
-                  controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-                  controller.close();
-                  return;
-                }
-                continue;
+              if (!trimmed) continue;
+              // Anthropic stream ends with event: message_stop
+              if (trimmed === "event: message_stop") {
+                controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+                controller.close();
+                return;
               }
               if (trimmed.startsWith("data: ")) {
                 try {
                   const json = JSON.parse(trimmed.slice(6));
-                  const content = json.choices?.[0]?.delta?.content;
-                  if (content) {
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
+                  // Anthropic format: content_block_delta with text_delta
+                  if (json.type === "content_block_delta" && json.delta?.text) {
+                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: json.delta.text })}\n\n`));
                   }
                 } catch {
                   // skip malformed JSON
