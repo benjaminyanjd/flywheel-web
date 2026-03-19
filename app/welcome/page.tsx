@@ -865,13 +865,8 @@ export default function WelcomePage() {
                             </p>
                             <div className="space-y-2">
                               {parsed.riskRules.map((rule, i) => (
-                                <div key={i} className="flex items-start gap-2.5 text-sm">
-                                  <span
-                                    className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold mt-0.5"
-                                    style={{ backgroundColor: "var(--bg-panel)", color: "var(--signal)" }}
-                                  >
-                                    {i + 1}
-                                  </span>
+                                <div key={i} className="flex items-start gap-2 text-sm">
+                                  <span className="shrink-0 mt-0.5" style={{ color: "var(--signal)" }}>▸</span>
                                   <span style={{ color: "var(--text-secondary)" }}>{rule}</span>
                                 </div>
                               ))}
