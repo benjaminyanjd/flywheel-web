@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
@@ -394,19 +394,12 @@ export default function WelcomePage() {
                 </h1>
               )}
             </CardContent>
-          </Card>
 
-          {/* ── Profile tags card ─────────────────────────── */}
-          <Card
-            className="rounded-2xl"
-            style={{
-              backgroundColor: "var(--bg-card)",
-              borderColor: "var(--border-subtle)",
-              opacity: 0,
-              animation: "fade-up 0.6s ease-out 0.5s forwards",
-            }}
-          >
-            <CardContent className="py-4 px-5">
+            {/* ── Divider ─── */}
+            <div className="mx-5" style={{ borderTop: "1px solid var(--border-subtle)" }} />
+
+            {/* ── Profile tags section ─────────────────────────── */}
+            <CardContent className="py-4 px-5" style={{ opacity: 0, animation: "fade-up 0.6s ease-out 0.5s forwards" }}>
               <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "var(--text-muted)" }}>
                 {t("welcome_profile_title")}
               </p>
@@ -438,206 +431,137 @@ export default function WelcomePage() {
                 })}
               </div>
             </CardContent>
-          </Card>
 
-          {/* ── Analysis content ─────────────────────────── */}
-          {/* Loading skeleton */}
-          {!hasContent && isStreaming && (
-            <Card
-              className="rounded-2xl"
-              style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}
-            >
-              <CardContent className="py-5 px-5 space-y-3">
-                <div className="flex items-center gap-2 mb-4">
+            {/* ── Analysis content ─────────────────────────── */}
+            {/* Loading skeleton */}
+            {!hasContent && isStreaming && (
+              <>
+                <div className="mx-5" style={{ borderTop: "1px solid var(--border-subtle)" }} />
+                <CardContent className="py-5 px-5 space-y-3">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span
+                      className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin shrink-0"
+                      style={{ borderColor: "var(--signal)" }}
+                    />
+                    <span className="text-sm" style={{ color: "var(--text-muted)" }}>
+                      {t("welcome_generating")}
+                    </span>
+                  </div>
+                  {[90, 75, 85, 60, 80, 70].map((w, i) => (
+                    <div
+                      key={i}
+                      className="h-3.5 rounded animate-pulse"
+                      style={{
+                        backgroundColor: "var(--bg-panel)",
+                        width: `${w}%`,
+                        animationDelay: `${i * 0.12}s`,
+                      }}
+                    />
+                  ))}
+                </CardContent>
+              </>
+            )}
+
+            {/* Risk warning section */}
+            {parsed?.riskWarning && (
+              <>
+                <div className="mx-5" style={{ borderTop: "1px solid var(--border-subtle)" }} />
+                <CardContent className="py-4 px-5" style={{ opacity: 0, animation: "fade-up 0.6s ease-out 0.7s forwards" }}>
+                  <div className="flex items-start gap-3">
+                    <span className="text-lg mt-0.5">⚠️</span>
+                    <div>
+                      <p
+                        className="text-xs font-semibold uppercase tracking-widest mb-1.5"
+                        style={{ color: "var(--signal-amber)" }}
+                      >
+                        最大風險提醒
+                      </p>
+                      <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                        {parsed.riskWarning}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </>
+            )}
+
+            {/* Risk rules section */}
+            {parsed?.riskRules && parsed.riskRules.length > 0 && (
+              <>
+                <div className="mx-5" style={{ borderTop: "1px solid var(--border-subtle)" }} />
+                <CardContent className="py-4 px-5" style={{ opacity: 0, animation: "fade-up 0.6s ease-out 0.85s forwards" }}>
+                  <p
+                    className="text-xs font-semibold uppercase tracking-widest mb-3"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    🛡️ 風控規則
+                  </p>
+                  <div className="space-y-2">
+                    {parsed.riskRules.map((rule, i) => (
+                      <div
+                        key={i}
+                        className="flex items-start gap-2.5 text-sm"
+                        style={{
+                          opacity: 0,
+                          animation: `slide-in 0.4s ease-out ${0.9 + i * 0.08}s forwards`,
+                        }}
+                      >
+                        <span
+                          className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold mt-0.5"
+                          style={{ backgroundColor: "var(--bg-panel)", color: "var(--signal)" }}
+                        >
+                          {i + 1}
+                        </span>
+                        <span style={{ color: "var(--text-secondary)" }}>{rule}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </>
+            )}
+
+            {/* Extra raw sections */}
+            {parsed?.rawSections && parsed.rawSections.length > 0 && parsed.rawSections.map((sec, i) => (
+              <React.Fragment key={i}>
+                <div className="mx-5" style={{ borderTop: "1px solid var(--border-subtle)" }} />
+                <CardContent className="py-4 px-5" style={{ opacity: 0, animation: `fade-up 0.6s ease-out ${1.1 + i * 0.1}s forwards` }}>
+                  <p
+                    className="text-xs font-semibold uppercase tracking-widest mb-2"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    {sec.title}
+                  </p>
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "var(--text-secondary)" }}>
+                    {sec.content}
+                  </p>
+                </CardContent>
+              </React.Fragment>
+            ))}
+
+            {/* Streaming indicator */}
+            {isStreaming && hasContent && (
+              <CardContent className="py-3 px-5">
+                <div className="flex items-center gap-2">
                   <span
-                    className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin shrink-0"
+                    className="w-3 h-3 border-2 border-t-transparent rounded-full animate-spin shrink-0"
                     style={{ borderColor: "var(--signal)" }}
                   />
-                  <span className="text-sm" style={{ color: "var(--text-muted)" }}>
-                    {t("welcome_generating")}
+                  <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                    分析進行中...
                   </span>
                 </div>
-                {[90, 75, 85, 60, 80, 70].map((w, i) => (
-                  <div
-                    key={i}
-                    className="h-3.5 rounded animate-pulse"
-                    style={{
-                      backgroundColor: "var(--bg-panel)",
-                      width: `${w}%`,
-                      animationDelay: `${i * 0.12}s`,
-                    }}
-                  />
-                ))}
               </CardContent>
-            </Card>
-          )}
+            )}
 
-          {/* Risk warning card */}
-          {parsed?.riskWarning && (
-            <Card
-              className="rounded-2xl"
-              style={{
-                backgroundColor: "var(--bg-card)",
-                borderColor: "var(--signal-amber)",
-                borderWidth: "1px",
-                opacity: 0,
-                animation: "fade-up 0.6s ease-out 0.7s forwards",
-              }}
-            >
-              <CardContent className="py-4 px-5">
-                <div className="flex items-start gap-3">
-                  <span className="text-lg mt-0.5">⚠️</span>
-                  <div>
-                    <p
-                      className="text-xs font-semibold uppercase tracking-widest mb-1.5"
-                      style={{ color: "var(--signal-amber)" }}
-                    >
-                      最大風險提醒
-                    </p>
-                    <p className="text-sm leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                      {parsed.riskWarning}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Risk rules */}
-          {parsed?.riskRules && parsed.riskRules.length > 0 && (
-            <Card
-              className="rounded-2xl"
-              style={{
-                backgroundColor: "var(--bg-card)",
-                borderColor: "var(--border-subtle)",
-                opacity: 0,
-                animation: "fade-up 0.6s ease-out 0.85s forwards",
-              }}
-            >
-              <CardContent className="py-4 px-5">
-                <p
-                  className="text-xs font-semibold uppercase tracking-widest mb-3"
-                  style={{ color: "var(--text-muted)" }}
-                >
-                  🛡️ 風控規則
-                </p>
-                <div className="space-y-2">
-                  {parsed.riskRules.map((rule, i) => (
-                    <div
-                      key={i}
-                      className="flex items-start gap-2.5 text-sm"
-                      style={{
-                        opacity: 0,
-                        animation: `slide-in 0.4s ease-out ${0.9 + i * 0.08}s forwards`,
-                      }}
-                    >
-                      <span
-                        className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold mt-0.5"
-                        style={{ backgroundColor: "var(--bg-panel)", color: "var(--signal)" }}
-                      >
-                        {i + 1}
-                      </span>
-                      <span style={{ color: "var(--text-secondary)" }}>{rule}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Weekly tips */}
-          {parsed?.weeklyTips && parsed.weeklyTips.length > 0 && (
-            <Card
-              className="rounded-2xl"
-              style={{
-                backgroundColor: "var(--bg-card)",
-                borderColor: "var(--border-subtle)",
-                opacity: 0,
-                animation: "fade-up 0.6s ease-out 1s forwards",
-              }}
-            >
-              <CardContent className="py-4 px-5">
-                <p
-                  className="text-xs font-semibold uppercase tracking-widest mb-3"
-                  style={{ color: "var(--text-muted)" }}
-                >
-                  💡 本週建議
-                </p>
-                <div className="space-y-2">
-                  {parsed.weeklyTips.map((tip, i) => (
-                    <div
-                      key={i}
-                      className="flex items-start gap-2.5 text-sm"
-                      style={{
-                        opacity: 0,
-                        animation: `slide-in 0.4s ease-out ${1.05 + i * 0.08}s forwards`,
-                      }}
-                    >
-                      <span className="shrink-0 mt-0.5" style={{ color: "var(--signal-light)" }}>✦</span>
-                      <span style={{ color: "var(--text-secondary)" }}>{tip}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Extra raw sections (anything not already structured) */}
-          {parsed?.rawSections && parsed.rawSections.length > 0 && (
-            <>
-              {parsed.rawSections.map((sec, i) => (
-                <Card
-                  key={i}
-                  className="rounded-2xl"
-                  style={{
-                    backgroundColor: "var(--bg-card)",
-                    borderColor: "var(--border-subtle)",
-                    opacity: 0,
-                    animation: `fade-up 0.6s ease-out ${1.1 + i * 0.1}s forwards`,
-                  }}
-                >
-                  <CardContent className="py-4 px-5">
-                    <p
-                      className="text-xs font-semibold uppercase tracking-widest mb-2"
-                      style={{ color: "var(--text-muted)" }}
-                    >
-                      {sec.title}
-                    </p>
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "var(--text-secondary)" }}>
-                      {sec.content}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </>
-          )}
-
-          {/* Streaming indicator when some content is already shown */}
-          {isStreaming && hasContent && (
-            <div className="flex items-center gap-2 px-2">
-              <span
-                className="w-3 h-3 border-2 border-t-transparent rounded-full animate-spin shrink-0"
-                style={{ borderColor: "var(--signal)" }}
-              />
-              <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-                分析進行中...
-              </span>
-            </div>
-          )}
-
-          {/* Error fallback */}
-          {streamError && !hasContent && (
-            <Card
-              className="rounded-2xl"
-              style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}
-            >
+            {/* Error fallback */}
+            {streamError && !hasContent && (
               <CardContent className="py-5 px-5 text-center">
                 <p className="text-sm" style={{ color: "var(--text-muted)" }}>
                   無法載入分析，請稍後再試。
                 </p>
               </CardContent>
-            </Card>
-          )}
+            )}
+          </Card>
 
           {/* ── Action buttons ────────────────────────────── */}
           {isDone && hasContent && (
