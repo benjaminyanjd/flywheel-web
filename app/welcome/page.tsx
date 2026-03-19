@@ -759,8 +759,15 @@ export default function WelcomePage() {
 
                       {/* Sub-description */}
                       {avatarMeta && (
-                        <p className="text-sm mt-1 mb-3" style={{ color: "var(--text-muted)" }}>
+                        <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
                           {avatarMeta.desc}
+                        </p>
+                      )}
+
+                      {/* Historical figure */}
+                      {avatarMeta?.figure && (
+                        <p className="text-xs mt-1 mb-3" style={{ color: "var(--text-muted)", opacity: 0.7, fontStyle: "italic" }}>
+                          如同 {avatarMeta.figure}——{avatarMeta.figureDesc}
                         </p>
                       )}
 

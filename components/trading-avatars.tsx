@@ -632,11 +632,11 @@ export const AVATAR_MAP: Record<string, React.FC<AvatarProps>> = {
   ninja: NinjaAvatar,
 };
 
-export const AVATAR_META: Record<string, { label: string; color: string; desc: string }> = {
-  surfer: { label: "趨勢衝浪者", color: "var(--signal-light)", desc: "追逐趨勢，乘浪而行" },
-  sniper: { label: "精準狙擊手", color: "var(--signal-amber)", desc: "精準進出，一擊致勝" },
-  turtle: { label: "穩健套利者", color: "var(--signal)", desc: "穩健低風險，細水長流" },
-  rocket: { label: "火箭追擊手", color: "var(--signal-amber-light)", desc: "高風險高回報，全力爆發" },
-  whale: { label: "市場鯨魚", color: "var(--text-secondary)", desc: "大資金玩家，掌控市場" },
-  ninja: { label: "閃電忍者", color: "var(--text-primary)", desc: "快進快出，神出鬼沒" },
+export const AVATAR_META: Record<string, { label: string; color: string; desc: string; figure: string; figureDesc: string }> = {
+  surfer: { label: "趨勢衝浪者", color: "var(--signal-light)", desc: "追逐趨勢，乘浪而行", figure: "Jesse Livermore", figureDesc: "華爾街投機之王" },
+  sniper: { label: "精準狙擊手", color: "var(--signal-amber)", desc: "精準進出，一擊致勝", figure: "George Soros", figureDesc: "精準狙擊英鎊的金融巨匠" },
+  turtle: { label: "穩健套利者", color: "var(--signal)", desc: "穩健低風險，細水長流", figure: "Benjamin Graham", figureDesc: "價值投資之父" },
+  rocket: { label: "火箭追擊手", color: "var(--signal-amber-light)", desc: "高風險高回報，全力爆發", figure: "Michael Burry", figureDesc: "做空次貸的孤注一擲者" },
+  whale: { label: "市場鯨魚", color: "var(--text-secondary)", desc: "大資金玩家，掌控市場", figure: "J.P. Morgan", figureDesc: "金融巨鱷，掌控華爾街" },
+  ninja: { label: "閃電忍者", color: "var(--text-primary)", desc: "快進快出，神出鬼沒", figure: "Jim Simons", figureDesc: "量化交易之王" },
 };
