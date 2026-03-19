@@ -715,15 +715,6 @@ export default function WelcomePage() {
 
                     {/* Avatar */}
                     <div className="relative shrink-0 mb-5 md:mb-0">
-                      {!!AvatarComponent && isDone && (
-                        <div
-                          className="pulse-ring absolute inset-0 rounded-full"
-                          style={{
-                            border: `2px solid ${avatarMeta?.color || "var(--signal)"}`,
-                            borderRadius: "50%",
-                          }}
-                        />
-                      )}
                       {AvatarComponent ? (
                         <div>
                           <AvatarComponent size={160} className="md:hidden" />
@@ -757,51 +748,41 @@ export default function WelcomePage() {
                         </div>
                       ) : null}
 
-                      {/* Sub-description */}
+                      {/* Sub-description — larger */}
                       {avatarMeta && (
-                        <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
+                        <p className="text-base mt-2 font-medium" style={{ color: "var(--text-secondary)" }}>
                           {avatarMeta.desc}
                         </p>
                       )}
 
-                      {/* Historical figure */}
+                      {/* Historical figure — larger */}
                       {avatarMeta?.figure && (
-                        <p className="text-xs mt-1 mb-3" style={{ color: "var(--text-muted)", opacity: 0.7, fontStyle: "italic" }}>
+                        <p className="text-sm mt-1 mb-4" style={{ color: "var(--text-muted)", opacity: 0.8, fontStyle: "italic" }}>
                           如同 {avatarMeta.figure}——{avatarMeta.figureDesc}
                         </p>
                       )}
 
-                      {/* Page title */}
-                      {t("welcome_title") && (
-                        <h1 className="text-xl font-bold mb-4" style={{ color: "var(--text-primary)" }}>
-                          {t("welcome_title")}
-                        </h1>
-                      )}
-
-                      {/* Profile tags */}
+                      {/* Profile tags — compact */}
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "var(--text-muted)" }}>
-                          {t("welcome_profile_title")}
-                        </p>
-                        <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                        <div className="flex flex-wrap gap-1.5 justify-center md:justify-start">
                           {PROFILE_FIELD_KEYS.map(({ key, tKey, icon }) => {
                             const value = settings ? formatProfileValue(key, settings[key]) : null;
                             return (
                               <div
                                 key={key}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm"
+                                className="flex items-center gap-1 px-2 py-1 rounded-full text-xs"
                                 style={{
                                   backgroundColor: "var(--bg-panel)",
                                   color: "var(--text-secondary)",
                                   border: "1px solid var(--border-subtle)",
                                 }}
                               >
-                                <span>{icon}</span>
+                                <span style={{ fontSize: "0.7rem" }}>{icon}</span>
                                 <span style={{ color: "var(--text-muted)" }}>{t(tKey)}：</span>
                                 {value ? (
                                   <span style={{ color: "var(--text-primary)" }}>{value}</span>
                                 ) : (
-                                  <span className="inline-block w-14 h-3 rounded" style={{ backgroundColor: "var(--bg-card-hover)" }} />
+                                  <span className="inline-block w-10 h-2.5 rounded" style={{ backgroundColor: "var(--bg-card-hover)" }} />
                                 )}
                               </div>
                             );
