@@ -707,18 +707,6 @@ export default function WelcomePage() {
           className="card-reveal"
           style={{ display: "flex", flexDirection: "column", flex: 1 }}
         >
-          {/* Header */}
-          <div className="flex items-center justify-center gap-2 pt-8 pb-4">
-            <FlywheelLogo
-              size={28}
-              className="animate-[spin_8s_linear_infinite]"
-              style={{ color: "var(--signal)" }}
-            />
-            <span className="font-semibold text-lg" style={{ color: "var(--text-primary)" }}>
-              嗅鐘
-            </span>
-          </div>
-
           {/* Main container */}
           <div className="flex-1 flex items-start justify-center p-4 pt-2 pb-12">
             <div className="w-full max-w-md md:max-w-3xl space-y-5">
