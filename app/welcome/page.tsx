@@ -9,6 +9,7 @@ import { FlywheelLogo } from "@/components/flywheel-logo";
 import { useT, type TKey } from "@/lib/i18n";
 import { AVATAR_MAP, AVATAR_META } from "@/components/trading-avatars";
 import { TopNav } from "@/components/top-nav";
+import { toPng } from "html-to-image";
 
 // ── Label maps ────────────────────────────────────────────────────
 const PROFILE_LABELS: Record<string, Record<string, string>> = {
@@ -563,7 +564,8 @@ export default function WelcomePage() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamError, setStreamError] = useState(false);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
-  const [shareStatus, setShareStatus] = useState<"idle" | "copied">("idle");
+  const [shareStatus, setShareStatus] = useState<"idle" | "saving" | "saved">("idle");
+  const cardRef = useRef<HTMLDivElement>(null);
   // phases: "hacking" → "revealing" → "done"
   const [phase, setPhase] = useState<"hacking" | "revealing" | "done">("hacking");
   const [overlayLeaving, setOverlayLeaving] = useState(false);
@@ -713,6 +715,7 @@ export default function WelcomePage() {
 
               {/* ── Hero card ─────────────────────────────────── */}
               <Card
+                ref={cardRef}
                 className="rounded-2xl overflow-hidden relative"
                 style={{ backgroundColor: "var(--bg-card)", borderColor: "var(--border-subtle)" }}
               >
@@ -896,22 +899,22 @@ export default function WelcomePage() {
                 <div className="space-y-3">
                   <Button
                     onClick={async () => {
-                      const shareUrl = `${window.location.origin}/profile/${user?.id || ""}`;
-                      const shareData = {
-                        title: "我的交易畫像 | 嗅鐘",
-                        text: `我是「${styleLabel || "交易者"}」，查看我的專屬交易畫像`,
-                        url: shareUrl,
-                      };
-                      if (navigator.share && navigator.canShare?.(shareData)) {
-                        try {
-                          await navigator.share(shareData);
-                        } catch {
-                          // User cancelled
-                        }
-                      } else {
-                        await navigator.clipboard.writeText(shareUrl);
-                        setShareStatus("copied");
+                      if (!cardRef.current || shareStatus === "saving") return;
+                      setShareStatus("saving");
+                      try {
+                        const dataUrl = await toPng(cardRef.current, {
+                          cacheBust: true,
+                          pixelRatio: 2,
+                          backgroundColor: "#FAFAF7",
+                        });
+                        const link = document.createElement("a");
+                        link.download = `交易畫像-${styleLabel || "嗅鐘"}.png`;
+                        link.href = dataUrl;
+                        link.click();
+                        setShareStatus("saved");
                         setTimeout(() => setShareStatus("idle"), 2000);
+                      } catch {
+                        setShareStatus("idle");
                       }
                     }}
                     variant="outline"
@@ -922,7 +925,7 @@ export default function WelcomePage() {
                       backgroundColor: "transparent",
                     }}
                   >
-                    {shareStatus === "copied" ? "✅ 已複製連結" : "🔗 分享我的交易畫像"}
+                    {shareStatus === "saving" ? "⏳ 正在生成圖片..." : shareStatus === "saved" ? "✅ 已保存圖片" : "📷 保存我的交易畫像"}
                   </Button>
 
                   <Button
