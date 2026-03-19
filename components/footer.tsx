@@ -2,10 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import { getLangStored, type Lang } from "@/lib/lang";
-
-const HIDDEN_PATHS = ["/onboarding", "/welcome"];
 
 const TEXTS = {
   zh: { contact: "聯繫支持", privacy: "隱私政策", login: "登入" },
@@ -29,7 +26,6 @@ function XIcon({ size = 14 }: { size?: number }) {
 }
 
 export function Footer() {
-  const pathname = usePathname();
   const [lang, setLang] = useState<Lang>("zh");
 
   useEffect(() => {
@@ -38,8 +34,6 @@ export function Footer() {
     window.addEventListener("flywheel-lang-change", handler);
     return () => window.removeEventListener("flywheel-lang-change", handler);
   }, []);
-
-  if (HIDDEN_PATHS.some(p => pathname.startsWith(p))) return null;
 
   const t = TEXTS[lang];
 

@@ -158,7 +158,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="flex-1 flex flex-col" style={{ backgroundColor: "var(--bg)" }}>
-      {/* TopNav removed — clean fullscreen onboarding */}
+      <TopNav hideCta hideLogin />
       <div className="flex-1 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}

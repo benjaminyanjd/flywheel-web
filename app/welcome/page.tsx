@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FlywheelLogo } from "@/components/flywheel-logo";
 import { useT, type TKey } from "@/lib/i18n";
 import { AVATAR_MAP, AVATAR_META } from "@/components/trading-avatars";
+import { TopNav } from "@/components/top-nav";
 
 // ── Label maps ────────────────────────────────────────────────────
 const PROFILE_LABELS: Record<string, Record<string, string>> = {
@@ -693,6 +694,7 @@ export default function WelcomePage() {
       style={{ backgroundColor: "var(--bg)" }}
     >
       <style>{CARVE_STYLE}</style>
+      <TopNav hideCta hideLogin />
 
       {/* ── Hacking overlay ── */}
       {(phase === "hacking" || overlayLeaving) && (
