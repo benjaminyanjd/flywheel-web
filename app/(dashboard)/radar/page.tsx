@@ -199,7 +199,7 @@ function RadarContent() {
   const [signals, setSignals] = useState<Signal[]>([]);
   const [loading, setLoading] = useState(true);
   const [newIds, setNewIds] = useState<Set<number>>(new Set());
-  const [heatFilter, setHeatFilter] = useState<"all" | "high" | "mid" | "low">("mid");
+  const [heatFilter, setHeatFilter] = useState<"all" | "high" | "mid" | "low">("all");
   const [keyword, setKeyword] = useState("");
   const [preferredCategories, setPreferredCategories] = useState<Set<string>>(new Set());
   const { t, lang } = useT();
