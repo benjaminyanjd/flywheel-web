@@ -31,10 +31,18 @@ export async function GET(req: NextRequest) {
 
     const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-    const total = db.prepare(`SELECT COUNT(*) as count FROM signals ${where}`).get(...params) as { count: number };
+    const heatWhereCount = conditions.length > 0
+      ? `${where} AND heat_score > 0`
+      : `WHERE heat_score > 0`;
+    const total = db.prepare(`SELECT COUNT(*) as count FROM signals ${heatWhereCount}`).get(...params) as { count: number };
+
+    // Filter out zero-score noise (kol_call junk), sort by heat then recency
+    const heatWhere = conditions.length > 0
+      ? `${where} AND heat_score > 0`
+      : `WHERE heat_score > 0`;
 
     const signals = db
-      .prepare(`SELECT * FROM signals ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`)
+      .prepare(`SELECT * FROM signals ${heatWhere} ORDER BY heat_score DESC, created_at DESC LIMIT ? OFFSET ?`)
       .all(...params, limit, offset);
 
     return NextResponse.json({
