@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FlywheelLogo } from "@/components/flywheel-logo";
 import { useT, type TKey } from "@/lib/i18n";
-import { AVATAR_MAP, AVATAR_META } from "@/components/trading-avatars";
+import { AVATAR_MAP, AVATAR_META, FIGURE_IMAGE_MAP } from "@/components/trading-avatars";
 import { TopNav } from "@/components/top-nav";
 import { toPng } from "html-to-image";
 
@@ -733,19 +733,31 @@ export default function WelcomePage() {
                 <CardContent className="py-8 px-5">
                   <div className="flex flex-col items-center text-center md:flex-row md:items-start md:text-left md:gap-8">
 
-                    {/* Avatar */}
+                    {/* Avatar — prioritize figure image if available, else SVG */}
                     <div className="relative shrink-0 mb-5 md:mb-0">
-                      {AvatarComponent ? (
-                        <div>
-                          <AvatarComponent size={160} className="md:hidden" />
-                          <AvatarComponent size={200} className="hidden md:block" />
-                        </div>
-                      ) : (
-                        <div
-                          className="w-40 h-40 md:w-[200px] md:h-[200px] rounded-full flex items-center justify-center"
-                          style={{ backgroundColor: "var(--bg-panel)" }}
-                        />
-                      )}
+                      {(() => {
+                        const figureImagePath = avatarMeta?.figure ? FIGURE_IMAGE_MAP[avatarMeta.figure] : null;
+                        if (figureImagePath) {
+                          return (
+                            <img
+                              src={`/avatars/${figureImagePath}`}
+                              alt={avatarMeta.figure}
+                              className="w-40 h-40 md:w-[200px] md:h-[200px] rounded-lg object-cover"
+                            />
+                          );
+                        }
+                        return AvatarComponent ? (
+                          <div>
+                            <AvatarComponent size={160} className="md:hidden" />
+                            <AvatarComponent size={200} className="hidden md:block" />
+                          </div>
+                        ) : (
+                          <div
+                            className="w-40 h-40 md:w-[200px] md:h-[200px] rounded-full flex items-center justify-center"
+                            style={{ backgroundColor: "var(--bg-panel)" }}
+                          />
+                        );
+                      })()}
                     </div>
 
                     {/* Style info */}

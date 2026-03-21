@@ -465,3 +465,13 @@ export const AVATAR_META: Record<string, { label: string; color: string; desc: s
   whale: { label: "市場鯨魚", color: "var(--text-secondary)", desc: "大資金玩家，掌控市場", figure: "J.P. Morgan", figureDesc: "金融巨鱷，掌控華爾街" },
   ninja: { label: "閃電忍者", color: "var(--text-primary)", desc: "快進快出，神出鬼沒", figure: "Jim Simons", figureDesc: "量化交易之王" },
 };
+
+// ── Figure image map: person name → image filename (stored in /public/avatars/) ──
+export const FIGURE_IMAGE_MAP: Record<string, string | null> = {
+  "Jesse Livermore": "livermore.png",
+  "George Soros": "soros.png",
+  "Benjamin Graham": "graham.png",
+  "Michael Burry": null, // waiting for generation
+  "J.P. Morgan": null,
+  "Jim Simons": null,
+};
