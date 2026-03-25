@@ -556,7 +556,7 @@ export const translations = {
     goal_learn_explore: "學習探索（先搞懂再下重注）",
 
     // Welcome page
-    welcome_title: "",
+    welcome_title: "歡迎來到嗅鐘",
     welcome_profile_title: "你的交易檔案",
     welcome_generating: "AI 正在為你生成專屬分析...",
     welcome_cta: "進入控制台 →",
@@ -1120,7 +1120,7 @@ export const translations = {
     goal_learn_explore: "Learn & Explore (understand before committing)",
 
     // Welcome page
-    welcome_title: "",
+    welcome_title: "Welcome to Sniffing Clock",
     welcome_profile_title: "Your Trading Profile",
     welcome_generating: "AI is generating your personalized analysis...",
     welcome_cta: "Enter Dashboard →",
